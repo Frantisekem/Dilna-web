@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="cs" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naše Dílna | Poctivá ruční výroba</title>
+    
+    <!-- Google Fonts: Caveat (ručně psaný) a Lora (elegantní patkový pro lepší čitelnost delších textů) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons (vektorové ikonky, které se hodí k ručnímu stylu) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        hand: ['Caveat', 'cursive'],
+                        serif: ['Lora', 'serif'],
+                    },
+                    colors: {
+                        kraft: {
+                            light: '#f4f0ea', 
+                            DEFAULT: '#eaddcf', 
+                            dark: '#d1bfae',
+                        },
+                        ink: {
+                            light: '#5c4e43',
+                            DEFAULT: '#3a2e26', // Tmavě hnědá místo černé
+                        },
+                        terracotta: {
+                            DEFAULT: '#d17a5a',
+                            hover: '#b56447',
+                        },
+                        sage: {
+                            DEFAULT: '#899a82',
+                            light: '#a3b19d',
+                        },
+                        mustard: '#d4a373'
+                    },
+                    boxShadow: {
+                        'sketch': '4px 4px 0px rgba(58, 46, 38, 0.1)',
+                        'sketch-hover': '6px 6px 0px rgba(58, 46, 38, 0.15)',
+                        'polaroid': '0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f4f0ea;
+            /* Jemná textura recyklovaného papíru pomocí šumu */
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+            color: #3a2e26;
+        }
+
+        /* Nepravidelné rámečky evokující ruční kreslení nebo stříhání */
+        .hand-drawn-box {
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+            border: 2px solid #3a2e26;
+        }
+        
+        .hand-drawn-box-light {
+            border-radius: 15px 255px 15px 225px/225px 15px 255px 15px;
+            border: 2px solid rgba(58, 46, 38, 0.2);
+        }
+
+        /* Efekt přilepení pomocí "washi pásky" */
+        .washi-tape {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-2deg);
+            width: 80px;
+            height: 25px;
+            background-color: rgba(209, 122, 90, 0.4); /* Terakotová páska */
+            backdrop-filter: blur(2px);
+            clip-path: polygon(0 5%, 100% 0, 95% 95%, 5% 100%);
+            z-index: 10;
+        }
+        
+        .washi-tape.sage {
+            background-color: rgba(137, 154, 130, 0.4); /* Šalvějová páska */
+            transform: translateX(-50%) rotate(3deg);
+            width: 90px;
+        }
+
+        /* Vzhled poznámkového bloku pro formulář */
+        .notebook-paper {
+            background-color: #f9f6f0;
+            background-image: repeating-linear-gradient(transparent, transparent 31px, #d1bfae 31px, #d1bfae 32px);
+            line-height: 32px;
+            padding-top: 8px;
+        }
+
+        /* Efekt prošívání */
+        .stitched-border {
+            outline: 2px dashed #d1bfae;
+            outline-offset: -8px;
+        }
+
+        /* Styl Polaroid fotky */
+        .polaroid {
+            background: white;
+            padding: 10px 10px 40px 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1);
+            transform: rotate(-3deg);
+            transition: transform 0.3s ease;
+        }
+        .polaroid:hover {
+            transform: rotate(0deg) scale(1.02);
+            z-index: 20;
+        }
+        .polaroid-2 {
+            transform: rotate(4deg);
+        }
+    </style>
+</head>
+<body class="font-serif antialiased selection:bg-terracotta selection:text-white relative">
+
+    <nav class="fixed w-full z-50 transition-all duration-300 py-4" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="hand-drawn-box bg-kraft-light/90 backdrop-blur-sm px-6 py-3 flex justify-between items-center shadow-sketch">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center gap-2">
+                    <i class="ph ph-scissors text-3xl text-terracotta transform -rotate-12"></i>
+                    <a href="#" class="font-hand text-3xl font-bold tracking-wide text-ink pt-1">Naše Dílna</a>
+                </div>
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-6 items-center">
+                    <a href="#o-nas" class="font-hand text-2xl text-ink hover:text-terracotta transition-colors">Náš příběh</a>
+                    <a href="#tvorba" class="font-hand text-2xl text-ink hover:text-terracotta transition-colors">Co tvoříme</a>
+                    <a href="#kontakt" class="font-hand text-2xl px-4 py-1 hand-drawn-box bg-sage-light/30 hover:bg-sage-light/50 transition-colors">Napište nám</a>
+                </div>
+                <!-- Mobilní menu tlačítko -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-ink hover:text-terracotta focus:outline-none">
+                        <i class="ph ph-list text-3xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobilní menu panel -->
+        <div id="mobile-menu" class="hidden md:hidden absolute top-20 left-4 right-4 hand-drawn-box bg-kraft-light shadow-sketch z-50">
+            <div class="px-4 py-4 flex flex-col gap-4 text-center">
+                <a href="#o-nas" class="font-hand text-2xl text-ink hover:text-terracotta">Náš příběh</a>
+                <a href="#tvorba" class="font-hand text-2xl text-ink hover:text-terracotta">Co tvoříme</a>
+                <a href="#kontakt" class="font-hand text-2xl text-ink hover:text-terracotta">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden flex flex-col items-center justify-center min-h-[90vh]">
+        <!-- Dekorativní malůvky v pozadí (absolutně pozicované) -->
+        <i class="ph ph-sparkle absolute top-40 left-10 lg:left-32 text-mustard text-4xl opacity-50 animate-pulse"></i>
+        <i class="ph ph-heart absolute bottom-20 right-10 lg:right-32 text-terracotta text-5xl opacity-50 transform rotate-12"></i>
+        <i class="ph ph-pencil-simple absolute top-60 right-20 text-sage text-6xl opacity-30 transform -rotate-45"></i>
+
+        <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
+            <div class="inline-block relative mb-8">
+                <div class="washi-tape"></div>
+                <div class="bg-white px-6 py-2 shadow-sm transform -rotate-2">
+                    <span class="font-hand text-xl text-sage tracking-widest uppercase font-bold">100% Vlastnoručně</span>
+                </div>
+            </div>
+            
+            <h1 class="font-hand text-6xl sm:text-7xl lg:text-8xl text-ink leading-none mb-6 relative">
+                Tvoříme s láskou <br>
+                <span class="relative inline-block mt-2">
+                    a nadšením
+                    <!-- Ručně kreslené podtržení -->
+                    <svg class="absolute w-full h-4 -bottom-1 left-0 text-terracotta" viewBox="0 0 200 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 6.5C48.5 2.5 130.5 -1.5 198 6.5" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                    </svg>
+                </span>
+            </h1>
+            
+            <p class="mt-8 max-w-2xl mx-auto text-lg sm:text-xl text-ink-light leading-relaxed mb-12">
+                V naší malé dílně se rodí nápady z papíru, plastu i dřeva. Od hravých samolepek, přes svatební výzdobu až po chytrý 3D tisk. Vše pečlivě, ručně a pro vás.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
+                <a href="#tvorba" class="group relative inline-flex justify-center items-center px-8 py-3 text-2xl font-hand font-bold text-white bg-terracotta hand-drawn-box shadow-sketch hover:shadow-sketch-hover transition-all duration-300 hover:-translate-y-1">
+                    <span class="stitched-border absolute inset-1 pointer-events-none opacity-50"></span>
+                    Nakouknout do dílny
+                </a>
+                <a href="#kontakt" class="group inline-flex justify-center items-center px-8 py-3 text-2xl font-hand font-bold text-ink bg-transparent hand-drawn-box border-ink hover:bg-ink/5 transition-all duration-300">
+                    <i class="ph ph-envelope-simple mr-2"></i> Napsat nám
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="o-nas" class="py-20 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="hand-drawn-box-light bg-white/50 backdrop-blur-sm p-8 lg:p-16">
+                <div class="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
+                    <!-- Obrázky (Polaroidy) -->
+                    <div class="mb-16 lg:mb-0 relative flex justify-center h-80">
+                        <!-- Fotka 1 -->
+                        <div class="polaroid absolute left-4 lg:left-10 top-0 w-64 z-10">
+                            <img src="https://placehold.co/400x400/eaddcf/3a2e26?text=Naše+ruce+v+akci" alt="Ruční výroba" class="w-full h-48 object-cover bg-kraft mb-3">
+                            <p class="font-hand text-xl text-center text-ink">Pečlivá práce...</p>
+                        </div>
+                        <!-- Fotka 2 -->
+                        <div class="polaroid polaroid-2 absolute right-4 lg:right-10 top-16 w-64 z-20">
+                            <img src="https://placehold.co/400x400/899a82/f4f0ea?text=Materiály" alt="Materiály" class="w-full h-48 object-cover bg-sage mb-3">
+                            <p class="font-hand text-xl text-center text-ink">...a vůně materiálu.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Text -->
+                    <div>
+                        <div class="inline-block relative mb-4">
+                            <div class="washi-tape sage"></div>
+                            <span class="bg-kraft px-4 py-1 font-hand text-xl text-ink transform rotate-2 inline-block">Náš příběh</span>
+                        </div>
+                        <h2 class="text-4xl sm:text-5xl font-hand font-bold text-ink mb-6">O naší ruční výrobě</h2>
+                        <div class="space-y-4 text-ink-light text-lg">
+                            <p>
+                                Všechno to začalo jedním velkým stolem, hromadou nápadů a chutí tvořit věci, které mají duši. Nejsme žádná velká továrna – jsme nadšenci, kteří každému kousku věnují svůj čas a pozornost.
+                            </p>
+                            <p>
+                                V naší dílně vládne tvořivá pohoda – k práci nesmí chybět dobrá káva a moje nezbytné horké kakao. Ať už zrovna ladíme trysku u <strong>3D tiskárny</strong>, stříháme stužky na <strong>svatební dekorace</strong>, nebo skládáme krabičky pro <strong>adventní kalendáře</strong>, děláme to s radostí. Věříme, že ruční práce zanechává ve výrobcích otisk, který žádný stroj nenapodobí.
+                            </p>
+                        </div>
+                        
+                        <div class="mt-8 flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full border-2 border-sage border-dashed flex items-center justify-center text-sage">
+                                <i class="ph ph-plant text-2xl"></i>
+                            </div>
+                            <span class="font-hand text-2xl text-ink">Tvoříme srdcem a z poctivých materiálů.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="tvorba" class="py-20 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 relative">
+                <i class="ph ph-arrow-bend-right-down absolute -left-4 top-10 text-4xl text-terracotta transform -rotate-12 hidden md:block"></i>
+                <h2 class="text-5xl sm:text-6xl font-hand font-bold text-ink mb-4">Co vám můžeme vyrobit?</h2>
+                <p class="text-ink-light text-xl font-hand">Vyberte si z naší nabídky, nebo nám napište svůj vlastní nápad!</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                
+                <!-- Produkt 1: 3D Tisk -->
+                <div class="bg-white hand-drawn-box p-8 relative shadow-sketch hover:-translate-y-2 transition-transform duration-300 group">
+                    <div class="washi-tape"></div>
+                    <div class="stitched-border absolute inset-2 pointer-events-none opacity-30"></div>
+                    
+                    <div class="w-16 h-16 rounded-full bg-kraft flex items-center justify-center mb-6 mx-auto group-hover:bg-terracotta group-hover:text-white transition-colors duration-300 text-ink">
+                        <i class="ph ph-cube text-3xl"></i>
+                    </div>
+                    <h3 class="text-3xl font-hand font-bold text-center text-ink mb-3">3D Tisk</h3>
+                    <p class="text-ink-light text-center">Tvary, které si vymyslíte. Od praktických vychytávek do domácnosti, přes náhradní díly až po personalizované klíčenky a figurky.</p>
+                </div>
+
+                <!-- Produkt 2: Svatební výzdoba -->
+                <div class="bg-white hand-drawn-box p-8 relative shadow-sketch hover:-translate-y-2 transition-transform duration-300 group mt-4 md:mt-0">
+                    <div class="washi-tape sage"></div>
+                    <div class="stitched-border absolute inset-2 pointer-events-none opacity-30"></div>
+                    
+                    <div class="w-16 h-16 rounded-full bg-kraft flex items-center justify-center mb-6 mx-auto group-hover:bg-sage group-hover:text-white transition-colors duration-300 text-ink">
+                        <i class="ph ph-heart text-3xl"></i>
+                    </div>
+                    <h3 class="text-3xl font-hand font-bold text-center text-ink mb-3">Svatební výzdoba</h3>
+                    <p class="text-ink-light text-center">Jmenovky na stůl, uvítací cedule, zápichy do dortů a drobnosti pro hosty. Vše laděné přesně do stylu vaší svatby.</p>
+                </div>
+
+                <!-- Produkt 3: Plesy -->
+                <div class="bg-white hand-drawn-box p-8 relative shadow-sketch hover:-translate-y-2 transition-transform duration-300 group md:col-span-2 lg:col-span-1 mt-8 lg:mt-0">
+                    <div class="washi-tape" style="background-color: rgba(212, 163, 115, 0.4);"></div> <!-- Hořčicová páska -->
+                    <div class="stitched-border absolute inset-2 pointer-events-none opacity-30"></div>
+                    
+                    <div class="w-16 h-16 rounded-full bg-kraft flex items-center justify-center mb-6 mx-auto group-hover:bg-mustard group-hover:text-white transition-colors duration-300 text-ink">
+                        <i class="ph ph-mask-happy text-3xl"></i>
+                    </div>
+                    <h3 class="text-3xl font-hand font-bold text-center text-ink mb-3">Plesové dekorace</h3>
+                    <p class="text-ink-light text-center">Originální rekvizity do fotokoutků, výzdoba sálů a stolů pro maturitní i jiné plesy. Tvoříme atmosféru!</p>
+                </div>
+
+                <!-- Produkt 4: Samolepky -->
+                <div class="bg-white hand-drawn-box p-8 relative shadow-sketch hover:-translate-y-2 transition-transform duration-300 group md:mt-4">
+                    <div class="washi-tape sage"></div>
+                    <div class="stitched-border absolute inset-2 pointer-events-none opacity-30"></div>
+                    
+                    <div class="w-16 h-16 rounded-full bg-kraft flex items-center justify-center mb-6 mx-auto group-hover:bg-sage group-hover:text-white transition-colors duration-300 text-ink">
+                        <i class="ph ph-sticker text-3xl"></i>
+                    </div>
+                    <h3 class="text-3xl font-hand font-bold text-center text-ink mb-3">Samolepky na míru</h3>
+                    <p class="text-ink-light text-center">Archy samolepek do diářů, vinylové samolepky na notebooky nebo etikety pro vaše vlastní výrobky a dárky.</p>
+                </div>
+
+                <!-- Produkt 5: Adventní kalendáře -->
+                <div class="bg-white hand-drawn-box p-8 relative shadow-sketch hover:-translate-y-2 transition-transform duration-300 group mt-8 md:mt-4">
+                    <div class="washi-tape"></div>
+                    <div class="stitched-border absolute inset-2 pointer-events-none opacity-30"></div>
+                    
+                    <div class="w-16 h-16 rounded-full bg-kraft flex items-center justify-center mb-6 mx-auto group-hover:bg-terracotta group-hover:text-white transition-colors duration-300 text-ink">
+                        <i class="ph ph-calendar-star text-3xl"></i>
+                    </div>
+                    <h3 class="text-3xl font-hand font-bold text-center text-ink mb-3">Adventní kalendáře</h3>
+                    <p class="text-ink-light text-center">Kouzelné a znovupoužitelné. Papírové domečky, dřevěné šuplíčky nebo látkové pytlíčky, které si sami naplníte.</p>
+                </div>
+
+                <!-- Zvláštní přání -->
+                <div class="bg-kraft-dark hand-drawn-box p-8 relative shadow-sketch hover:-translate-y-2 transition-transform duration-300 flex flex-col justify-center items-center text-center mt-8 md:mt-4">
+                    <i class="ph ph-lightbulb text-5xl text-ink mb-4 animate-bounce"></i>
+                    <h3 class="text-3xl font-hand font-bold text-ink mb-3">Máte jiný nápad?</h3>
+                    <p class="text-ink-light mb-6">Rádi experimentujeme a zkoušíme nové věci. Napište nám, co byste chtěli vyrobit!</p>
+                    <a href="#kontakt" class="font-hand text-2xl text-terracotta hover:text-ink underline decoration-dashed underline-offset-4">Sem s ním!</a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="kontakt" class="py-20 relative">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row gap-12 items-start">
+                
+                <!-- Kontaktní info -->
+                <div class="md:w-1/3">
+                    <h2 class="text-5xl font-hand font-bold text-ink mb-6">Napište nám řádky</h2>
+                    <p class="text-ink-light mb-8">
+                        Máte dotaz, chcete si objednat něco z naší nabídky, nebo s námi chcete jen tak probrat váš nápad? Dopisní schránku máme vždycky otevřenou.
+                    </p>
+                    
+                    <div class="space-y-6 font-hand text-2xl text-ink">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-paper-plane-tilt text-terracotta"></i>
+                            <a href="mailto:ahoj@nasedilna.cz" class="hover:text-terracotta decoration-dashed underline underline-offset-4">ahoj@nasedilna.cz</a>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-phone text-terracotta"></i>
+                            <span>+420 123 456 789</span>
+                        </div>
+                        <div class="flex items-start gap-3 mt-4 pt-4 border-t-2 border-dashed border-kraft-dark">
+                            <i class="ph ph-map-pin text-sage mt-1"></i>
+                            <span class="leading-tight">Naše Dílna<br>Tvořivá ulice 1<br>Praha</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulář - Vzhled sešitu/bloku -->
+                <div class="md:w-2/3 w-full relative">
+                    <!-- Spirála bloku (dekorace) -->
+                    <div class="absolute -left-3 top-4 bottom-4 w-6 flex flex-col justify-between z-20 py-8">
+                        <script>
+                            // Vykreslení kroužků bloku
+                            for(let i=0; i<10; i++) {
+                                document.write('<div class="w-6 h-3 rounded-full border-4 border-ink/80 bg-white/50 -ml-1"></div>');
+                            }
+                        </script>
+                    </div>
+
+                    <div class="hand-drawn-box notebook-paper p-8 pl-10 relative shadow-sketch">
+                        
+                        <!-- Zpráva o úspěchu -->
+                        <div id="form-success" class="hidden absolute inset-0 bg-white/95 z-30 flex-col items-center justify-center text-center p-8 hand-drawn-box">
+                            <i class="ph ph-smiley-wink text-6xl text-sage mb-4"></i>
+                            <h4 class="text-4xl font-hand font-bold text-ink mb-2">Zpráva odletěla!</h4>
+                            <p class="text-ink-light mb-6 font-serif">Moc děkujeme. Přečteme si ji a co nejdříve se vám ozveme.</p>
+                            <button onclick="resetForm()" class="px-6 py-2 bg-kraft text-ink font-hand text-2xl hand-drawn-box hover:bg-terracotta hover:text-white transition-colors">
+                                Napsat další
+                            </button>
+                        </div>
+
+                        <form id="contact-form" class="space-y-4" onsubmit="handleFormSubmit(event)">
+                            <div class="border-b-2 border-kraft-dark pb-1">
+                                <input type="text" id="name" required class="w-full bg-transparent outline-none font-hand text-2xl text-ink placeholder-ink/40" placeholder="Vaše jméno...">
+                            </div>
+                            
+                            <div class="border-b-2 border-kraft-dark pb-1">
+                                <input type="email" id="email" required class="w-full bg-transparent outline-none font-hand text-2xl text-ink placeholder-ink/40" placeholder="Váš e-mail (ať vám můžeme odepsat)...">
+                            </div>
+
+                            <div class="border-b-2 border-kraft-dark pb-1 pt-2">
+                                <select id="service" class="w-full bg-transparent outline-none font-hand text-2xl text-ink appearance-none cursor-pointer">
+                                    <option value="" disabled selected>Co budeme tvořit? (Vyberte)</option>
+                                    <option value="3d">Něco z 3D tiskárny</option>
+                                    <option value="svatba">Svatební výzdobu</option>
+                                    <option value="ples">Plesové dekorace</option>
+                                    <option value="samolepky">Samolepky</option>
+                                    <option value="advent">Adventní kalendář</option>
+                                    <option value="jine">Mám vlastní nápad!</option>
+                                </select>
+                            </div>
+
+                            <div class="pt-2">
+                                <textarea id="message" rows="4" required class="w-full bg-transparent outline-none font-hand text-2xl text-ink placeholder-ink/40 resize-y leading-8" placeholder="Tady nám můžete popsat svou představu..."></textarea>
+                                <!-- Čáry pro textarea simulující linkovaný papír -->
+                                <div class="w-full h-[120px] pointer-events-none -mt-[128px] border-b-2 border-kraft-dark" style="background-image: repeating-linear-gradient(transparent, transparent 30px, #d1bfae 30px, #d1bfae 32px);"></div>
+                            </div>
+
+                            <div class="pt-8 text-right">
+                                <button type="submit" class="inline-flex items-center gap-2 px-6 py-2 bg-sage hover:bg-sage-light text-white font-hand text-3xl font-bold hand-drawn-box shadow-sketch hover:shadow-sketch-hover transition-all duration-300 transform hover:-rotate-2">
+                                    Odeslat dopis <i class="ph-bold ph-paper-plane-tilt"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-10 text-center relative z-10 border-t-2 border-dashed border-kraft-dark mt-10">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex flex-col items-center justify-center gap-2 text-ink">
+                <p class="font-hand text-3xl font-bold">Naše Dílna</p>
+                <div class="flex items-center gap-2">
+                    <span class="font-serif text-sm">Vyrobeno s</span>
+                    <i class="ph-fill ph-heart text-terracotta"></i>
+                    <span class="font-serif text-sm">v roce 2026</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Logika pro mobilní menu
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // Stylování navigace při scrollování
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 20) {
+                nav.classList.add('-translate-y-2');
+            } else {
+                nav.classList.remove('-translate-y-2');
+            }
+        });
+
+        // Odeslání formuláře (bez alertu, ukáže poděkování)
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            const formSuccess = document.getElementById('form-success');
+            const form = document.getElementById('contact-form');
+            
+            form.style.opacity = '0';
+            setTimeout(() => {
+                form.style.display = 'none';
+                formSuccess.style.display = 'flex';
+                formSuccess.classList.remove('hidden');
+            }, 300);
+        }
+
+        // Reset formuláře
+        function resetForm() {
+            const formSuccess = document.getElementById('form-success');
+            const form = document.getElementById('contact-form');
+            
+            form.reset();
+            formSuccess.style.display = 'none';
+            formSuccess.classList.add('hidden');
+            form.style.display = 'block';
+            setTimeout(() => {
+                form.style.opacity = '1';
+            }, 50);
+        }
+    </script>
+</body>
+</html>
