@@ -14,6 +14,20 @@
 </head>
 <body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
 
+    <!-- PŘIHLAŠOVACÍ OBRAZOVKA (ZÁMEK) -->
+    <div id="login-screen" class="fixed inset-0 bg-gray-900 bg-opacity-95 z-50 flex items-center justify-center transition-opacity duration-300">
+        <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-sm text-center">
+            <div class="text-4xl mb-4">🔒</div>
+            <h2 class="text-2xl font-bold mb-2">Vstup do systému</h2>
+            <p class="text-gray-500 text-sm mb-6">Zadejte heslo pro přístup do administrace vaší dílny.</p>
+            <form onsubmit="overitHeslo(event)">
+                <input type="password" id="heslo-input" class="w-full border-2 border-gray-300 p-3 rounded-lg mb-4 text-center focus:border-blue-500 focus:outline-none" placeholder="Zadejte heslo" required>
+                <p id="heslo-chyba" class="text-red-500 text-sm mb-4 font-bold hidden">Nesprávné heslo!</p>
+                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition">Odemknout</button>
+            </form>
+        </div>
+    </div>
+
     <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
         <div class="p-6 border-b border-gray-200">
             <h1 class="text-xl font-bold text-gray-800">Moje Dílna</h1>
@@ -29,7 +43,7 @@
         </nav>
     </aside>
 
-    <main class="flex-1 overflow-y-auto p-8">
+    <main id="hlavni-obsah" class="flex-1 overflow-y-auto p-8 opacity-0 transition-opacity duration-300">
         
         <!-- PŘEHLED -->
         <section id="prehled" class="tab-content active">
@@ -176,7 +190,32 @@
     </main>
 
     <script>
-        // Jednoduché UI skripty pro přepínání tabů
+        // ======= NASTAVENÍ HESLA =======
+        const TAJNE_HESLO = "TonyaPepr1"; // Zde si můžete heslo kdykoliv změnit
+        
+        let jePrihlasen = sessionStorage.getItem('dilna_prihlaseno') === 'ano';
+
+        if(jePrihlasen) {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('hlavni-obsah').classList.remove('opacity-0');
+        }
+
+        window.overitHeslo = function(e) {
+            e.preventDefault();
+            const zadaneHeslo = document.getElementById('heslo-input').value;
+            
+            if(zadaneHeslo === TAJNE_HESLO) {
+                sessionStorage.setItem('dilna_prihlaseno', 'ano');
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('hlavni-obsah').classList.remove('opacity-0');
+                jePrihlasen = true;
+                spustitFirebase(); // Databáze se načte až po přihlášení
+            } else {
+                document.getElementById('heslo-chyba').classList.remove('hidden');
+            }
+        };
+
+        // ======= JEDNODUCHÉ UI SKRIPTY =======
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
@@ -193,165 +232,173 @@
         });
     </script>
 
-    <!-- Napojení na Firebase -->
+    <!-- ======= NAPOJENÍ NA FIREBASE ======= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCGMPmV6UI1Q-T5VCHFkv_Qbp3_6d8HoGQ",
-            authDomain: "dilna-web.firebaseapp.com",
-            projectId: "dilna-web",
-            storageBucket: "dilna-web.firebasestorage.app",
-            messagingSenderId: "579413031750",
-            appId: "1:579413031750:web:de8e579a13b3f483134347",
-            measurementId: "G-6T0Q7909D2"
-        };
+        // Firebase nespouštíme hned, čekáme na zadání hesla (nebo kontrolu session)
+        window.spustitFirebase = function() {
+            const firebaseConfig = {
+                apiKey: "AIzaSyCGMPmV6UI1Q-T5VCHFkv_Qbp3_6d8HoGQ",
+                authDomain: "dilna-web.firebaseapp.com",
+                projectId: "dilna-web",
+                storageBucket: "dilna-web.firebasestorage.app",
+                messagingSenderId: "579413031750",
+                appId: "1:579413031750:web:de8e579a13b3f483134347",
+                measurementId: "G-6T0Q7909D2"
+            };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
 
-        // -- ZAKÁZKY --
-        document.getElementById('form-zakazky').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            let obsahObjednavky = [];
-            document.querySelectorAll('.polozka-row').forEach(row => {
-                const nazev = row.querySelector('.polozka-nazev').value;
-                const ks = row.querySelector('.polozka-ks').value;
-                if(nazev) obsahObjednavky.push({ nazev, ks });
+            // -- ZAKÁZKY --
+            document.getElementById('form-zakazky').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                let obsahObjednavky = [];
+                document.querySelectorAll('.polozka-row').forEach(row => {
+                    const nazev = row.querySelector('.polozka-nazev').value;
+                    const ks = row.querySelector('.polozka-ks').value;
+                    if(nazev) obsahObjednavky.push({ nazev, ks });
+                });
+                await addDoc(collection(db, "zakazky"), {
+                    zakaznik: document.getElementById('z-zakaznik').value,
+                    kategorie: document.getElementById('z-kategorie').value,
+                    cena: Number(document.getElementById('z-cena').value),
+                    stav: 'Přijato',
+                    obsah: obsahObjednavky
+                });
+                e.target.reset();
             });
-            await addDoc(collection(db, "zakazky"), {
-                zakaznik: document.getElementById('z-zakaznik').value,
-                kategorie: document.getElementById('z-kategorie').value,
-                cena: Number(document.getElementById('z-cena').value),
-                stav: 'Přijato',
-                obsah: obsahObjednavky
-            });
-            e.target.reset();
-        });
 
-        window.zmenitStav = async (id, novyStav) => {
-            await updateDoc(doc(db, "zakazky", id), { stav: novyStav });
-        };
-        window.smazatZ = async (id) => { if(confirm('Smazat?')) await deleteDoc(doc(db, "zakazky", id)); };
+            window.zmenitStav = async (id, novyStav) => {
+                await updateDoc(doc(db, "zakazky", id), { stav: novyStav });
+            };
+            window.smazatZ = async (id) => { if(confirm('Smazat?')) await deleteDoc(doc(db, "zakazky", id)); };
 
-        onSnapshot(collection(db, "zakazky"), (snapshot) => {
-            let zHTML = '';
-            let aktivni = 0, kOdeslani = 0;
-            const stavyK = { '3D tisk': ['Přijato','Připraveno na tisk','Vytisknuto','Nabarveno','Zabaleno','Odesláno'], 'default': ['Přijato','Příprava / Řezání','Zabaleno','Odesláno'] };
-            
-            snapshot.forEach(docSnap => {
-                const z = docSnap.data();
-                const id = docSnap.id;
-                if(z.stav !== 'Odesláno') aktivni++;
-                if(z.stav === 'Zabaleno') kOdeslani++;
+            onSnapshot(collection(db, "zakazky"), (snapshot) => {
+                let zHTML = '';
+                let aktivni = 0, kOdeslani = 0;
+                const stavyK = { '3D tisk': ['Přijato','Připraveno na tisk','Vytisknuto','Nabarveno','Zabaleno','Odesláno'], 'default': ['Přijato','Příprava / Řezání','Zabaleno','Odesláno'] };
                 
-                const stavy = stavyK[z.kategorie] || stavyK['default'];
-                let options = stavy.map(s => `<option value="${s}" ${z.stav === s ? 'selected' : ''}>${s}</option>`).join('');
-                let obsahHTML = z.obsah ? z.obsah.map(p => `<li>${p.ks}x ${p.nazev}</li>`).join('') : '';
+                snapshot.forEach(docSnap => {
+                    const z = docSnap.data();
+                    const id = docSnap.id;
+                    if(z.stav !== 'Odesláno') aktivni++;
+                    if(z.stav === 'Zabaleno') kOdeslani++;
+                    
+                    const stavy = stavyK[z.kategorie] || stavyK['default'];
+                    let options = stavy.map(s => `<option value="${s}" ${z.stav === s ? 'selected' : ''}>${s}</option>`).join('');
+                    let obsahHTML = z.obsah ? z.obsah.map(p => `<li>${p.ks}x ${p.nazev}</li>`).join('') : '';
 
-                zHTML += `<tr class="hover:bg-gray-50"><td class="p-4">${z.zakaznik}</td><td class="p-4 text-xs">${z.kategorie}</td><td class="p-4 text-xs"><ul>${obsahHTML}</ul></td><td class="p-4 font-bold">${z.cena} Kč</td><td class="p-4"><select onchange="zmenitStav('${id}', this.value)" class="bg-blue-50 text-xs p-1">${options}</select></td><td class="p-4"><button onclick="smazatZ('${id}')" class="text-red-500">Smazat</button></td></tr>`;
+                    zHTML += `<tr class="hover:bg-gray-50"><td class="p-4">${z.zakaznik}</td><td class="p-4 text-xs">${z.kategorie}</td><td class="p-4 text-xs"><ul>${obsahHTML}</ul></td><td class="p-4 font-bold">${z.cena} Kč</td><td class="p-4"><select onchange="zmenitStav('${id}', this.value)" class="bg-blue-50 text-xs p-1">${options}</select></td><td class="p-4"><button onclick="smazatZ('${id}')" class="text-red-500">Smazat</button></td></tr>`;
+                });
+                document.getElementById('list-zakazky').innerHTML = zHTML;
+                document.getElementById('stat-aktivni').innerText = aktivni;
+                document.getElementById('stat-odeslani').innerText = kOdeslani;
             });
-            document.getElementById('list-zakazky').innerHTML = zHTML;
-            document.getElementById('stat-aktivni').innerText = aktivni;
-            document.getElementById('stat-odeslani').innerText = kOdeslani;
-        });
 
-        // -- SKLAD --
-        document.getElementById('form-sklad').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await addDoc(collection(db, "sklad"), {
-                nazev: document.getElementById('s-nazev').value,
-                dodavatel: document.getElementById('s-dodavatel').value || '-',
-                pocet: Number(document.getElementById('s-pocet').value)
+            // -- SKLAD --
+            document.getElementById('form-sklad').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await addDoc(collection(db, "sklad"), {
+                    nazev: document.getElementById('s-nazev').value,
+                    dodavatel: document.getElementById('s-dodavatel').value || '-',
+                    pocet: Number(document.getElementById('s-pocet').value)
+                });
+                e.target.reset();
             });
-            e.target.reset();
-        });
 
-        window.zmenitPocet = async (id, pocet, delta) => {
-            const novy = Math.max(0, pocet + delta);
-            await updateDoc(doc(db, "sklad", id), { pocet: novy });
+            window.zmenitPocet = async (id, pocet, delta) => {
+                const novy = Math.max(0, pocet + delta);
+                await updateDoc(doc(db, "sklad", id), { pocet: novy });
+            };
+            window.smazatS = async (id) => await deleteDoc(doc(db, "sklad", id));
+
+            onSnapshot(collection(db, "sklad"), (snapshot) => {
+                let sHTML = '', varovaniHTML = '';
+                let maloSkladem = 0;
+                snapshot.forEach(docSnap => {
+                    const s = docSnap.data();
+                    const id = docSnap.id;
+                    if(s.pocet < 5) {
+                        maloSkladem++;
+                        varovaniHTML += `<li>⚠️ ${s.nazev} (zbývá ${s.pocet}) - Od: ${s.dodavatel}</li>`;
+                    }
+                    sHTML += `<div class="bg-white p-4 border rounded-xl flex justify-between items-center"><div><div class="font-bold">${s.nazev}</div><div class="text-xs">Od: ${s.dodavatel}</div></div><div class="flex items-center gap-2"><button onclick="zmenitPocet('${id}', ${s.pocet}, -1)" class="w-8 h-8 bg-gray-200 rounded-full">-</button><span class="font-bold ${s.pocet < 5 ? 'text-red-600' : ''}">${s.pocet}</span><button onclick="zmenitPocet('${id}', ${s.pocet}, 1)" class="w-8 h-8 bg-gray-200 rounded-full">+</button><button onclick="smazatS('${id}')" class="text-red-400 ml-2">X</button></div></div>`;
+                });
+                document.getElementById('list-sklad').innerHTML = sHTML;
+                document.getElementById('stat-sklad').innerText = maloSkladem + ' položek';
+                document.getElementById('low-stock-list').innerHTML = maloSkladem > 0 ? varovaniHTML : '<li class="text-green-600">Všeho je dostatek.</li>';
+            });
+
+            // -- DODAVATELÉ --
+            document.getElementById('form-dodavatele').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await addDoc(collection(db, "dodavatele"), { nazev: document.getElementById('d-nazev').value, material: document.getElementById('d-material').value });
+                e.target.reset();
+            });
+            window.smazatD = async (id) => await deleteDoc(doc(db, "dodavatele", id));
+            onSnapshot(collection(db, "dodavatele"), (snapshot) => {
+                let dHTML = '';
+                snapshot.forEach(docSnap => {
+                    const d = docSnap.data();
+                    dHTML += `<li class="bg-white p-4 border rounded-xl flex justify-between"><div><div class="font-bold">${d.nazev}</div><div class="text-sm">Dodává: ${d.material}</div></div><button onclick="smazatD('${docSnap.id}')" class="text-red-500">Smazat</button></li>`;
+                });
+                document.getElementById('list-dodavatele').innerHTML = dHTML;
+            });
+
+            // -- FINANCE --
+            document.getElementById('form-finance').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await addDoc(collection(db, "finance"), {
+                    datum: new Date().toLocaleDateString('cs-CZ'),
+                    typ: document.getElementById('f-typ').value,
+                    popis: document.getElementById('f-popis').value,
+                    castka: Number(document.getElementById('f-castka').value)
+                });
+                e.target.reset();
+            });
+            window.smazatF = async (id) => await deleteDoc(doc(db, "finance", id));
+            onSnapshot(collection(db, "finance"), (snapshot) => {
+                let fHTML = '', celkem = 0;
+                snapshot.forEach(docSnap => {
+                    const f = docSnap.data();
+                    if(f.typ === 'prijem') celkem += f.castka; else celkem -= f.castka;
+                    fHTML += `<tr><td class="p-4">${f.datum}</td><td class="p-4">${f.typ === 'prijem' ? '<span class="text-green-600">+ Příjem</span>' : '<span class="text-red-600">- Výdaj</span>'}</td><td class="p-4">${f.popis}</td><td class="p-4 font-bold">${f.castka} Kč</td><td class="p-4"><button onclick="smazatF('${docSnap.id}')" class="text-red-500">Smazat</button></td></tr>`;
+                });
+                document.getElementById('list-finance').innerHTML = fHTML;
+                const statFin = document.getElementById('stat-finance');
+                statFin.innerText = celkem + ' Kč';
+                statFin.className = celkem >= 0 ? "text-3xl font-bold text-green-600 mt-2" : "text-3xl font-bold text-red-600 mt-2";
+            });
+
+            // -- 3D KNIHOVNA --
+            document.getElementById('form-3d').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await addDoc(collection(db, "modely"), {
+                    nazev: document.getElementById('m-nazev').value,
+                    odkaz: document.getElementById('m-odkaz').value,
+                    soubor: document.getElementById('m-soubor').value,
+                    poznamky: document.getElementById('m-poznamky').value
+                });
+                e.target.reset();
+            });
+            window.smazatM = async (id) => await deleteDoc(doc(db, "modely", id));
+            onSnapshot(collection(db, "modely"), (snapshot) => {
+                let mHTML = '';
+                snapshot.forEach(docSnap => {
+                    const m = docSnap.data();
+                    mHTML += `<div class="bg-white p-4 border rounded-xl relative"><button onclick="smazatM('${docSnap.id}')" class="absolute top-3 right-3 text-red-400">X</button><h4 class="font-bold text-indigo-700">${m.nazev}</h4><p class="text-xs mb-2">📄 ${m.soubor}</p>${m.odkaz ? `<a href="${m.odkaz}" target="_blank" class="text-xs text-blue-500 mb-2 block">🔗 Odkaz na model</a>` : ''}${m.poznamky ? `<div class="bg-indigo-50 p-2 text-xs text-indigo-800 border">💡 ${m.poznamky}</div>` : ''}</div>`;
+                });
+                document.getElementById('list-3d').innerHTML = mHTML;
+            });
         };
-        window.smazatS = async (id) => await deleteDoc(doc(db, "sklad", id));
 
-        onSnapshot(collection(db, "sklad"), (snapshot) => {
-            let sHTML = '', varovaniHTML = '';
-            let maloSkladem = 0;
-            snapshot.forEach(docSnap => {
-                const s = docSnap.data();
-                const id = docSnap.id;
-                if(s.pocet < 5) {
-                    maloSkladem++;
-                    varovaniHTML += `<li>⚠️ ${s.nazev} (zbývá ${s.pocet}) - Od: ${s.dodavatel}</li>`;
-                }
-                sHTML += `<div class="bg-white p-4 border rounded-xl flex justify-between items-center"><div><div class="font-bold">${s.nazev}</div><div class="text-xs">Od: ${s.dodavatel}</div></div><div class="flex items-center gap-2"><button onclick="zmenitPocet('${id}', ${s.pocet}, -1)" class="w-8 h-8 bg-gray-200 rounded-full">-</button><span class="font-bold ${s.pocet < 5 ? 'text-red-600' : ''}">${s.pocet}</span><button onclick="zmenitPocet('${id}', ${s.pocet}, 1)" class="w-8 h-8 bg-gray-200 rounded-full">+</button><button onclick="smazatS('${id}')" class="text-red-400 ml-2">X</button></div></div>`;
-            });
-            document.getElementById('list-sklad').innerHTML = sHTML;
-            document.getElementById('stat-sklad').innerText = maloSkladem + ' položek';
-            document.getElementById('low-stock-list').innerHTML = maloSkladem > 0 ? varovaniHTML : '<li class="text-green-600">Všeho je dostatek.</li>';
-        });
-
-        // -- DODAVATELÉ --
-        document.getElementById('form-dodavatele').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await addDoc(collection(db, "dodavatele"), { nazev: document.getElementById('d-nazev').value, material: document.getElementById('d-material').value });
-            e.target.reset();
-        });
-        window.smazatD = async (id) => await deleteDoc(doc(db, "dodavatele", id));
-        onSnapshot(collection(db, "dodavatele"), (snapshot) => {
-            let dHTML = '';
-            snapshot.forEach(docSnap => {
-                const d = docSnap.data();
-                dHTML += `<li class="bg-white p-4 border rounded-xl flex justify-between"><div><div class="font-bold">${d.nazev}</div><div class="text-sm">Dodává: ${d.material}</div></div><button onclick="smazatD('${docSnap.id}')" class="text-red-500">Smazat</button></li>`;
-            });
-            document.getElementById('list-dodavatele').innerHTML = dHTML;
-        });
-
-        // -- FINANCE --
-        document.getElementById('form-finance').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await addDoc(collection(db, "finance"), {
-                datum: new Date().toLocaleDateString('cs-CZ'),
-                typ: document.getElementById('f-typ').value,
-                popis: document.getElementById('f-popis').value,
-                castka: Number(document.getElementById('f-castka').value)
-            });
-            e.target.reset();
-        });
-        window.smazatF = async (id) => await deleteDoc(doc(db, "finance", id));
-        onSnapshot(collection(db, "finance"), (snapshot) => {
-            let fHTML = '', celkem = 0;
-            snapshot.forEach(docSnap => {
-                const f = docSnap.data();
-                if(f.typ === 'prijem') celkem += f.castka; else celkem -= f.castka;
-                fHTML += `<tr><td class="p-4">${f.datum}</td><td class="p-4">${f.typ === 'prijem' ? '<span class="text-green-600">+ Příjem</span>' : '<span class="text-red-600">- Výdaj</span>'}</td><td class="p-4">${f.popis}</td><td class="p-4 font-bold">${f.castka} Kč</td><td class="p-4"><button onclick="smazatF('${docSnap.id}')" class="text-red-500">Smazat</button></td></tr>`;
-            });
-            document.getElementById('list-finance').innerHTML = fHTML;
-            const statFin = document.getElementById('stat-finance');
-            statFin.innerText = celkem + ' Kč';
-            statFin.className = celkem >= 0 ? "text-3xl font-bold text-green-600 mt-2" : "text-3xl font-bold text-red-600 mt-2";
-        });
-
-        // -- 3D KNIHOVNA --
-        document.getElementById('form-3d').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await addDoc(collection(db, "modely"), {
-                nazev: document.getElementById('m-nazev').value,
-                odkaz: document.getElementById('m-odkaz').value,
-                soubor: document.getElementById('m-soubor').value,
-                poznamky: document.getElementById('m-poznamky').value
-            });
-            e.target.reset();
-        });
-        window.smazatM = async (id) => await deleteDoc(doc(db, "modely", id));
-        onSnapshot(collection(db, "modely"), (snapshot) => {
-            let mHTML = '';
-            snapshot.forEach(docSnap => {
-                const m = docSnap.data();
-                mHTML += `<div class="bg-white p-4 border rounded-xl relative"><button onclick="smazatM('${docSnap.id}')" class="absolute top-3 right-3 text-red-400">X</button><h4 class="font-bold text-indigo-700">${m.nazev}</h4><p class="text-xs mb-2">📄 ${m.soubor}</p>${m.odkaz ? `<a href="${m.odkaz}" target="_blank" class="text-xs text-blue-500 mb-2 block">🔗 Odkaz na model</a>` : ''}${m.poznamky ? `<div class="bg-indigo-50 p-2 text-xs text-indigo-800 border">💡 ${m.poznamky}</div>` : ''}</div>`;
-            });
-            document.getElementById('list-3d').innerHTML = mHTML;
-        });
+        // Pokud už je uživatel přihlášen z dřívějška, spustíme Firebase rovnou
+        if(jePrihlasen) {
+            spustitFirebase();
+        }
     </script>
 </body>
 </html>
