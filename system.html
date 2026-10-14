@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dílenský Systém</title>
-    <!-- Moderní vzhled přes Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -15,26 +14,24 @@
 </head>
 <body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
 
-    <!-- Boční menu -->
     <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
         <div class="p-6 border-b border-gray-200">
             <h1 class="text-xl font-bold text-gray-800">Moje Dílna</h1>
             <p class="text-xs text-gray-500 mt-1">Interní systém</p>
         </div>
         <nav class="flex-1 p-4 space-y-2">
-            <button onclick="switchTab('prehled')" class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 font-medium tab-btn" id="btn-prehled">📊 Přehled</button>
+            <button onclick="switchTab('prehled')" class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 font-medium tab-btn bg-gray-200 text-blue-600" id="btn-prehled">📊 Přehled</button>
             <button onclick="switchTab('zakazky')" class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 font-medium tab-btn" id="btn-zakazky">📦 Zakázky</button>
-            <button onclick="switchTab('sklad')" class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 font-medium tab-btn" id="btn-sklad">🗄️ Sklad materiálu</button>
+            <button onclick="switchTab('sklad')" class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 font-medium tab-btn" id="btn-sklad">🗄️ Sklad</button>
             <button onclick="switchTab('dodavatele')" class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 font-medium tab-btn" id="btn-dodavatele">🚚 Dodavatelé</button>
             <button onclick="switchTab('finance')" class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 font-medium tab-btn" id="btn-finance">💰 Finance</button>
             <button onclick="switchTab('3dknihovna')" class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 font-medium tab-btn" id="btn-3dknihovna">🧊 3D Knihovna</button>
         </nav>
     </aside>
 
-    <!-- Hlavní obsah -->
     <main class="flex-1 overflow-y-auto p-8">
-
-        <!-- SEKCE: PŘEHLED -->
+        
+        <!-- PŘEHLED -->
         <section id="prehled" class="tab-content active">
             <h2 class="text-2xl font-bold mb-6">Dnešní přehled</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -58,27 +55,23 @@
             
             <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm" id="low-stock-alert-container">
                 <h3 class="text-lg font-bold text-gray-800 mb-4">Co je potřeba objednat:</h3>
-                <ul id="low-stock-list" class="space-y-2 text-sm text-gray-600">
-                    <!-- Zde se automaticky vypíše docházející materiál -->
-                </ul>
+                <ul id="low-stock-list" class="space-y-2 text-sm text-gray-600"></ul>
             </div>
         </section>
 
-        <!-- SEKCE: ZAKÁZKY -->
+        <!-- ZAKÁZKY -->
         <section id="zakazky" class="tab-content">
             <h2 class="text-2xl font-bold mb-6">Správa zakázek</h2>
-            
             <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-8">
-                <h3 class="font-bold mb-4">Nová zakázka</h3>
-                <form id="form-zakazky" onsubmit="pridatZakazku(event)" class="space-y-4">
+                <form id="form-zakazky" class="space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Zákazník</label>
-                            <input type="text" id="z-zakaznik" class="w-full border-gray-300 border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+                            <input type="text" id="z-zakaznik" class="w-full border-gray-300 border rounded-lg p-2" required>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Kategorie</label>
-                            <select id="z-kategorie" class="w-full border-gray-300 border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+                            <select id="z-kategorie" class="w-full border-gray-300 border rounded-lg p-2" required>
                                 <option value="3D tisk">3D tisk</option>
                                 <option value="Svatební">Svatební</option>
                                 <option value="Samolepky">Samolepky</option>
@@ -88,473 +81,277 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Celková cena (Kč)</label>
-                            <input type="number" id="z-cena" class="w-full border-gray-300 border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+                            <input type="number" id="z-cena" class="w-full border-gray-300 border rounded-lg p-2" required>
                         </div>
                     </div>
-
-                    <!-- ROZEPIS POLOŽEK -->
                     <div class="mt-4 p-4 border border-gray-200 rounded-lg bg-gray-50">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Obsah objednávky (co si zákazník objednal)</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Obsah objednávky</label>
                         <div id="polozky-container" class="space-y-2">
                             <div class="flex gap-2 polozka-row">
-                                <input type="text" placeholder="Název položky (např. Jmenovka)" class="flex-1 border-gray-300 border rounded-lg p-2 polozka-nazev" required>
+                                <input type="text" placeholder="Název položky" class="flex-1 border-gray-300 border rounded-lg p-2 polozka-nazev" required>
                                 <input type="number" placeholder="Ks" min="1" value="1" class="w-20 border-gray-300 border rounded-lg p-2 polozka-ks" required>
                             </div>
                         </div>
-                        <button type="button" onclick="pridatRadekPolozky()" class="mt-2 text-sm text-blue-600 hover:text-blue-800 font-medium">+ Přidat další položku do této zakázky</button>
+                        <button type="button" id="btn-add-polozka" class="mt-2 text-sm text-blue-600 font-medium">+ Přidat položku</button>
                     </div>
-
-                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-medium">Uložit zakázku</button>
+                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg">Uložit zakázku</button>
                 </form>
             </div>
-
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-gray-50 border-b border-gray-200 text-sm text-gray-600">
-                            <th class="p-4">Zákazník</th>
-                            <th class="p-4">Kategorie</th>
-                            <th class="p-4">Obsah</th>
-                            <th class="p-4">Cena</th>
-                            <th class="p-4">Stav</th>
-                            <th class="p-4">Akce</th>
-                        </tr>
-                    </thead>
-                    <tbody id="list-zakazky" class="text-sm divide-y divide-gray-100">
-                        <!-- Generováno přes JS -->
-                    </tbody>
-                </table>
-            </div>
+            <table class="w-full text-left border-collapse bg-white rounded-xl shadow-sm overflow-hidden">
+                <thead>
+                    <tr class="bg-gray-50 border-b text-sm text-gray-600"><th class="p-4">Zákazník</th><th class="p-4">Kategorie</th><th class="p-4">Obsah</th><th class="p-4">Cena</th><th class="p-4">Stav</th><th class="p-4">Akce</th></tr>
+                </thead>
+                <tbody id="list-zakazky" class="text-sm divide-y divide-gray-100"></tbody>
+            </table>
         </section>
 
-        <!-- OSTATNÍ SEKCE JSOU NÍŽE (Sklad, Dodavatelé, Finance, 3D Knihovna) -->
-        
-        <!-- SEKCE: SKLAD -->
+        <!-- SKLAD -->
         <section id="sklad" class="tab-content">
             <h2 class="text-2xl font-bold mb-6">Sklad materiálu</h2>
             <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-8">
-                <form id="form-sklad" onsubmit="pridatMaterial(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                <form id="form-sklad" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Název materiálu</label>
                         <input type="text" id="s-nazev" class="w-full border-gray-300 border rounded-lg p-2" required>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Od dodavatele</label>
-                        <input type="text" id="s-dodavatel" class="w-full border-gray-300 border rounded-lg p-2" placeholder="Např. Prusa">
+                        <input type="text" id="s-dodavatel" class="w-full border-gray-300 border rounded-lg p-2">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Počet (ks/role)</label>
                         <input type="number" id="s-pocet" class="w-full border-gray-300 border rounded-lg p-2" required>
                     </div>
-                    <div class="md:col-span-4">
-                        <button type="submit" class="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition w-full md:w-auto">Přidat na sklad</button>
-                    </div>
+                    <div class="md:col-span-4"><button type="submit" class="bg-gray-800 text-white px-6 py-2 rounded-lg">Přidat na sklad</button></div>
                 </form>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="list-sklad"></div>
         </section>
 
-        <!-- SEKCE: DODAVATELÉ -->
+        <!-- DODAVATELÉ -->
         <section id="dodavatele" class="tab-content">
             <h2 class="text-2xl font-bold mb-6">Dodavatelé</h2>
             <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-8">
-                <form id="form-dodavatele" onsubmit="pridatDodavatele(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Název dodavatele</label>
-                        <input type="text" id="d-nazev" class="w-full border-gray-300 border rounded-lg p-2" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Co nám dodává (materiál)</label>
-                        <input type="text" id="d-material" class="w-full border-gray-300 border rounded-lg p-2" required>
-                    </div>
-                    <div class="md:col-span-2">
-                        <button type="submit" class="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition">Uložit dodavatele</button>
-                    </div>
+                <form id="form-dodavatele" class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+                    <div><label class="block text-sm font-medium mb-1">Název</label><input type="text" id="d-nazev" class="w-full border p-2 rounded-lg" required></div>
+                    <div><label class="block text-sm font-medium mb-1">Materiál</label><input type="text" id="d-material" class="w-full border p-2 rounded-lg" required></div>
+                    <div class="md:col-span-2"><button type="submit" class="bg-gray-800 text-white px-6 py-2 rounded-lg">Uložit dodavatele</button></div>
                 </form>
             </div>
             <ul id="list-dodavatele" class="space-y-3"></ul>
         </section>
 
-        <!-- SEKCE: FINANCE -->
+        <!-- FINANCE -->
         <section id="finance" class="tab-content">
             <h2 class="text-2xl font-bold mb-6">Finance</h2>
             <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-8">
-                <form id="form-finance" onsubmit="pridatZaznam(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Typ</label>
-                        <select id="f-typ" class="w-full border-gray-300 border rounded-lg p-2" required>
-                            <option value="prijem">Příjem (Výdělek)</option>
-                            <option value="vydaj">Výdaj (Náklady)</option>
-                        </select>
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Popis (Za co)</label>
-                        <input type="text" id="f-popis" class="w-full border-gray-300 border rounded-lg p-2" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Částka (Kč)</label>
-                        <input type="number" id="f-castka" class="w-full border-gray-300 border rounded-lg p-2" required>
-                    </div>
-                    <div class="md:col-span-4">
-                        <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition w-full md:w-auto">Přidat záznam</button>
-                    </div>
+                <form id="form-finance" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                    <div><label class="block text-sm font-medium mb-1">Typ</label><select id="f-typ" class="w-full border p-2 rounded-lg"><option value="prijem">Příjem</option><option value="vydaj">Výdaj</option></select></div>
+                    <div class="md:col-span-2"><label class="block text-sm font-medium mb-1">Popis</label><input type="text" id="f-popis" class="w-full border p-2 rounded-lg" required></div>
+                    <div><label class="block text-sm font-medium mb-1">Částka</label><input type="number" id="f-castka" class="w-full border p-2 rounded-lg" required></div>
+                    <div class="md:col-span-4"><button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-lg">Přidat záznam</button></div>
                 </form>
             </div>
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-gray-50 border-b border-gray-200 text-sm text-gray-600">
-                            <th class="p-4">Datum</th>
-                            <th class="p-4">Typ</th>
-                            <th class="p-4">Popis</th>
-                            <th class="p-4">Částka</th>
-                            <th class="p-4">Akce</th>
-                        </tr>
-                    </thead>
-                    <tbody id="list-finance" class="text-sm divide-y divide-gray-100"></tbody>
-                </table>
-            </div>
+            <table class="w-full text-left border-collapse bg-white rounded-xl shadow-sm"><tbody id="list-finance" class="text-sm divide-y"></tbody></table>
         </section>
 
-        <!-- SEKCE: 3D KNIHOVNA -->
+        <!-- 3D KNIHOVNA -->
         <section id="3dknihovna" class="tab-content">
             <h2 class="text-2xl font-bold mb-6">3D Knihovna</h2>
-            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-8">
-                <form id="form-3d" onsubmit="pridatModel(event)" class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Název modelu</label>
-                            <input type="text" id="m-nazev" class="w-full border-gray-300 border rounded-lg p-2" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Odkaz (Printables, MakerWorld, apod.)</label>
-                            <input type="text" id="m-odkaz" class="w-full border-gray-300 border rounded-lg p-2" placeholder="https://...">
-                        </div>
+            <div class="bg-white p-6 rounded-xl border shadow-sm mb-8">
+                <form id="form-3d" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label class="block text-sm mb-1">Název</label><input type="text" id="m-nazev" class="w-full border p-2 rounded-lg" required></div>
+                        <div><label class="block text-sm mb-1">Odkaz</label><input type="text" id="m-odkaz" class="w-full border p-2 rounded-lg"></div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Fyzický soubor (.stl, .3mf)</label>
-                            <input type="file" id="m-soubor" class="w-full border-gray-300 border rounded-lg p-1 text-sm bg-white">
-                            <p class="text-xs text-gray-500 mt-1">Systém si uloží název souboru, abyste jej snadno dohledali.</p>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Tiskové poznámky (Materiál, Infill...)</label>
-                            <input type="text" id="m-poznamky" class="w-full border-gray-300 border rounded-lg p-2" placeholder="Např. PETG, 15% infill, límec">
-                        </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label class="block text-sm mb-1">Soubor (název)</label><input type="text" id="m-soubor" class="w-full border p-2 rounded-lg" placeholder="vaza.stl"></div>
+                        <div><label class="block text-sm mb-1">Poznámky</label><input type="text" id="m-poznamky" class="w-full border p-2 rounded-lg"></div>
                     </div>
-                    <button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition">Uložit model do knihovny</button>
+                    <button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded-lg">Uložit model</button>
                 </form>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="list-3d"></div>
         </section>
-
     </main>
 
-    <!-- KÓD PRO LOGIKU APLIKACE (JavaScript) -->
     <script>
-        // Simulace databáze v prohlížeči (Local Storage)
-        let databaze = {
-            zakazky: JSON.parse(localStorage.getItem('dilna_zakazky')) || [],
-            sklad: JSON.parse(localStorage.getItem('dilna_sklad')) || [],
-            dodavatele: JSON.parse(localStorage.getItem('dilna_dodavatele')) || [],
-            finance: JSON.parse(localStorage.getItem('dilna_finance')) || [],
-            modely: JSON.parse(localStorage.getItem('dilna_modely')) || []
-        };
-
-        function ulozData() {
-            localStorage.setItem('dilna_zakazky', JSON.stringify(databaze.zakazky));
-            localStorage.setItem('dilna_sklad', JSON.stringify(databaze.sklad));
-            localStorage.setItem('dilna_dodavatele', JSON.stringify(databaze.dodavatele));
-            localStorage.setItem('dilna_finance', JSON.stringify(databaze.finance));
-            localStorage.setItem('dilna_modely', JSON.stringify(databaze.modely));
-            vykresliVse();
-        }
-
-        // PŘEPÍNÁNÍ ZÁLOŽEK
+        // Jednoduché UI skripty pro přepínání tabů
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            
-            document.querySelectorAll('.tab-btn').forEach(el => {
-                el.classList.remove('bg-gray-200', 'text-blue-600');
-            });
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('bg-gray-200', 'text-blue-600'));
             document.getElementById('btn-' + tabId).classList.add('bg-gray-200', 'text-blue-600');
         }
-
-        // PŘIDÁNÍ DALŠÍHO ŘÁDKU PRO POLOŽKU V ZAKÁZCE
-        function pridatRadekPolozky() {
+        
+        document.getElementById('btn-add-polozka').addEventListener('click', () => {
             const container = document.getElementById('polozky-container');
             const row = document.createElement('div');
             row.className = 'flex gap-2 polozka-row mt-2';
-            row.innerHTML = `
-                <input type="text" placeholder="Název položky" class="flex-1 border-gray-300 border rounded-lg p-2 polozka-nazev" required>
-                <input type="number" placeholder="Ks" min="1" value="1" class="w-20 border-gray-300 border rounded-lg p-2 polozka-ks" required>
-                <button type="button" onclick="this.parentElement.remove()" class="bg-red-100 text-red-600 px-3 rounded-lg hover:bg-red-200 font-bold">X</button>
-            `;
+            row.innerHTML = `<input type="text" placeholder="Název" class="flex-1 border p-2 rounded-lg polozka-nazev" required><input type="number" placeholder="Ks" min="1" value="1" class="w-20 border p-2 rounded-lg polozka-ks" required><button type="button" onclick="this.parentElement.remove()" class="bg-red-100 text-red-600 px-3 rounded-lg font-bold">X</button>`;
             container.appendChild(row);
-        }
+        });
+    </script>
 
-        // MOŽNÉ STAVY PODLE KATEGORIE
-        const stavyPodleKategorie = {
-            '3D tisk': ['Přijato', 'Připraveno na tisk', 'Vytisknuto', 'Nabarveno', 'Zabaleno', 'Odesláno'],
-            'default': ['Přijato', 'Příprava / Řezání', 'Zabaleno', 'Odesláno']
+    <!-- Napojení na Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCGMPmV6UI1Q-T5VCHFkv_Qbp3_6d8HoGQ",
+            authDomain: "dilna-web.firebaseapp.com",
+            projectId: "dilna-web",
+            storageBucket: "dilna-web.firebasestorage.app",
+            messagingSenderId: "579413031750",
+            appId: "1:579413031750:web:de8e579a13b3f483134347",
+            measurementId: "G-6T0Q7909D2"
         };
 
-        function ziskejStavy(kategorie) {
-            return stavyPodleKategorie[kategorie] || stavyPodleKategorie['default'];
-        }
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-        // ZAKÁZKY
-        function pridatZakazku(e) {
+        // -- ZAKÁZKY --
+        document.getElementById('form-zakazky').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            // Posbírání všech položek z formuláře
-            const polozkyElements = document.querySelectorAll('.polozka-row');
             let obsahObjednavky = [];
-            polozkyElements.forEach(row => {
+            document.querySelectorAll('.polozka-row').forEach(row => {
                 const nazev = row.querySelector('.polozka-nazev').value;
                 const ks = row.querySelector('.polozka-ks').value;
                 if(nazev) obsahObjednavky.push({ nazev, ks });
             });
-
-            const novaZakazka = {
-                id: Date.now(),
+            await addDoc(collection(db, "zakazky"), {
                 zakaznik: document.getElementById('z-zakaznik').value,
                 kategorie: document.getElementById('z-kategorie').value,
-                obsah: obsahObjednavky,
                 cena: Number(document.getElementById('z-cena').value),
-                stav: 'Přijato'
-            };
-            databaze.zakazky.push(novaZakazka);
-            document.getElementById('form-zakazky').reset();
+                stav: 'Přijato',
+                obsah: obsahObjednavky
+            });
+            e.target.reset();
+        });
+
+        window.zmenitStav = async (id, novyStav) => {
+            await updateDoc(doc(db, "zakazky", id), { stav: novyStav });
+        };
+        window.smazatZ = async (id) => { if(confirm('Smazat?')) await deleteDoc(doc(db, "zakazky", id)); };
+
+        onSnapshot(collection(db, "zakazky"), (snapshot) => {
+            let zHTML = '';
+            let aktivni = 0, kOdeslani = 0;
+            const stavyK = { '3D tisk': ['Přijato','Připraveno na tisk','Vytisknuto','Nabarveno','Zabaleno','Odesláno'], 'default': ['Přijato','Příprava / Řezání','Zabaleno','Odesláno'] };
             
-            // Vymazání extra řádků položek a ponechání jen prvního prázdného
-            document.getElementById('polozky-container').innerHTML = `
-                <div class="flex gap-2 polozka-row">
-                    <input type="text" placeholder="Název položky (např. Jmenovka)" class="flex-1 border-gray-300 border rounded-lg p-2 polozka-nazev" required>
-                    <input type="number" placeholder="Ks" min="1" value="1" class="w-20 border-gray-300 border rounded-lg p-2 polozka-ks" required>
-                </div>
-            `;
-            
-            ulozData();
-        }
+            snapshot.forEach(docSnap => {
+                const z = docSnap.data();
+                const id = docSnap.id;
+                if(z.stav !== 'Odesláno') aktivni++;
+                if(z.stav === 'Zabaleno') kOdeslani++;
+                
+                const stavy = stavyK[z.kategorie] || stavyK['default'];
+                let options = stavy.map(s => `<option value="${s}" ${z.stav === s ? 'selected' : ''}>${s}</option>`).join('');
+                let obsahHTML = z.obsah ? z.obsah.map(p => `<li>${p.ks}x ${p.nazev}</li>`).join('') : '';
 
-        function zmenitStav(id, novyStav) {
-            const z = databaze.zakazky.find(x => x.id === id);
-            if (z) { z.stav = novyStav; ulozData(); }
-        }
+                zHTML += `<tr class="hover:bg-gray-50"><td class="p-4">${z.zakaznik}</td><td class="p-4 text-xs">${z.kategorie}</td><td class="p-4 text-xs"><ul>${obsahHTML}</ul></td><td class="p-4 font-bold">${z.cena} Kč</td><td class="p-4"><select onchange="zmenitStav('${id}', this.value)" class="bg-blue-50 text-xs p-1">${options}</select></td><td class="p-4"><button onclick="smazatZ('${id}')" class="text-red-500">Smazat</button></td></tr>`;
+            });
+            document.getElementById('list-zakazky').innerHTML = zHTML;
+            document.getElementById('stat-aktivni').innerText = aktivni;
+            document.getElementById('stat-odeslani').innerText = kOdeslani;
+        });
 
-        function smazatZakazku(id) {
-            if(confirm('Smazat zakázku?')) {
-                databaze.zakazky = databaze.zakazky.filter(x => x.id !== id);
-                ulozData();
-            }
-        }
-
-        // SKLAD
-        function pridatMaterial(e) {
+        // -- SKLAD --
+        document.getElementById('form-sklad').addEventListener('submit', async (e) => {
             e.preventDefault();
-            databaze.sklad.push({
-                id: Date.now(),
+            await addDoc(collection(db, "sklad"), {
                 nazev: document.getElementById('s-nazev').value,
                 dodavatel: document.getElementById('s-dodavatel').value || '-',
                 pocet: Number(document.getElementById('s-pocet').value)
             });
-            document.getElementById('form-sklad').reset();
-            ulozData();
-        }
+            e.target.reset();
+        });
 
-        function zmenitPocet(id, delta) {
-            const item = databaze.sklad.find(x => x.id === id);
-            if (item) {
-                item.pocet += delta;
-                if (item.pocet < 0) item.pocet = 0;
-                ulozData();
-            }
-        }
+        window.zmenitPocet = async (id, pocet, delta) => {
+            const novy = Math.max(0, pocet + delta);
+            await updateDoc(doc(db, "sklad", id), { pocet: novy });
+        };
+        window.smazatS = async (id) => await deleteDoc(doc(db, "sklad", id));
 
-        function smazatSklad(id) {
-            databaze.sklad = databaze.sklad.filter(x => x.id !== id);
-            ulozData();
-        }
-
-        // DODAVATELÉ
-        function pridatDodavatele(e) {
-            e.preventDefault();
-            databaze.dodavatele.push({
-                id: Date.now(),
-                nazev: document.getElementById('d-nazev').value,
-                material: document.getElementById('d-material').value
+        onSnapshot(collection(db, "sklad"), (snapshot) => {
+            let sHTML = '', varovaniHTML = '';
+            let maloSkladem = 0;
+            snapshot.forEach(docSnap => {
+                const s = docSnap.data();
+                const id = docSnap.id;
+                if(s.pocet < 5) {
+                    maloSkladem++;
+                    varovaniHTML += `<li>⚠️ ${s.nazev} (zbývá ${s.pocet}) - Od: ${s.dodavatel}</li>`;
+                }
+                sHTML += `<div class="bg-white p-4 border rounded-xl flex justify-between items-center"><div><div class="font-bold">${s.nazev}</div><div class="text-xs">Od: ${s.dodavatel}</div></div><div class="flex items-center gap-2"><button onclick="zmenitPocet('${id}', ${s.pocet}, -1)" class="w-8 h-8 bg-gray-200 rounded-full">-</button><span class="font-bold ${s.pocet < 5 ? 'text-red-600' : ''}">${s.pocet}</span><button onclick="zmenitPocet('${id}', ${s.pocet}, 1)" class="w-8 h-8 bg-gray-200 rounded-full">+</button><button onclick="smazatS('${id}')" class="text-red-400 ml-2">X</button></div></div>`;
             });
-            document.getElementById('form-dodavatele').reset();
-            ulozData();
-        }
+            document.getElementById('list-sklad').innerHTML = sHTML;
+            document.getElementById('stat-sklad').innerText = maloSkladem + ' položek';
+            document.getElementById('low-stock-list').innerHTML = maloSkladem > 0 ? varovaniHTML : '<li class="text-green-600">Všeho je dostatek.</li>';
+        });
 
-        function smazatDodavatele(id) {
-            databaze.dodavatele = databaze.dodavatele.filter(x => x.id !== id);
-            ulozData();
-        }
-
-        // FINANCE
-        function pridatZaznam(e) {
+        // -- DODAVATELÉ --
+        document.getElementById('form-dodavatele').addEventListener('submit', async (e) => {
             e.preventDefault();
-            databaze.finance.push({
-                id: Date.now(),
+            await addDoc(collection(db, "dodavatele"), { nazev: document.getElementById('d-nazev').value, material: document.getElementById('d-material').value });
+            e.target.reset();
+        });
+        window.smazatD = async (id) => await deleteDoc(doc(db, "dodavatele", id));
+        onSnapshot(collection(db, "dodavatele"), (snapshot) => {
+            let dHTML = '';
+            snapshot.forEach(docSnap => {
+                const d = docSnap.data();
+                dHTML += `<li class="bg-white p-4 border rounded-xl flex justify-between"><div><div class="font-bold">${d.nazev}</div><div class="text-sm">Dodává: ${d.material}</div></div><button onclick="smazatD('${docSnap.id}')" class="text-red-500">Smazat</button></li>`;
+            });
+            document.getElementById('list-dodavatele').innerHTML = dHTML;
+        });
+
+        // -- FINANCE --
+        document.getElementById('form-finance').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addDoc(collection(db, "finance"), {
                 datum: new Date().toLocaleDateString('cs-CZ'),
                 typ: document.getElementById('f-typ').value,
                 popis: document.getElementById('f-popis').value,
                 castka: Number(document.getElementById('f-castka').value)
             });
-            document.getElementById('form-finance').reset();
-            ulozData();
-        }
+            e.target.reset();
+        });
+        window.smazatF = async (id) => await deleteDoc(doc(db, "finance", id));
+        onSnapshot(collection(db, "finance"), (snapshot) => {
+            let fHTML = '', celkem = 0;
+            snapshot.forEach(docSnap => {
+                const f = docSnap.data();
+                if(f.typ === 'prijem') celkem += f.castka; else celkem -= f.castka;
+                fHTML += `<tr><td class="p-4">${f.datum}</td><td class="p-4">${f.typ === 'prijem' ? '<span class="text-green-600">+ Příjem</span>' : '<span class="text-red-600">- Výdaj</span>'}</td><td class="p-4">${f.popis}</td><td class="p-4 font-bold">${f.castka} Kč</td><td class="p-4"><button onclick="smazatF('${docSnap.id}')" class="text-red-500">Smazat</button></td></tr>`;
+            });
+            document.getElementById('list-finance').innerHTML = fHTML;
+            const statFin = document.getElementById('stat-finance');
+            statFin.innerText = celkem + ' Kč';
+            statFin.className = celkem >= 0 ? "text-3xl font-bold text-green-600 mt-2" : "text-3xl font-bold text-red-600 mt-2";
+        });
 
-        function smazatZaznam(id) {
-            databaze.finance = databaze.finance.filter(x => x.id !== id);
-            ulozData();
-        }
-
-        // 3D KNIHOVNA
-        function pridatModel(e) {
+        // -- 3D KNIHOVNA --
+        document.getElementById('form-3d').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const souborInput = document.getElementById('m-soubor');
-            const nazevSouboru = souborInput.files.length > 0 ? souborInput.files[0].name : 'Nenahráno';
-            
-            databaze.modely.push({
-                id: Date.now(),
+            await addDoc(collection(db, "modely"), {
                 nazev: document.getElementById('m-nazev').value,
                 odkaz: document.getElementById('m-odkaz').value,
-                soubor: nazevSouboru,
+                soubor: document.getElementById('m-soubor').value,
                 poznamky: document.getElementById('m-poznamky').value
             });
-            document.getElementById('form-3d').reset();
-            ulozData();
-        }
-
-        function smazatModel(id) {
-            databaze.modely = databaze.modely.filter(x => x.id !== id);
-            ulozData();
-        }
-
-        // VYKRESLOVÁNÍ VŠEHO A AKTUALIZACE PŘEHLEDU
-        function vykresliVse() {
-            // -- Zakázky --
-            const zList = document.getElementById('list-zakazky');
-            zList.innerHTML = databaze.zakazky.map(z => {
-                const stavy = ziskejStavy(z.kategorie);
-                let options = stavy.map(s => `<option value="${s}" ${z.stav === s ? 'selected' : ''}>${s}</option>`).join('');
-                
-                // Formátování rozpisu položek
-                let obsahHTML = `<ul class="list-disc pl-4 text-xs text-gray-500">`;
-                if(z.obsah && z.obsah.length > 0) {
-                    z.obsah.forEach(p => { obsahHTML += `<li>${p.ks}x ${p.nazev}</li>`; });
-                } else {
-                    obsahHTML += `<li>Neuvedeno</li>`;
-                }
-                obsahHTML += `</ul>`;
-
-                return `
-                <tr class="hover:bg-gray-50">
-                    <td class="p-4 font-medium">${z.zakaznik}</td>
-                    <td class="p-4"><span class="px-2 py-1 bg-gray-200 text-xs rounded-full">${z.kategorie}</span></td>
-                    <td class="p-4">${obsahHTML}</td>
-                    <td class="p-4 font-bold text-gray-700">${z.cena} Kč</td>
-                    <td class="p-4">
-                        <select onchange="zmenitStav(${z.id}, this.value)" class="bg-blue-50 text-blue-700 text-xs border-0 rounded p-1 font-semibold cursor-pointer">
-                            ${options}
-                        </select>
-                    </td>
-                    <td class="p-4"><button onclick="smazatZakazku(${z.id})" class="text-red-500 hover:text-red-700">Smazat</button></td>
-                </tr>`;
-            }).join('');
-
-            // -- Sklad --
-            const sList = document.getElementById('list-sklad');
-            sList.innerHTML = databaze.sklad.map(s => `
-                <div class="bg-white p-4 rounded-xl border ${s.pocet < 5 ? 'border-red-300 bg-red-50' : 'border-gray-200'} flex justify-between items-center shadow-sm">
-                    <div>
-                        <div class="font-bold text-gray-800">${s.nazev}</div>
-                        <div class="text-xs text-gray-500 mt-1">Od: ${s.dodavatel}</div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <button onclick="zmenitPocet(${s.id}, -1)" class="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center font-bold">-</button>
-                        <span class="font-bold w-6 text-center ${s.pocet < 5 ? 'text-red-600' : ''}">${s.pocet}</span>
-                        <button onclick="zmenitPocet(${s.id}, 1)" class="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center font-bold">+</button>
-                        <button onclick="smazatSklad(${s.id})" class="text-red-400 hover:text-red-600 ml-2 text-xs">X</button>
-                    </div>
-                </div>
-            `).join('');
-
-            // -- Dodavatelé --
-            document.getElementById('list-dodavatele').innerHTML = databaze.dodavatele.map(d => `
-                <li class="bg-white p-4 rounded-xl border border-gray-200 flex justify-between items-center shadow-sm">
-                    <div>
-                        <div class="font-bold text-gray-800">${d.nazev}</div>
-                        <div class="text-sm text-gray-500">Dodává: ${d.material}</div>
-                    </div>
-                    <button onclick="smazatDodavatele(${d.id})" class="text-red-500 hover:text-red-700 text-sm">Smazat</button>
-                </li>
-            `).join('');
-
-            // -- Finance --
-            document.getElementById('list-finance').innerHTML = databaze.finance.map(f => `
-                <tr class="hover:bg-gray-50">
-                    <td class="p-4 text-gray-500">${f.datum}</td>
-                    <td class="p-4">${f.typ === 'prijem' ? '<span class="text-green-600 font-bold">+ Příjem</span>' : '<span class="text-red-600 font-bold">- Výdaj</span>'}</td>
-                    <td class="p-4">${f.popis}</td>
-                    <td class="p-4 font-bold">${f.castka} Kč</td>
-                    <td class="p-4"><button onclick="smazatZaznam(${f.id})" class="text-red-500 hover:text-red-700">Smazat</button></td>
-                </tr>
-            `).join('');
-
-            // -- 3D Knihovna --
-            document.getElementById('list-3d').innerHTML = databaze.modely.map(m => `
-                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm relative">
-                    <button onclick="smazatModel(${m.id})" class="absolute top-3 right-3 text-red-400 hover:text-red-600 font-bold text-sm">X</button>
-                    <h4 class="font-bold text-indigo-700 mb-1">${m.nazev}</h4>
-                    <p class="text-xs text-gray-500 mb-3">📄 ${m.soubor}</p>
-                    ${m.odkaz ? `<a href="${m.odkaz}" target="_blank" class="text-xs text-blue-500 hover:underline mb-2 block">🔗 Otevřít odkaz na model</a>` : ''}
-                    ${m.poznamky ? `<div class="bg-indigo-50 p-2 text-xs rounded text-indigo-800 border border-indigo-100">💡 ${m.poznamky}</div>` : ''}
-                </div>
-            `).join('');
-
-            // -- AKTUALIZACE PŘEHLEDU (Nástěnka) --
-            // 1. Aktivní zakázky (vše kromě "Odesláno")
-            let aktivni = databaze.zakazky.filter(z => z.stav !== 'Odesláno').length;
-            document.getElementById('stat-aktivni').innerText = aktivni;
-
-            // 2. K odeslání (Zabaleno)
-            let kOdeslani = databaze.zakazky.filter(z => z.stav === 'Zabaleno').length;
-            document.getElementById('stat-odeslani').innerText = kOdeslani;
-
-            // 3. Finance (Příjmy - Výdaje)
-            let celkem = 0;
-            databaze.finance.forEach(f => {
-                if (f.typ === 'prijem') celkem += f.castka;
-                else celkem -= f.castka;
+            e.target.reset();
+        });
+        window.smazatM = async (id) => await deleteDoc(doc(db, "modely", id));
+        onSnapshot(collection(db, "modely"), (snapshot) => {
+            let mHTML = '';
+            snapshot.forEach(docSnap => {
+                const m = docSnap.data();
+                mHTML += `<div class="bg-white p-4 border rounded-xl relative"><button onclick="smazatM('${docSnap.id}')" class="absolute top-3 right-3 text-red-400">X</button><h4 class="font-bold text-indigo-700">${m.nazev}</h4><p class="text-xs mb-2">📄 ${m.soubor}</p>${m.odkaz ? `<a href="${m.odkaz}" target="_blank" class="text-xs text-blue-500 mb-2 block">🔗 Odkaz na model</a>` : ''}${m.poznamky ? `<div class="bg-indigo-50 p-2 text-xs text-indigo-800 border">💡 ${m.poznamky}</div>` : ''}</div>`;
             });
-            let finStat = document.getElementById('stat-finance');
-            finStat.innerText = celkem + ' Kč';
-            finStat.className = celkem >= 0 ? "text-3xl font-bold text-green-600 mt-2" : "text-3xl font-bold text-red-600 mt-2";
-
-            // 4. Docházející sklad
-            let maloSkladem = databaze.sklad.filter(s => s.pocet < 5);
-            document.getElementById('stat-sklad').innerText = maloSkladem.length + ' položek';
-            
-            let listSkladHTML = '';
-            if (maloSkladem.length > 0) {
-                maloSkladem.forEach(s => {
-                    listSkladHTML += `<li>⚠️ <strong>${s.nazev}</strong> (zbývá ${s.pocet} ks) – Objednat od: <em>${s.dodavatel}</em></li>`;
-                });
-            } else {
-                listSkladHTML = `<li class="text-green-600">Všeho je aktuálně dostatek.</li>`;
-            }
-            document.getElementById('low-stock-list').innerHTML = listSkladHTML;
-        }
-
-        // Spuštění po načtení
-        switchTab('prehled');
-        vykresliVse();
+            document.getElementById('list-3d').innerHTML = mHTML;
+        });
     </script>
 </body>
 </html>
