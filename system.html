@@ -6,6 +6,7 @@
     <title>Dílenský Systém</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Knihovna pro PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -56,7 +57,7 @@
 
     <main id="hlavni-obsah" class="flex-1 overflow-y-auto p-8 opacity-0 transition-opacity duration-300">
         
-        <!-- PŘEHLED -->
+        <!-- 1. PŘEHLED -->
         <section id="prehled" class="tab-content active">
             <h2 class="text-2xl font-bold mb-6">Dnešní přehled</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -67,7 +68,7 @@
             </div>
         </section>
 
-        <!-- KLIENTI (CRM) -->
+        <!-- 2. KLIENTI (CRM) -->
         <section id="klienti" class="tab-content">
             <h2 class="text-2xl font-bold mb-6">Adresář Klientů (CRM)</h2>
             <div class="bg-white p-6 rounded-xl border shadow-sm mb-8">
@@ -82,7 +83,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="list-klienti"></div>
         </section>
 
-        <!-- ZAKÁZKY (AKTIVNÍ) -->
+        <!-- 3. ZAKÁZKY (AKTIVNÍ) -->
         <section id="zakazky" class="tab-content">
             <h2 class="text-2xl font-bold mb-6">Aktivní Zakázky</h2>
             <div class="bg-white p-6 rounded-xl border shadow-sm mb-8">
@@ -120,7 +121,7 @@
             </table>
         </section>
 
-        <!-- ARCHIV ZAKÁZEK -->
+        <!-- 4. ARCHIV ZAKÁZEK -->
         <section id="archiv" class="tab-content">
             <h2 class="text-2xl font-bold mb-6">Archiv odeslaných zakázek</h2>
             <table class="w-full text-left border-collapse bg-white rounded-xl shadow-sm overflow-hidden opacity-80">
@@ -129,7 +130,7 @@
             </table>
         </section>
 
-        <!-- ZÁZNAMY TISKU -->
+        <!-- 5. ZÁZNAMY TISKU -->
         <section id="zaznamy-tisku" class="tab-content">
             <h2 class="text-2xl font-bold mb-6">Deník 3D tisku & Odezvání materiálu</h2>
             <div class="bg-white p-6 rounded-xl border shadow-sm mb-8">
@@ -144,8 +145,7 @@
                     </div>
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium mb-1">Ze skladu odečíst (Materiál)</label>
-                        <!-- TOTO JE TEN OPRAVENÝ VÝBĚR MATERIÁLU -->
-                        <select id="zt-material" class="w-full border p-2 rounded-lg bg-blue-50" required>
+                        <select id="zt-material" class="w-full border p-2 rounded-lg bg-blue-50 font-bold text-blue-800" required>
                             <option value="">-- Vyberte materiál --</option>
                         </select>
                     </div>
@@ -154,7 +154,7 @@
                         <input type="number" id="zt-spotreba" class="w-full border p-2 rounded-lg" required>
                     </div>
                     <div class="md:col-span-6 mt-2">
-                        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700">Uložit tisk a odečíst</button>
+                        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700">Uložit tisk a odečíst ze skladu</button>
                     </div>
                 </form>
             </div>
@@ -164,12 +164,12 @@
             </table>
         </section>
 
-        <!-- SKLAD -->
+        <!-- 6. SKLAD -->
         <section id="sklad" class="tab-content">
             <h2 class="text-2xl font-bold mb-6">Sklad materiálu</h2>
             <div class="bg-white p-6 rounded-xl border shadow-sm mb-8">
                 <form id="form-sklad" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                    <div class="md:col-span-2"><label class="block text-sm mb-1">Název</label><input type="text" id="s-nazev" class="w-full border p-2 rounded-lg" required></div>
+                    <div class="md:col-span-2"><label class="block text-sm mb-1">Název materiálu (např. Černé PLA)</label><input type="text" id="s-nazev" class="w-full border p-2 rounded-lg" required></div>
                     <div><label class="block text-sm mb-1">Dodavatel</label><input type="text" id="s-dodavatel" class="w-full border p-2 rounded-lg"></div>
                     <div><label class="block text-sm mb-1 font-bold text-blue-600">Počet (ks nebo GRAMY)</label><input type="number" id="s-pocet" class="w-full border p-2 rounded-lg border-blue-400" required></div>
                     <div class="md:col-span-4"><button type="submit" class="bg-gray-800 text-white px-6 py-2 rounded-lg">Přidat na sklad</button></div>
@@ -178,7 +178,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="list-sklad"></div>
         </section>
 
-        <!-- DODAVATELÉ -->
+        <!-- 7. DODAVATELÉ -->
         <section id="dodavatele" class="tab-content">
             <h2 class="text-2xl font-bold mb-6">Dodavatelé</h2>
             <div class="bg-white p-6 rounded-xl border shadow-sm mb-8">
@@ -191,21 +191,21 @@
             <ul id="list-dodavatele" class="space-y-3"></ul>
         </section>
 
-        <!-- FINANCE -->
+        <!-- 8. FINANCE -->
         <section id="finance" class="tab-content">
             <h2 class="text-2xl font-bold mb-6">Finance</h2>
             <div class="bg-white p-6 rounded-xl border shadow-sm mb-8">
                 <form id="form-finance" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                     <div><label class="block text-sm mb-1">Typ</label><select id="f-typ" class="w-full border p-2 rounded-lg"><option value="prijem">Příjem</option><option value="vydaj">Výdaj</option></select></div>
                     <div class="md:col-span-2"><label class="block text-sm mb-1">Popis</label><input type="text" id="f-popis" class="w-full border p-2 rounded-lg" required></div>
-                    <div><label class="block text-sm mb-1">Částka</label><input type="number" id="f-castka" class="w-full border p-2 rounded-lg" required></div>
+                    <div><label class="block text-sm mb-1">Částka (Kč)</label><input type="number" id="f-castka" class="w-full border p-2 rounded-lg" required></div>
                     <div class="md:col-span-4"><button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-lg">Přidat záznam</button></div>
                 </form>
             </div>
             <table class="w-full text-left border-collapse bg-white rounded-xl shadow-sm"><tbody id="list-finance" class="text-sm divide-y"></tbody></table>
         </section>
 
-        <!-- KALKULAČKA TISKU -->
+        <!-- 9. KALKULAČKA TISKU -->
         <section id="kalkulacka" class="tab-content">
             <h2 class="text-2xl font-bold mb-6">Kalkulačka nákladů 3D tisku</h2>
             <div class="bg-white p-8 rounded-xl border shadow-sm max-w-3xl">
@@ -226,20 +226,14 @@
                         <li>Vaše práce: <span id="res-prace" class="font-bold"></span> Kč</li>
                     </ul>
                     <div class="pt-4 border-t border-blue-200 flex justify-between items-end">
-                        <div>
-                            <div class="text-sm text-gray-500">Čisté náklady (Materiál + Stroj)</div>
-                            <div id="res-naklady" class="text-xl font-bold text-gray-800"></div>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-sm text-indigo-600 font-bold">Doporučená prodejní cena (vč. vaší práce)</div>
-                            <div id="res-celkem" class="text-3xl font-black text-indigo-700"></div>
-                        </div>
+                        <div><div class="text-sm text-gray-500">Čisté náklady (Materiál + Stroj)</div><div id="res-naklady" class="text-xl font-bold text-gray-800"></div></div>
+                        <div class="text-right"><div class="text-sm text-indigo-600 font-bold">Doporučená prodejní cena (vč. vaší práce)</div><div id="res-celkem" class="text-3xl font-black text-indigo-700"></div></div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 3D KNIHOVNA -->
+        <!-- 10. 3D KNIHOVNA -->
         <section id="3dknihovna" class="tab-content">
             <h2 class="text-2xl font-bold mb-6">3D Knihovna</h2>
             <div class="bg-white p-6 rounded-xl border shadow-sm mb-8">
@@ -294,12 +288,24 @@
         </div>
     </div>
 
-    <!-- UI SKRIPTY -->
+    <!-- ZÁKLADNÍ UI SKRIPTY -->
     <script>
         const TAJNE_HESLO = "TonyaPepr1"; 
         let jePrihlasen = sessionStorage.getItem('dilna_prihlaseno') === 'ano';
         if(jePrihlasen) { document.getElementById('login-screen').style.display = 'none'; document.getElementById('hlavni-obsah').classList.remove('opacity-0'); }
-        window.overitHeslo = function(e) { e.preventDefault(); if(document.getElementById('heslo-input').value === TAJNE_HESLO) { sessionStorage.setItem('dilna_prihlaseno', 'ano'); document.getElementById('login-screen').style.display = 'none'; document.getElementById('hlavni-obsah').classList.remove('opacity-0'); jePrihlasen = true; spustitFirebase(); } else { document.getElementById('heslo-chyba').classList.remove('hidden'); } };
+        
+        window.overitHeslo = function(e) { 
+            e.preventDefault(); 
+            if(document.getElementById('heslo-input').value === TAJNE_HESLO) { 
+                sessionStorage.setItem('dilna_prihlaseno', 'ano'); 
+                document.getElementById('login-screen').style.display = 'none'; 
+                document.getElementById('hlavni-obsah').classList.remove('opacity-0'); 
+                jePrihlasen = true; 
+                spustitFirebase(); 
+            } else { 
+                document.getElementById('heslo-chyba').classList.remove('hidden'); 
+            } 
+        };
         
         function switchTab(tabId) { 
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active')); 
@@ -354,9 +360,9 @@
             const app = initializeApp(firebaseConfig);
             const db = getFirestore(app);
 
-            // KLIENTI (CRM)
+            // KLIENTI
             document.getElementById('form-klienti').addEventListener('submit', async (e) => { e.preventDefault(); await addDoc(collection(db, "klienti"), { jmeno: document.getElementById('k-jmeno').value, kontakt: document.getElementById('k-kontakt').value, telefon: document.getElementById('k-telefon').value, poznamka: document.getElementById('k-poznamka').value }); e.target.reset(); });
-            window.smazatK = async (id) => { if(confirm('Smazat klienta z adresáře?')) await deleteDoc(doc(db, "klienti", id)); };
+            window.smazatK = async (id) => { if(confirm('Smazat klienta?')) await deleteDoc(doc(db, "klienti", id)); };
             onSnapshot(collection(db, "klienti"), (snapshot) => { 
                 let kHTML = ''; let optionsHtml = '<option value="">-- Vyberte klienta --</option>'; 
                 snapshot.forEach(docSnap => { 
@@ -368,7 +374,7 @@
                 document.getElementById('z-zakaznik').innerHTML = optionsHtml; 
             });
 
-            // ZAKÁZKY & ARCHIV
+            // ZAKÁZKY
             document.getElementById('form-zakazky').addEventListener('submit', async (e) => { e.preventDefault(); let obsah = []; document.querySelectorAll('.polozka-row').forEach(row => { const nazev = row.querySelector('.polozka-nazev').value; const ks = row.querySelector('.polozka-ks').value; if(nazev) obsah.push({ nazev, ks, stavItem: 'Čeká' }); }); await addDoc(collection(db, "zakazky"), { zakaznik: document.getElementById('z-zakaznik').value, typ: document.getElementById('z-typ').value, kategorie: document.getElementById('z-kategorie').value, cena: Number(document.getElementById('z-cena').value), stav: 'Přijato', obsah: obsah }); e.target.reset(); window.zmenKategorie(); });
             window.zmenitStav = async (id, novyStav) => { await updateDoc(doc(db, "zakazky", id), { stav: novyStav }); }; 
             window.smazatZ = async (id) => { if(confirm('Opravdu smazat zakázku?')) await deleteDoc(doc(db, "zakazky", id)); };
@@ -379,14 +385,14 @@
 
             onSnapshot(collection(db, "zakazky"), (snapshot) => { let zHTML = ''; let archivHTML = ''; let aktivni = 0, kOdeslani = 0; const stavyVyroby = { '3D tisk': ['Přijato','Příprava 3D modelu','Tisk','Nabarveno','Zabaleno','Odesláno'], 'Cricut': ['Přijato','Příprava grafiky','Řezání/Tisk','Zabaleno','Odesláno'] }; vsechnyZakazkyRaw = {}; snapshot.forEach(docSnap => { const z = docSnap.data(); const id = docSnap.id; const typ = z.typ || '3D tisk'; vsechnyZakazkyRaw[id] = z; const stavyCelkove = stavyVyroby[typ] || stavyVyroby['3D tisk']; let optionsGlobal = stavyCelkove.map(s => `<option value="${s}" ${z.stav === s ? 'selected' : ''}>${s}</option>`).join(''); let obsahListHtml = z.obsah ? z.obsah.map((p, index) => { const stavPolozky = p.stavItem || 'Čeká'; const stavyPolozky = ['Čeká', 'Tiskne se', 'Vytištěno/Vyřezáno', 'Nabarveno', 'Hotovo']; let optionsItem = stavyPolozky.map(s => `<option value="${s}" ${stavPolozky === s ? 'selected' : ''}>${s}</option>`).join(''); if(z.stav === 'Odesláno') { return `<li class="py-1">✔️ ${p.ks}x ${p.nazev}</li>`; } else { return `<li class="flex items-center justify-between bg-white border border-gray-200 shadow-sm p-1 px-2 mb-1 rounded text-xs"><span class="font-medium text-gray-700">${p.ks}x ${p.nazev}</span><select onchange="zmenitStavPolozky('${id}', ${index}, this.value)" class="text-xs ml-2 bg-gray-50 border border-gray-300 rounded outline-none cursor-pointer">${optionsItem}</select></li>`; } }).join('') : ''; const akceTlacitka = `<div class="flex flex-col gap-1"><button onclick="generovatPDF('${id}')" class="bg-green-100 text-green-700 hover:bg-green-200 font-bold px-3 py-1 rounded text-xs text-center">📄 PDF</button><button onclick="smazatZ('${id}')" class="text-red-500 hover:text-red-700 font-bold bg-red-50 px-3 py-1 rounded text-xs text-center">Smazat</button></div>`; const rowHtml = `<tr class="hover:bg-gray-50"><td class="p-4 font-bold text-gray-800">${z.zakaznik}</td><td class="p-4 text-xs"><span class="bg-gray-200 px-2 py-1 rounded text-gray-700 font-bold">${typ}</span><br><span class="inline-block mt-2 text-gray-500">${z.kategorie || '-'}</span></td><td class="p-4 text-xs"><ul class="min-w-[180px]">${obsahListHtml}</ul></td><td class="p-4 font-bold text-blue-600">${z.cena} Kč</td><td class="p-4"><select onchange="zmenitStav('${id}', this.value)" class="bg-blue-100 font-bold text-blue-800 p-2 rounded outline-none border border-blue-200 cursor-pointer text-xs w-full">${optionsGlobal}</select></td><td class="p-4">${akceTlacitka}</td></tr>`; if(z.stav === 'Odesláno') { archivHTML += rowHtml; } else { zHTML += rowHtml; aktivni++; if(z.stav === 'Zabaleno') kOdeslani++; } }); document.getElementById('list-zakazky').innerHTML = zHTML; document.getElementById('list-archiv').innerHTML = archivHTML; document.getElementById('stat-aktivni').innerText = aktivni; document.getElementById('stat-odeslani').innerText = kOdeslani; });
 
-            // SKLAD (ZDE JE OPRAVA PRO ZÁZNAMY TISKU)
+            // SKLAD A PLNĚNÍ ROLETKY V ZÁZNAMECH TISKU
             document.getElementById('form-sklad').addEventListener('submit', async (e) => { e.preventDefault(); await addDoc(collection(db, "sklad"), { nazev: document.getElementById('s-nazev').value, dodavatel: document.getElementById('s-dodavatel').value || '-', pocet: Number(document.getElementById('s-pocet').value) }); e.target.reset(); });
             window.zmenitPocet = async (id, pocet, delta) => { await updateDoc(doc(db, "sklad", id), { pocet: Math.max(0, pocet + delta) }); }; 
             window.smazatS = async (id) => await deleteDoc(doc(db, "sklad", id));
             
             onSnapshot(collection(db, "sklad"), (snapshot) => { 
                 let sHTML = '', varovaniHTML = ''; let maloSkladem = 0; 
-                let materialOptions = '<option value="">-- Vyberte materiál --</option>'; 
+                let materialOptions = '<option value="">-- Vyberte materiál ze skladu --</option>'; 
                 
                 snapshot.forEach(docSnap => { 
                     const s = docSnap.data(); const id = docSnap.id; 
@@ -395,19 +401,16 @@
                     
                     sHTML += `<div class="bg-white p-4 border rounded-xl flex justify-between items-center"><div><div class="font-bold">${s.nazev}</div><div class="text-xs">Stav: <span class="${isMalo ? 'text-red-600 font-bold' : ''}">${s.pocet}</span> (Od: ${s.dodavatel})</div></div><div class="flex"><button onclick="zmenitPocet('${id}', ${s.pocet}, -100)" class="px-2 bg-gray-200 mx-1 rounded hover:bg-gray-300">-100</button><button onclick="zmenitPocet('${id}', ${s.pocet}, 100)" class="px-2 bg-gray-200 mx-1 rounded hover:bg-gray-300">+100</button><button onclick="smazatS('${id}')" class="text-red-400 ml-2 font-bold hover:text-red-600">X</button></div></div>`; 
                     
-                    // Naplnění výběru
-                    materialOptions += `<option value="${id}">${s.nazev} (Zbytků: ${s.pocet})</option>`; 
+                    // Propis do roletky
+                    materialOptions += `<option value="${id}">${s.nazev} (Zbytků: ${s.pocet}g)</option>`; 
                 }); 
                 
                 document.getElementById('list-sklad').innerHTML = sHTML; 
                 document.getElementById('stat-sklad').innerText = maloSkladem + ' položek'; 
                 document.getElementById('low-stock-list').innerHTML = maloSkladem > 0 ? varovaniHTML : '<li class="text-green-600">Sklad je v pořádku.</li>'; 
                 
-                // Přepsání HTML výběru pro Záznamy tisku
                 const ztMaterialSelect = document.getElementById('zt-material');
-                if (ztMaterialSelect) {
-                    ztMaterialSelect.innerHTML = materialOptions; 
-                }
+                if(ztMaterialSelect) { ztMaterialSelect.innerHTML = materialOptions; }
             });
 
             // ZÁZNAMY TISKU
@@ -420,6 +423,7 @@
             document.getElementById('form-finance').addEventListener('submit', async (e) => { e.preventDefault(); await addDoc(collection(db, "finance"), { datum: new Date().toLocaleDateString('cs-CZ'), typ: document.getElementById('f-typ').value, popis: document.getElementById('f-popis').value, castka: Number(document.getElementById('f-castka').value) }); e.target.reset(); }); window.smazatF = async (id) => await deleteDoc(doc(db, "finance", id)); onSnapshot(collection(db, "finance"), (snapshot) => { let fHTML = '', celkem = 0; snapshot.forEach(docSnap => { const f = docSnap.data(); if(f.typ === 'prijem') celkem += f.castka; else celkem -= f.castka; fHTML += `<tr><td class="p-4">${f.datum}</td><td class="p-4 font-bold ${f.typ === 'prijem' ? 'text-green-600' : 'text-red-600'}">${f.typ === 'prijem' ? '+' : '-'}</td><td class="p-4">${f.popis}</td><td class="p-4 font-bold">${f.castka} Kč</td><td class="p-4"><button onclick="smazatF('${docSnap.id}')" class="text-red-500 font-bold bg-red-50 px-2 rounded">X</button></td></tr>`; }); document.getElementById('list-finance').innerHTML = fHTML; document.getElementById('stat-finance').innerText = celkem + ' Kč'; document.getElementById('stat-finance').className = celkem >= 0 ? "text-3xl font-bold text-green-600 mt-2" : "text-3xl font-bold text-red-600 mt-2"; });
             document.getElementById('form-3d').addEventListener('submit', async (e) => { e.preventDefault(); await addDoc(collection(db, "modely"), { nazev: document.getElementById('m-nazev').value, odkaz: document.getElementById('m-odkaz').value, soubor: document.getElementById('m-soubor').value, poznamky: document.getElementById('m-poznamky').value }); e.target.reset(); }); window.smazatM = async (id) => { if(confirm('Opravdu smazat?')) await deleteDoc(doc(db, "modely", id)); }; onSnapshot(collection(db, "modely"), (snapshot) => { let mHTML = ''; snapshot.forEach(docSnap => { const m = docSnap.data(); mHTML += `<div class="bg-white p-4 border rounded-xl relative"><button onclick="smazatM('${docSnap.id}')" class="absolute top-3 right-3 text-red-400 font-bold">X</button><h4 class="font-bold text-indigo-700 mb-2">${m.nazev}</h4>${m.soubor ? `<div class="text-xs text-gray-500">📄 ${m.soubor}</div>` : ''} ${m.odkaz ? `<a href="${m.odkaz}" target="_blank" class="text-xs text-blue-500 mt-1 inline-block">Odkaz</a>` : ''}</div>`; }); document.getElementById('list-3d').innerHTML = mHTML; });
         };
+        
         if(jePrihlasen) { spustitFirebase(); }
     </script>
 </body>
