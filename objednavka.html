@@ -6,9 +6,11 @@
     <title>MachacekART | Nahrajte svůj 3D model</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Knihovna pro rozbalení 3MF (ZIP) archivu v prohlížeči -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .drag-over { border-color: #059669; background-color: #ecfdf5; } /* Smaragdová barva při přetažení */
+        .drag-over { border-color: #059669; background-color: #ecfdf5; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
@@ -16,7 +18,6 @@
     <!-- HLAVIČKA -->
     <header class="bg-emerald-700 text-white p-6 shadow-md">
         <div class="max-w-4xl mx-auto flex items-center gap-4">
-            <!-- Ikonka loga / M hexagon zástupce -->
             <div class="w-12 h-12 bg-white rounded flex items-center justify-center text-emerald-700 font-black text-2xl" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);">
                 M
             </div>
@@ -32,15 +33,20 @@
         <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
             <div class="p-8 border-b border-gray-100">
                 <h2 class="text-xl font-bold mb-2">1. Nahrajte svůj 3D model</h2>
-                <p class="text-gray-500 text-sm mb-6">Podporujeme standardní formát .STL (Binární). Soubor zůstává u vás, objem se počítá okamžitě v prohlížeči.</p>
+                <p class="text-gray-500 text-sm mb-6">Podporujeme formáty <strong>.STL</strong> a <strong>.3MF</strong>. Výpočet objemu a ceny probíhá okamžitě přímo ve vašem prohlížeči.</p>
                 
                 <!-- DROPZONE -->
                 <div id="dropzone" class="border-2 border-dashed border-gray-300 rounded-xl p-10 text-center cursor-pointer transition-colors hover:bg-gray-50">
                     <div class="text-4xl mb-3">📁</div>
-                    <p class="font-bold text-gray-700">Klikněte nebo sem přetáhněte .STL soubor</p>
-                    <input type="file" id="fileInput" accept=".stl" class="hidden">
+                    <p class="font-bold text-gray-700">Klikněte nebo sem přetáhněte .STL či .3MF soubor</p>
+                    <input type="file" id="fileInput" accept=".stl,.3mf" class="hidden">
                 </div>
                 
+                <!-- INDIKÁTOR NAČÍTÁNÍ -->
+                <div id="loading-indicator" class="hidden mt-4 text-center text-emerald-600 font-bold py-4">
+                    ⏳ Zpracovávám model, moment strpení...
+                </div>
+
                 <div id="file-info" class="hidden mt-4 bg-emerald-50 text-emerald-800 p-4 rounded-lg font-medium flex justify-between items-center border border-emerald-200">
                     <span id="file-name">model.stl</span>
                     <span id="file-volume" class="font-bold">0 cm³</span>
@@ -103,33 +109,30 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Firebase konfigurace (Stejná jako máte v dílně)
         const firebaseConfig = { apiKey: "AIzaSyCGMPmV6UI1Q-T5VCHFkv_Qbp3_6d8HoGQ", authDomain: "dilna-web.firebaseapp.com", projectId: "dilna-web", storageBucket: "dilna-web.firebasestorage.app", messagingSenderId: "579413031750", appId: "1:579413031750:web:de8e579a13b3f483134347", measurementId: "G-6T0Q7909D2" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Proměnné pro výpočet
         let aktualniVaha = 0;
         let aktualniCenaCelkem = 0;
-        const CENA_PRIPRAVA = 150; // Fixní sazba za spuštění tisku v Kč
-        const CENA_ZA_GRAM = 2.5;  // Průměrná cena pro klienta za 1g materiálu (zahrnuje i amortizaci)
-        const HUSTOTA_PLA = 1.24;  // g/cm3
+        const CENA_PRIPRAVA = 150; 
+        const CENA_ZA_GRAM = 2.5;  
+        const HUSTOTA_PLA = 1.24;  
 
-        // 1. Načtení skladu z Firebase do roletky
         onSnapshot(collection(db, "sklad"), (snapshot) => {
             let options = '<option value="">-- Vyberte barvu materiálu --</option>';
             snapshot.forEach(docSnap => {
                 const s = docSnap.data();
-                const jeSkladem = s.pocet > 50; // Pokud je víc než 50g, bereme to jako dostupné
+                const jeSkladem = s.pocet > 50; 
                 const stitek = jeSkladem ? '🟢 Skladem' : '🟠 Na objednávku';
                 options += `<option value="${s.nazev}" data-skladem="${jeSkladem}">${s.nazev} (${stitek})</option>`;
             });
             document.getElementById('material-select').innerHTML = options;
         });
 
-        // 2. Obsluha Drag & Drop a nahrání souboru
         const dropzone = document.getElementById('dropzone');
         const fileInput = document.getElementById('fileInput');
+        const loadingIndicator = document.getElementById('loading-indicator');
 
         dropzone.addEventListener('click', () => fileInput.click());
         dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('drag-over'); });
@@ -137,55 +140,151 @@
         dropzone.addEventListener('drop', (e) => {
             e.preventDefault();
             dropzone.classList.remove('drag-over');
-            if (e.dataTransfer.files.length) zpracovatSoubor(e.dataTransfer.files[0]);
+            if (e.dataTransfer.files.length) zpracovatSouborWrapper(e.dataTransfer.files[0]);
         });
         fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length) zpracovatSoubor(e.target.files[0]);
+            if (e.target.files.length) zpracovatSouborWrapper(e.target.files[0]);
         });
 
-        function zpracovatSoubor(file) {
-            if (!file.name.toLowerCase().endsWith('.stl')) {
-                alert('Prosím nahrajte platný .STL soubor.'); return;
+        async function zpracovatSouborWrapper(file) {
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (ext !== 'stl' && ext !== '3mf') {
+                alert('Prosím nahrajte platný .STL nebo .3MF soubor.'); 
+                return;
             }
             
             document.getElementById('file-name').innerText = file.name;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const buffer = e.target.result;
-                try {
-                    const objemCm3 = spocitatObjemSTL(buffer);
-                    if(objemCm3 <= 0 || isNaN(objemCm3)) throw new Error("Chyba výpočtu");
-                    
-                    // Nastavení hodnot do UI
-                    document.getElementById('file-volume').innerText = objemCm3.toFixed(2) + ' cm³';
-                    aktualniVaha = objemCm3 * HUSTOTA_PLA;
-                    document.getElementById('calc-weight').innerText = Math.ceil(aktualniVaha) + ' g';
-                    
-                    aktualniCenaCelkem = CENA_PRIPRAVA + (aktualniVaha * CENA_ZA_GRAM);
-                    document.getElementById('calc-price').innerText = Math.ceil(aktualniCenaCelkem) + ' Kč';
+            dropzone.classList.add('hidden');
+            loadingIndicator.classList.remove('hidden');
 
-                    // Odemknout další kroky
-                    document.getElementById('file-info').classList.remove('hidden');
-                    document.getElementById('dropzone').classList.add('hidden');
-                    document.getElementById('krok2').classList.remove('opacity-50', 'pointer-events-none');
-                    
-                } catch (err) {
-                    alert('Nepodařilo se zpracovat model. Ujistěte se, že jde o binární STL soubor.');
+            try {
+                let objemCm3 = 0;
+                if (ext === 'stl') {
+                    objemCm3 = await zpracovatSTL(file);
+                } else if (ext === '3mf') {
+                    objemCm3 = await zpracovat3MF(file);
                 }
-            };
-            reader.readAsArrayBuffer(file);
+
+                if(objemCm3 <= 0 || isNaN(objemCm3)) throw new Error("Chybný výpočet objemu.");
+
+                document.getElementById('file-volume').innerText = objemCm3.toFixed(2) + ' cm³';
+                aktualniVaha = objemCm3 * HUSTOTA_PLA;
+                document.getElementById('calc-weight').innerText = Math.ceil(aktualniVaha) + ' g';
+                
+                aktualniCenaCelkem = CENA_PRIPRAVA + (aktualniVaha * CENA_ZA_GRAM);
+                document.getElementById('calc-price').innerText = Math.ceil(aktualniCenaCelkem) + ' Kč';
+
+                loadingIndicator.classList.add('hidden');
+                document.getElementById('file-info').classList.remove('hidden');
+                document.getElementById('krok2').classList.remove('opacity-50', 'pointer-events-none');
+            } catch (err) {
+                console.error(err);
+                alert('Nepodařilo se zpracovat model. Ujistěte se, že soubor není poškozený.');
+                loadingIndicator.classList.add('hidden');
+                dropzone.classList.remove('hidden');
+            }
         }
 
-        // Aktivovat formulář až po výběru materiálu
-        document.getElementById('material-select').addEventListener('change', function() {
-            if(this.value !== "") {
-                document.getElementById('krok3').classList.remove('hidden');
-            } else {
-                document.getElementById('krok3').classList.add('hidden');
+        // --- ZPRACOVÁNÍ BINÁRNÍHO STL ---
+        function zpracovatSTL(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const buffer = e.target.result;
+                        const view = new DataView(buffer);
+                        const numTriangles = view.getUint32(80, true);
+                        let volume = 0;
+                        let offset = 84;
+                        
+                        for (let i = 0; i < numTriangles; i++) {
+                            offset += 12; 
+                            const v1x = view.getFloat32(offset, true); offset += 4;
+                            const v1y = view.getFloat32(offset, true); offset += 4;
+                            const v1z = view.getFloat32(offset, true); offset += 4;
+                            const v2x = view.getFloat32(offset, true); offset += 4;
+                            const v2y = view.getFloat32(offset, true); offset += 4;
+                            const v2z = view.getFloat32(offset, true); offset += 4;
+                            const v3x = view.getFloat32(offset, true); offset += 4;
+                            const v3y = view.getFloat32(offset, true); offset += 4;
+                            const v3z = view.getFloat32(offset, true); offset += 4;
+                            offset += 2; 
+                            
+                            const v321 = v3x * v2y * v1z; const v231 = v2x * v3y * v1z; const v312 = v3x * v1y * v2z;
+                            const v132 = v1x * v3y * v2z; const v213 = v2x * v1y * v3z; const v123 = v1x * v2y * v3z;
+                            volume += (1.0 / 6.0) * (-v321 + v231 + v312 - v132 - v213 + v123);
+                        }
+                        resolve(Math.abs(volume) / 1000);
+                    } catch(err) { reject(err); }
+                };
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        // --- ZPRACOVÁNÍ 3MF (ZIP ARCHIV) ---
+        async function zpracovat3MF(file) {
+            const zip = await JSZip.loadAsync(file);
+            let modelFile = zip.file("3D/3dmodel.model");
+            
+            // Záloha pro případ, že slicer uložil XML pod jiným názvem
+            if (!modelFile) {
+                const files = Object.keys(zip.files);
+                const match = files.find(f => f.toLowerCase() === "3d/3dmodel.model");
+                if (match) modelFile = zip.file(match);
             }
+            if (!modelFile) throw new Error("Soubor 3dmodel.model nebyl v 3MF nalezen.");
+
+            const xmlString = await modelFile.async("string");
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+            
+            const objects = xmlDoc.getElementsByTagName("object");
+            let totalVolume = 0;
+
+            for (let i = 0; i < objects.length; i++) {
+                const meshNodes = objects[i].getElementsByTagName("mesh");
+                if (meshNodes.length === 0) continue;
+                const mesh = meshNodes[0];
+
+                const verticesNode = mesh.getElementsByTagName("vertices")[0];
+                const trianglesNode = mesh.getElementsByTagName("triangles")[0];
+                if (!verticesNode || !trianglesNode) continue;
+
+                const vNodes = verticesNode.getElementsByTagName("vertex");
+                const vertices = [];
+                for (let j = 0; j < vNodes.length; j++) {
+                    vertices.push({
+                        x: parseFloat(vNodes[j].getAttribute("x")),
+                        y: parseFloat(vNodes[j].getAttribute("y")),
+                        z: parseFloat(vNodes[j].getAttribute("z"))
+                    });
+                }
+
+                const tNodes = trianglesNode.getElementsByTagName("triangle");
+                let volume = 0;
+                for (let j = 0; j < tNodes.length; j++) {
+                    const v1Idx = parseInt(tNodes[j].getAttribute("v1"));
+                    const v2Idx = parseInt(tNodes[j].getAttribute("v2"));
+                    const v3Idx = parseInt(tNodes[j].getAttribute("v3"));
+
+                    const p1 = vertices[v1Idx];
+                    const p2 = vertices[v2Idx];
+                    const p3 = vertices[v3Idx];
+
+                    const v321 = p3.x * p2.y * p1.z; const v231 = p2.x * p3.y * p1.z; const v312 = p3.x * p1.y * p2.z;
+                    const v132 = p1.x * p3.y * p2.z; const v213 = p2.x * p1.y * p3.z; const v123 = p1.x * p2.y * p3.z;
+                    volume += (1.0 / 6.0) * (-v321 + v231 + v312 - v132 - v213 + v123);
+                }
+                totalVolume += Math.abs(volume) / 1000;
+            }
+            return totalVolume;
+        }
+
+        document.getElementById('material-select').addEventListener('change', function() {
+            if(this.value !== "") document.getElementById('krok3').classList.remove('hidden');
+            else document.getElementById('krok3').classList.add('hidden');
         });
 
-        // 3. Odeslání do Firebase do vaší dílny
         document.getElementById('order-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const tlacitko = e.target.querySelector('button');
@@ -199,70 +298,22 @@
             const material = document.getElementById('material-select').value;
             const fileName = document.getElementById('file-name').innerText;
 
-            const obsahObjednavky = [
-                { nazev: `Tisk z webu: ${fileName} (${material})`, ks: 1, stavItem: 'Čeká' }
-            ];
+            const obsahObjednavky = [ { nazev: `Web: ${fileName} (${material})`, ks: 1, stavItem: 'Čeká' } ];
 
-            // Nejprve uložíme klienta do adresáře
             await addDoc(collection(db, "klienti"), {
-                jmeno: jmeno + ' (Web)',
-                kontakt: email,
-                telefon: telefon,
-                poznamka: 'Zákazník z webového formuláře'
+                jmeno: jmeno + ' (Web)', kontakt: email, telefon: telefon, poznamka: poznamka
             });
 
-            // Poté založíme zakázku
             await addDoc(collection(db, "zakazky"), {
-                zakaznik: jmeno + ' (Web)',
-                typ: '3D tisk',
-                kategorie: 'Z webu',
-                cena: Math.ceil(aktualniCenaCelkem),
-                stav: 'Přijato',
-                obsah: obsahObjednavky
+                zakaznik: jmeno + ' (Web)', typ: '3D tisk', kategorie: 'Z webu',
+                cena: Math.ceil(aktualniCenaCelkem), stav: 'Přijato', obsah: obsahObjednavky
             });
 
-            // Zobrazení úspěchu
             document.getElementById('krok2').classList.add('hidden');
             document.getElementById('krok3').classList.add('hidden');
             document.getElementById('success-message').classList.remove('hidden');
             document.querySelector('.p-8.border-b').classList.add('hidden');
         });
-
-        // --- MATEMATICKÝ PARSER PRO BINÁRNÍ STL SOUBORY ---
-        function spocitatObjemSTL(buffer) {
-            const view = new DataView(buffer);
-            const numTriangles = view.getUint32(80, true);
-            let volume = 0;
-            let offset = 84;
-            
-            for (let i = 0; i < numTriangles; i++) {
-                offset += 12; // Přeskočíme normály
-                
-                // Přečteme souřadnice tří bodů trojúhelníku
-                const v1x = view.getFloat32(offset, true); offset += 4;
-                const v1y = view.getFloat32(offset, true); offset += 4;
-                const v1z = view.getFloat32(offset, true); offset += 4;
-                const v2x = view.getFloat32(offset, true); offset += 4;
-                const v2y = view.getFloat32(offset, true); offset += 4;
-                const v2z = view.getFloat32(offset, true); offset += 4;
-                const v3x = view.getFloat32(offset, true); offset += 4;
-                const v3y = view.getFloat32(offset, true); offset += 4;
-                const v3z = view.getFloat32(offset, true); offset += 4;
-                
-                offset += 2; // Přeskočíme atributy
-                
-                // Výpočet objemu tetraedru od počátku souřadnic ke konkrétnímu trojúhelníku
-                const v321 = v3x * v2y * v1z;
-                const v231 = v2x * v3y * v1z;
-                const v312 = v3x * v1y * v2z;
-                const v132 = v1x * v3y * v2z;
-                const v213 = v2x * v1y * v3z;
-                const v123 = v1x * v2y * v3z;
-                volume += (1.0 / 6.0) * (-v321 + v231 + v312 - v132 - v213 + v123);
-            }
-            // Převede mm krychlové na cm krychlové a vrátí absolutní hodnotu
-            return Math.abs(volume) / 1000; 
-        }
     </script>
 </body>
 </html>
