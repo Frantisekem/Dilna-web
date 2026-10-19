@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D & Cricut Poctivá Dílna | Ruční Tisk a Výroba na Míru</title>
-    <!-- Google Fonts pro rukopisný a poctivý řemeslný styl -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
@@ -70,7 +70,7 @@
         </div>
     </nav>
 
-    <!-- HERO SEKCE -->
+    <!-- HERO SEKCE (HNĚDÁ DŘEVĚNÁ) -->
     <section class="relative pt-12 pb-24 text-amber-50">
         <div class="max-w-5xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             
@@ -111,7 +111,7 @@
         </div>
     </section>
 
-    <!-- DETAILNÍ PŘEHLED -->
+    <!-- DETAILNÍ PŘEHLED (PAPÍROVÁ SEKCE) -->
     <section id="sluzby" class="paper-texture text-amber-950 py-20 brush-border-top brush-border-bottom relative z-10">
         <div class="max-w-5xl mx-auto px-4">
             
@@ -164,7 +164,48 @@
         </div>
     </section>
 
-    <!-- OBJEDNÁVKOVÝ SYSTÉM -->
+    <!-- HLAVNÍ HNĚDÁ SEKCE PRO AKCE (SVATBY, PLESY, OSLAVY) -->
+    <section id="akce" class="wood-texture py-24 text-amber-50 relative">
+        <div class="max-w-5xl mx-auto px-4">
+            
+            <div class="text-center max-w-xl mx-auto mb-16">
+                <span class="font-handwrite text-3xl text-craftAmberLight font-bold">Inspirace pro vaše události</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-amber-100 mt-1">Svatby, plesy a oslavy s duší</h2>
+                <p class="text-sm text-amber-200/80 mt-2">Kombinujeme 3D tisk a Cricut tak, aby vaše událost byla dokonale sladěná a nezapomenutelná.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <div class="bg-amber-950/70 p-8 rounded-3xl border border-amber-800/50 text-center relative group hover:border-craftAmberLight transition-all shadow-xl">
+                    <div class="w-16 h-16 bg-craftAmber rounded-full flex items-center justify-center text-2xl mx-auto mb-4 text-white shadow-lg">
+                        <i class="fa-solid fa-ring"></i>
+                    </div>
+                    <h3 class="font-handwrite text-3xl font-bold text-amber-100 mb-2">Svatební balíček na míru</h3>
+                    <p class="text-xs text-amber-200/70 leading-relaxed">Oznámení, stírací losy, balíčky „Poslední záchrana“ i 3D jmenovky. Můžete vyzkoušet náš **Testovací balíček** přímo k vám domů!</p>
+                </div>
+
+                <div class="bg-amber-950/70 p-8 rounded-3xl border border-amber-800/50 text-center relative group hover:border-craftAmberLight transition-all shadow-xl">
+                    <div class="w-16 h-16 bg-craftAmber rounded-full flex items-center justify-center text-2xl mx-auto mb-4 text-white shadow-lg">
+                        <i class="fa-solid fa-masks-theater"></i>
+                    </div>
+                    <h3 class="font-handwrite text-3xl font-bold text-amber-100 mb-2">Plesová sezóna & Výzdoba</h3>
+                    <p class="text-xs text-amber-200/70 leading-relaxed">Kompletní homemade výzdoba na plesy – cedule, jmenovky na stoly, fotokoutek rekvizity i originální tombola doplňky.</p>
+                </div>
+
+                <div class="bg-amber-950/70 p-8 rounded-3xl border border-amber-800/50 text-center relative group hover:border-craftAmberLight transition-all shadow-xl">
+                    <div class="w-16 h-16 bg-craftAmber rounded-full flex items-center justify-center text-2xl mx-auto mb-4 text-white shadow-lg">
+                        <i class="fa-solid fa-gift"></i>
+                    </div>
+                    <h3 class="font-handwrite text-3xl font-bold text-amber-100 mb-2">Oslavy & Sezónní dárky</h3>
+                    <p class="text-xs text-amber-200/70 leading-relaxed">Ručně malované 3D dárky pro knihomoly, vícebarevné herní inserty, vánoční ozdoby a rekvizity do videí.</p>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- OBJEDNÁVKOVÝ SYSTÉM (PAPÍROVÁ SEKCE) -->
     <section id="objednat" class="paper-texture text-amber-950 py-20 brush-border-top relative z-10">
         <div class="max-w-3xl mx-auto px-4">
             
@@ -289,7 +330,7 @@
         </div>
     </section>
 
-    <!-- PATIČKA -->
+    <!-- PATIČKA (HNĚDÁ DŘEVĚNÁ) -->
     <footer class="wood-texture border-t border-amber-900/40 py-10 text-center text-amber-300/60 text-xs">
         <div class="max-w-5xl mx-auto px-4 space-y-3">
             <p class="font-handwrite text-2xl text-amber-100">Vyrobeno ručně a s láskou v naší 3D & Cricut dílně</p>
@@ -342,11 +383,8 @@
 
                 let basePrice = (w * 0.22) + 60;
 
-                // Přirážka za vícebarevný / skládací model
                 if (type3d.value.includes('Vícebarevný')) basePrice += 80;
                 if (type3d.value.includes('Skládací')) basePrice += 50;
-
-                // Přirážka za ruční malování
                 if (paint3d.value.includes('Ruční malování')) basePrice += 250;
 
                 totalPriceEl.textContent = Math.round(basePrice) + ' Kč';
@@ -359,7 +397,7 @@
                 let price = 100;
 
                 if (cricutVal.includes('TESTOVACÍ')) {
-                    price = 290; // Fixní cena za testovací vzorkový balíček
+                    price = 290;
                 } else if (cricutVal.includes('kompletní')) {
                     price = 120 * qty + 150;
                 } else {
@@ -367,7 +405,7 @@
                 }
 
                 if (graphicCricut.checked) {
-                    price += 300; // Příplatek za kompletní grafický návrh na míru
+                    price += 300;
                 }
 
                 totalPriceEl.textContent = Math.round(price) + ' Kč';
