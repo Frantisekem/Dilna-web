@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Poctivá Dílna | Řemeslný 3D Tisk</title>
+    <title>3D Poctivá Dílna | Ruční 3D Tisk na Míru</title>
     <!-- Google Fonts pro rukopisný a poctivý řemeslný styl -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,9 +21,9 @@
                         woodDark: '#2C1D11',
                         woodBg: '#3D2817',
                         woodPaper: '#F7F3E9',
-                        craftGreen: '#4A6B3A',
-                        craftGreenLight: '#8CAE68',
-                        craftAccent: '#D97706',
+                        craftAmber: '#C27803',
+                        craftAmberLight: '#F59E0B',
+                        craftDark: '#1E150F',
                     }
                 }
             }
@@ -31,20 +31,17 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Dřevěná textura pozadí */
         .wood-texture {
             background-color: #2C1D11;
             background-image: radial-gradient(#3D2817 1px, transparent 1px), radial-gradient(#3D2817 1px, #2C1D11 1px);
             background-size: 40px 40px;
             background-position: 0 0, 20px 20px;
         }
-        /* Papírová desk textura pro střední část */
         .paper-texture {
             background-color: #F7F3E9;
             background-image: radial-gradient(#E2D9C8 0.8px, transparent 0.8px);
             background-size: 16px 16px;
         }
-        /* Trhaný okraj / tah štětce effect */
         .brush-border-top {
             clip-path: polygon(0 3%, 15% 0%, 35% 2%, 50% 0%, 70% 3%, 85% 1%, 100% 3%, 100% 100%, 0% 100%);
         }
@@ -53,130 +50,122 @@
         }
     </style>
 </head>
-<body class="wood-texture text-gray-800 font-sans antialiased selection:bg-craftGreen selection:text-white">
+<body class="wood-texture text-gray-800 font-sans antialiased selection:bg-craftAmber selection:text-white">
 
     <!-- HORNI LIŠTA / NAVIGATION -->
     <nav class="relative z-20 pt-6 px-4">
         <div class="max-w-5xl mx-auto flex items-center justify-between border-b border-amber-900/40 pb-4">
             <div class="flex items-center gap-2">
-                <i class="fa-solid fa-tree text-craftGreenLight text-2xl"></i>
+                <i class="fa-solid fa-cube text-craftAmberLight text-2xl"></i>
                 <span class="font-handwrite text-3xl font-bold text-amber-100 tracking-wide">3D Poctivá Dílna</span>
             </div>
             <div class="hidden md:flex gap-6 text-sm font-semibold text-amber-200/80">
-                <a href="#produkt" class="hover:text-craftGreenLight transition-colors">Hlavní Výrobek</a>
-                <a href="#slozeni" class="hover:text-craftGreenLight transition-colors">Anatomie Tisku</a>
-                <a href="#pouziti" class="hover:text-craftGreenLight transition-colors">Využití</a>
-                <a href="#dalsi" class="hover:text-craftGreenLight transition-colors">Další Tvorba</a>
+                <a href="#produkt" class="hover:text-craftAmberLight transition-colors">Hlavní Výrobek</a>
+                <a href="#slozeni" class="hover:text-craftAmberLight transition-colors">Anatomie Tisku</a>
+                <a href="#pouziti" class="hover:text-craftAmberLight transition-colors">Kde všude se hodí</a>
+                <a href="#objednat" class="hover:text-craftAmberLight transition-colors">Poptávkový systém</a>
             </div>
-            <a href="https://etsy.com" target="_blank" class="px-5 py-2 rounded-full bg-craftGreen font-bold text-white shadow-md hover:bg-craftGreenLight transition-all text-sm flex items-center gap-2">
-                <i class="fa-solid fa-store"></i> Obchůdek
+            <a href="#objednat" class="px-5 py-2 rounded-full bg-craftAmber font-bold text-white shadow-md hover:bg-craftAmberLight transition-all text-sm flex items-center gap-2">
+                <i class="fa-solid fa-calculator"></i> Spočítat & Poptat
             </a>
         </div>
     </nav>
 
-    <!-- HERO SEKCE (HLAVNÍ VÝROBEK) -->
+    <!-- HERO SEKCE (PROMO & HLAVNÍ VÝROBEK) -->
     <section id="produkt" class="relative pt-12 pb-24 text-amber-50">
         <div class="max-w-5xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             
-            <!-- Pravá strana v mobilu, vpravo na PC: Obrázek výrobku -->
             <div class="relative order-1 md:order-2 flex justify-center">
-                <!-- Zelená kaňka pod produktem -->
-                <div class="absolute w-72 h-72 bg-craftGreen/40 rounded-full blur-2xl -z-10 transform scale-110"></div>
-                
+                <div class="absolute w-72 h-72 bg-craftAmber/30 rounded-full blur-2xl -z-10 transform scale-110"></div>
                 <div class="relative bg-woodPaper p-6 rounded-3xl shadow-2xl rotate-2 border-4 border-amber-900/30 text-gray-800 text-center max-w-sm">
-                    <span class="absolute -top-4 -left-4 font-handwrite text-2xl bg-craftAccent text-white px-4 py-1 rounded-full shadow-md -rotate-6">Eko PLA Plast</span>
+                    <span class="absolute -top-4 -left-4 font-handwrite text-2xl bg-craftAmber text-white px-4 py-1 rounded-full shadow-md -rotate-6">Ruční výroba</span>
                     <div class="w-full h-64 bg-amber-100/60 rounded-2xl flex items-center justify-center border-2 border-dashed border-amber-800/20 mb-4">
-                        <div class="text-center">
-                            <i class="fa-solid fa-cube text-6xl text-craftGreen mb-2"></i>
-                            <p class="font-handwrite text-xl text-gray-600">Fotka vašeho svatebního / herního stojánku</p>
+                        <div class="text-center p-4">
+                            <i class="fa-solid fa-heart text-6xl text-craftAmber mb-2"></i>
+                            <p class="font-handwrite text-xl text-gray-700">Vytvořeno s láskou a maximální péčí pro váš jedinečný moment</p>
                         </div>
                     </div>
-                    <h3 class="font-handwrite text-3xl font-bold text-amber-950">Svatební Stojánek / Insert</h3>
-                    <p class="text-xs text-gray-600 mt-1">Ručně očištěno & zkontrolováno</p>
+                    <h3 class="font-handwrite text-3xl font-bold text-amber-950">Vlastní Výtisk Na Míru</h3>
+                    <p class="text-xs text-gray-600 mt-1">Svatební doplňky, herní inserty i kancelář</p>
                 </div>
             </div>
 
-            <!-- Levá strana: Popis hlavního produktu -->
             <div class="order-2 md:order-1 space-y-6">
-                <span class="font-handwrite text-3xl text-craftGreenLight block">- Poctivý ruční výtisk -</span>
+                <span class="font-handwrite text-3xl text-craftAmberLight block">- Děláme věci ručně a s láskou -</span>
                 <h1 class="text-4xl md:text-5xl font-extrabold text-amber-100 leading-tight">
-                    Svatební & Kancelářský <span class="text-craftGreenLight">Organizér na Míru</span>
+                    Oživte své nápady <span class="text-craftAmberLight">s poctivým 3D tiskem</span>
                 </h1>
                 <p class="text-amber-200/80 text-sm leading-relaxed">
-                    Každý kus projde našima rukama. Od prvního vrstvení kukuřičného škrobu po finální ruční úpravu hran. Žádná pásová výroba, ale poctivý kus práce z naší domácí dílny.
+                    Zapomeňte na sterilní velkovýrobu. Každý kousek u nás prochází lidskýma rukama – od precizního nastavení tisku až po pečlivé ruční začištění a kontrolu. Vytváříme doplňky, které mají duši a přesně sednou do vašeho světa.
                 </p>
 
                 <div class="flex items-center gap-6 pt-2">
                     <div>
-                        <span class="text-xs text-amber-300/70 block uppercase tracking-wider">Cena od</span>
-                        <span class="text-3xl font-black text-craftGreenLight">350 Kč</span>
+                        <span class="text-xs text-amber-300/70 block uppercase tracking-wider">Cena materiálu od</span>
+                        <span class="text-3xl font-black text-craftAmberLight">220 Kč / kg</span>
                     </div>
-                    <a href="#slozeni" class="px-8 py-3.5 rounded-full bg-craftGreenLight text-woodDark font-extrabold hover:bg-white transition-all shadow-lg font-sans">
-                        Koupit / Poptat
+                    <a href="#objednat" class="px-8 py-3.5 rounded-full bg-craftAmberLight text-woodDark font-extrabold hover:bg-white transition-all shadow-lg font-sans">
+                        Chci vytvořit zakázku
                     </a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ANATOMIE / SLOŽENÍ (SVĚTLÁ PAPÍROVÁ SEKCE S BRUSH OKRAJEM) -->
+    <!-- ANATOMIE / SLOŽENÍ CENY -->
     <section id="slozeni" class="paper-texture text-amber-950 py-20 brush-border-top brush-border-bottom relative z-10">
         <div class="max-w-5xl mx-auto px-4">
             
             <div class="text-center max-w-xl mx-auto mb-16">
-                <span class="font-handwrite text-3xl text-craftGreen font-bold">Anatomie tisku</span>
-                <h2 class="text-3xl font-black uppercase tracking-wide text-amber-900 mt-1">Co všechno v sobě ukrývá?</h2>
-                <p class="text-sm text-gray-600 mt-2">Stejně jako u poctivého džemíku, i u našeho 3D tisku dbáme na čisté a kvalitní složení.</p>
+                <span class="font-handwrite text-3xl text-craftAmber font-bold">Transparentní řemeslo</span>
+                <h2 class="text-3xl font-black uppercase tracking-wide text-amber-900 mt-1">Z čeho se skládá naše práce?</h2>
+                <p class="text-sm text-gray-600 mt-2">Žádné skryté poplatky. Přesně víte, co platíte – od materiálu po poctivou ruční práci.</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                 
-                <!-- Informační tabulka / Složení -->
-                <div class="bg-white/80 p-8 rounded-2xl border-2 border-amber-900/10 shadow-md space-y-4">
-                    <h3 class="font-handwrite text-3xl font-bold border-b border-amber-900/10 pb-3 text-craftGreen">Specifikace Výtisku</h3>
+                <div class="bg-white/90 p-8 rounded-2xl border-2 border-amber-900/10 shadow-md space-y-4">
+                    <h3 class="font-handwrite text-3xl font-bold border-b border-amber-900/10 pb-3 text-craftAmber">Standardní hodnoty zakázky</h3>
                     
                     <div class="flex justify-between items-center py-2 border-b border-gray-100">
-                        <span class="text-sm font-semibold text-gray-700"><i class="fa-solid fa-leaf text-craftGreen mr-2"></i>Materiál</span>
-                        <span class="font-bold text-gray-900">Eko PLA (Bio-plast)</span>
+                        <span class="text-sm font-semibold text-gray-700"><i class="fa-solid fa-scale-balanced text-craftAmber mr-2"></i>Cena cívky materiálu</span>
+                        <span class="font-bold text-gray-900">220 Kč / kg</span>
                     </div>
                     <div class="flex justify-between items-center py-2 border-b border-gray-100">
-                        <span class="text-sm font-semibold text-gray-700"><i class="fa-solid fa-weight-hanging text-craftGreen mr-2"></i>Spotřeba vlákna</span>
-                        <span class="font-bold text-gray-900">140 gramů</span>
+                        <span class="text-sm font-semibold text-gray-700"><i class="fa-solid fa-clock text-craftAmber mr-2"></i>Doba tisku</span>
+                        <span class="font-bold text-gray-900">Dle modelu a složitosti</span>
                     </div>
                     <div class="flex justify-between items-center py-2 border-b border-gray-100">
-                        <span class="text-sm font-semibold text-gray-700"><i class="fa-solid fa-clock text-craftGreen mr-2"></i>Doba tisku</span>
-                        <span class="font-bold text-gray-900">6 hodin 20 minut</span>
-                    </div>
-                    <div class="flex justify-between items-center py-2 border-b border-gray-100">
-                        <span class="text-sm font-semibold text-gray-700"><i class="fa-solid fa-hands-holding text-craftGreen mr-2"></i>Ruční začčištění</span>
-                        <span class="font-bold text-gray-900">100% ruční péče</span>
+                        <span class="text-sm font-semibold text-gray-700"><i class="fa-solid fa-hands-holding-child text-craftAmber mr-2"></i>Ruční finiš a péče</span>
+                        <span class="font-bold text-gray-900">Zahrnuto v každém kuse</span>
                     </div>
 
                     <div class="pt-4 text-center">
-                        <a href="#pouziti" class="inline-block px-6 py-2.5 rounded-full bg-craftGreen text-white font-bold text-sm hover:bg-amber-900 transition-colors">
-                            Zjistit, k čemu se hodí
+                        <a href="#objednat" class="inline-block px-6 py-2.5 rounded-full bg-craftAmber text-white font-bold text-sm hover:bg-amber-900 transition-colors">
+                            Spustit kalkulačku zakázky
                         </a>
                     </div>
                 </div>
 
-                <!-- Vizuální rozpad (Ingredience / Díly) -->
-                <div class="relative flex flex-col items-center justify-center space-y-6">
+                <div class="relative flex flex-col items-center justify-center space-y-4">
                     <div class="font-handwrite text-2xl text-amber-800 -rotate-3 bg-amber-200/60 px-4 py-1 rounded-lg">
-                        <i class="fa-solid fa-arrow-down mr-1"></i> Z čeho se skládá cena 350 Kč:
+                        <i class="fa-solid fa-heart mr-1"></i> Co do každého výrobku vkládáme:
                     </div>
 
                     <div class="w-full space-y-3">
-                        <div class="bg-white p-4 rounded-xl border border-amber-900/10 shadow-sm flex items-center justify-between">
-                            <span class="text-xs font-bold text-gray-600">1. Kvalitní česká cívka (220 Kč/kg)</span>
-                            <span class="font-bold text-craftGreen">~31 Kč</span>
+                        <div class="bg-white p-4 rounded-xl border border-amber-900/10 shadow-sm flex items-center gap-4">
+                            <i class="fa-solid fa-check text-craftAmber text-xl"></i>
+                            <div>
+                                <h4 class="font-bold text-sm text-gray-900">Pečlivá kontrola kvality</h4>
+                                <p class="text-xs text-gray-600">Každý výtisk osobně zkontrolujeme před odesláním.</p>
+                            </div>
                         </div>
-                        <div class="bg-white p-4 rounded-xl border border-amber-900/10 shadow-sm flex items-center justify-between">
-                            <span class="text-xs font-bold text-gray-600">2. Elektřina & Opotřebení tiskárny</span>
-                            <span class="font-bold text-craftGreen">~25 Kč</span>
-                        </div>
-                        <div class="bg-white p-4 rounded-xl border border-amber-900/10 shadow-sm flex items-center justify-between">
-                            <span class="text-xs font-bold text-gray-600">3. Příprava modelu & Ruční finiš</span>
-                            <span class="font-bold text-craftGreen">~150 Kč</span>
+                        <div class="bg-white p-4 rounded-xl border border-amber-900/10 shadow-sm flex items-center gap-4">
+                            <i class="fa-solid fa-check text-craftAmber text-xl"></i>
+                            <div>
+                                <h4 class="font-bold text-sm text-gray-900">Individuální domluva</h4>
+                                <p class="text-xs text-gray-600">Poradíme s výběrem barev a přizpůsobíme detaily na přání.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -185,42 +174,47 @@
         </div>
     </section>
 
-    <!-- K ČEMU SE HODÍ (MAPA / POUŽITÍ S DŘEVĚNÝM POZADÍM) -->
+    <!-- K ČEMU SE HODÍ (SVATBY, OSLAVY, KANCELÁŘE, HERNÍ DOUPĚ) -->
     <section id="pouziti" class="py-24 text-amber-50 relative">
         <div class="max-w-5xl mx-auto px-4">
             
             <div class="text-center max-w-xl mx-auto mb-16">
-                <h2 class="font-handwrite text-4xl text-craftGreenLight font-bold">K čemu se hodí?</h2>
-                <p class="text-sm text-amber-200/80 mt-1">Jedinečný doplněk, který najde své místo na více místech.</p>
+                <h2 class="font-handwrite text-4xl text-craftAmberLight font-bold">Kde všude na nás narazíte?</h2>
+                <p class="text-sm text-amber-200/80 mt-1">Vyrábíme doplňky pro vaše významné chvíle i každodenní radosti.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 
-                <!-- Použití 1 -->
-                <div class="bg-amber-950/60 p-6 rounded-2xl border border-amber-800/40 text-center relative group hover:border-craftGreenLight transition-all">
-                    <div class="w-16 h-16 bg-craftGreen rounded-full flex items-center justify-center text-2xl mx-auto mb-4 text-white shadow-lg">
-                        <i class="fa-solid fa-heart"></i>
+                <div class="bg-amber-950/60 p-6 rounded-2xl border border-amber-800/40 text-center relative group hover:border-craftAmberLight transition-all">
+                    <div class="w-14 h-14 bg-craftAmber rounded-full flex items-center justify-center text-xl mx-auto mb-4 text-white shadow-lg">
+                        <i class="fa-solid fa-ring"></i>
                     </div>
-                    <h3 class="font-handwrite text-2xl font-bold text-amber-100 mb-2">Na Svatební Stůl</h3>
-                    <p class="text-xs text-amber-200/70 leading-relaxed">Jako elegantní stojánek na jmenovky, číslo stolu nebo svatební menu.</p>
+                    <h3 class="font-handwrite text-2xl font-bold text-amber-100 mb-1">Svatby & Oslavy</h3>
+                    <p class="text-xs text-amber-200/70 leading-relaxed">Zápichy do dortů, jmenovky, cedule a dárky pro hosty vytvořené s láskou pro váš den.</p>
                 </div>
 
-                <!-- Použití 2 -->
-                <div class="bg-amber-950/60 p-6 rounded-2xl border border-amber-800/40 text-center relative group hover:border-craftGreenLight transition-all">
-                    <div class="w-16 h-16 bg-craftGreen rounded-full flex items-center justify-center text-2xl mx-auto mb-4 text-white shadow-lg">
-                        <i class="fa-solid fa-gamepad"></i>
+                <div class="bg-amber-950/60 p-6 rounded-2xl border border-amber-800/40 text-center relative group hover:border-craftAmberLight transition-all">
+                    <div class="w-14 h-14 bg-craftAmber rounded-full flex items-center justify-center text-xl mx-auto mb-4 text-white shadow-lg">
+                        <i class="fa-solid fa-dice-d20"></i>
                     </div>
-                    <h3 class="font-handwrite text-2xl font-bold text-amber-100 mb-2">Pro Deskové Hry</h3>
-                    <p class="text-xs text-amber-200/70 leading-relaxed">Perfektní držák na karty, žetony a komponenty během vašeho herního večera.</p>
+                    <h3 class="font-handwrite text-2xl font-bold text-amber-100 mb-1">Herní Doupě</h3>
+                    <p class="text-xs text-amber-200/70 leading-relaxed">Inserty do deskových her, stojánky na karty, miniatury a vychytávky pro hráče.</p>
                 </div>
 
-                <!-- Použití 3 -->
-                <div class="bg-amber-950/60 p-6 rounded-2xl border border-amber-800/40 text-center relative group hover:border-craftGreenLight transition-all">
-                    <div class="w-16 h-16 bg-craftGreen rounded-full flex items-center justify-center text-2xl mx-auto mb-4 text-white shadow-lg">
-                        <i class="fa-solid fa-laptop"></i>
+                <div class="bg-amber-950/60 p-6 rounded-2xl border border-amber-800/40 text-center relative group hover:border-craftAmberLight transition-all">
+                    <div class="w-14 h-14 bg-craftAmber rounded-full flex items-center justify-center text-xl mx-auto mb-4 text-white shadow-lg">
+                        <i class="fa-solid fa-desktop"></i>
                     </div>
-                    <h3 class="font-handwrite text-2xl font-bold text-amber-100 mb-2">Do Kanceláře</h3>
-                    <p class="text-xs text-amber-200/70 leading-relaxed">Stojánek na mobil, vizitky nebo psací potřeby pro čistý a organizovaný stůl.</p>
+                    <h3 class="font-handwrite text-2xl font-bold text-amber-100 mb-1">Do Kanceláře</h3>
+                    <p class="text-xs text-amber-200/70 leading-relaxed">Stojánky na telefony, organizéry na stůl a stylové doplňky pro čistý pracovní prostor.</p>
+                </div>
+
+                <div class="bg-amber-950/60 p-6 rounded-2xl border border-amber-800/40 text-center relative group hover:border-craftAmberLight transition-all">
+                    <div class="w-14 h-14 bg-craftAmber rounded-full flex items-center justify-center text-xl mx-auto mb-4 text-white shadow-lg">
+                        <i class="fa-solid fa-gift"></i>
+                    </div>
+                    <h3 class="font-handwrite text-2xl font-bold text-amber-100 mb-1">Vlastní Návrhy</h3>
+                    <p class="text-xs text-amber-200/70 leading-relaxed">Máte vlastní model nebo nápad? Rádi ho s vámi zkonzultujeme a vytiskneme.</p>
                 </div>
 
             </div>
@@ -228,41 +222,74 @@
         </div>
     </section>
 
-    <!-- DALŠÍ PRODUKTY (SVĚTLÁ KOLEKCE DÍLNY) -->
-    <section id="dalsi" class="paper-texture text-amber-950 py-20 brush-border-top relative z-10">
-        <div class="max-w-5xl mx-auto px-4">
+    <!-- INTERAKTIVNÍ KALKULAČKA & OBJEDNÁVKOVÝ SYSTÉM -->
+    <section id="objednat" class="paper-texture text-amber-950 py-20 brush-border-top relative z-10">
+        <div class="max-w-3xl mx-auto px-4">
             
-            <div class="text-center max-w-xl mx-auto mb-16">
-                <span class="font-handwrite text-3xl text-craftGreen font-bold">Různá ztvárnění</span>
-                <h2 class="text-3xl font-black uppercase tracking-wide text-amber-900 mt-1">Další výtvory z naší dílny</h2>
+            <div class="text-center max-w-xl mx-auto mb-12">
+                <span class="font-handwrite text-3xl text-craftAmber font-bold">Interaktivní systém</span>
+                <h2 class="text-3xl font-black uppercase tracking-wide text-amber-900 mt-1">Spočítat cenu a odeslat poptávku</h2>
+                <p class="text-sm text-gray-600 mt-2">Zvolte parametry svého výrobku a odešlete nám nezávaznou poptávku přímo z této stránky.</p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+            <div class="bg-white p-8 sm:p-10 rounded-3xl border-2 border-amber-900/10 shadow-xl space-y-6">
                 
-                <!-- Produkt A -->
-                <div class="bg-white p-6 rounded-3xl border border-amber-900/10 shadow-lg flex flex-col items-center text-center">
-                    <div class="w-full h-48 bg-craftGreen/10 rounded-2xl flex items-center justify-center mb-4">
-                        <i class="fa-solid fa-chess-knight text-5xl text-craftGreen"></i>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">Kategorie výrobku</label>
+                        <select id="order-category" class="w-full bg-amber-50 border border-amber-900/20 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-craftAmber">
+                            <option value="Svatba / Oslava">💍 Svatba / Oslava (zápichy, jmenovky)</option>
+                            <option value="Herní doupě / Deskovky">🎲 Herní doupě / Deskovky (inserty, stojánky)</option>
+                            <option value="Kancelář / Stůl">🖥️ Kancelář / Stůl (organizéry, stojánky)</option>
+                            <option value="Zakázkový tisk na přání">🛠️ Zakázkový tisk na přání</option>
+                        </select>
                     </div>
-                    <h3 class="font-handwrite text-3xl font-bold text-amber-900">Fantasy Doplňky & Terény</h3>
-                    <p class="text-xs text-gray-600 mt-1 mb-4">Miniatury a kostky pro TTRPG hry a fanoušky fantasy.</p>
-                    <button onclick="alert('Otevřít nabídku na Etsy!')" class="px-6 py-2 rounded-full bg-craftGreen text-white font-bold text-xs uppercase tracking-wider hover:bg-craftGreenLight transition-all">
-                        Detail Nabídky
-                    </button>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">Materiál</label>
+                        <select id="order-material" class="w-full bg-amber-50 border border-amber-900/20 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-craftAmber">
+                            <option value="1">Standardní pevný plast (Cívka 220 Kč/kg)</option>
+                            <option value="1.25">Odolnější PETG (zvýšená pevnost)</option>
+                            <option value="1.5">Detailní Resin / Pryskyřice</option>
+                        </select>
+                    </div>
                 </div>
 
-                <!-- Produkt B -->
-                <div class="bg-white p-6 rounded-3xl border border-amber-900/10 shadow-lg flex flex-col items-center text-center">
-                    <div class="w-full h-48 bg-amber-800/10 rounded-2xl flex items-center justify-center mb-4">
-                        <i class="fa-solid fa-pen-ruler text-5xl text-amber-800"></i>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">Orientační hmotnost: <span id="calc-weight-val" class="text-craftAmber font-bold">100g</span></label>
+                        <input type="range" id="calc-weight" min="20" max="800" step="10" value="100" class="w-full accent-craftAmber bg-amber-100 rounded-lg h-2 cursor-pointer">
                     </div>
-                    <h3 class="font-handwrite text-3xl font-bold text-amber-900">Zakázkový 3D Tisk</h3>
-                    <p class="text-xs text-gray-600 mt-1 mb-4">Máte vlastní nápad nebo model? Rádi vám ho vytiskneme.</p>
-                    <button onclick="alert('Napište nám pro nezávaznou kalkulaci!')" class="px-6 py-2 rounded-full bg-amber-800 text-white font-bold text-xs uppercase tracking-wider hover:bg-amber-900 transition-all">
-                        Poptat Zakázku
-                    </button>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">Předpokládaný čas tisku: <span id="calc-time-val" class="text-craftAmber font-bold">4h</span></label>
+                        <input type="range" id="calc-time" min="1" max="30" step="1" value="4" class="w-full accent-craftAmber bg-amber-100 rounded-lg h-2 cursor-pointer">
+                    </div>
                 </div>
 
+                <div class="border-t border-b border-amber-900/10 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div>
+                        <span class="text-xs text-gray-500 uppercase tracking-wider block">Orientační odhad ceny</span>
+                        <div id="calc-total-price" class="text-3xl font-black text-craftAmber">280 Kč</div>
+                    </div>
+                    <div class="text-xs text-gray-500 text-center sm:text-right max-w-xs">
+                        Zahrnuje materiál (220 Kč/kg), energii, přípravu a ruční začištění z naší dílny.
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">Vaše jméno nebo e-mail pro odpověď</label>
+                        <input type="text" id="order-contact" placeholder="např. jan.novak@email.cz" class="w-full bg-amber-50 border border-amber-900/20 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-craftAmber">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">Poznámka k zakázce (popis, barva, rozměr)</label>
+                        <textarea id="order-note" rows="3" placeholder="Popište nám, co byste rádi vytvořili..." class="w-full bg-amber-50 border border-amber-900/20 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-craftAmber"></textarea>
+                    </div>
+                </div>
+
+                <button onclick="submitOrder()" class="w-full py-4 rounded-xl bg-craftAmber hover:bg-amber-900 text-white font-extrabold shadow-lg transition-all text-base flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Odeslat nezávaznou poptávku
+                </button>
             </div>
 
         </div>
@@ -271,10 +298,56 @@
     <!-- PATIČKA -->
     <footer class="wood-texture border-t border-amber-900/40 py-10 text-center text-amber-300/60 text-xs">
         <div class="max-w-5xl mx-auto px-4 space-y-3">
-            <p class="font-handwrite text-2xl text-amber-100">Vyrobeno s láskou k 3D tisku v naší domácí dílně</p>
-            <p>© 2026 Poctivá 3D Dílna • Všechna práva vyhrazena</p>
+            <p class="font-handwrite text-2xl text-amber-100">Vyrobeno ručně a s láskou v naší 3D dílně</p>
+            <p>© 2026 3D Poctivá Dílna • Všechna práva vyhrazena</p>
         </div>
     </footer>
 
+    <!-- SCRIPT PRO KALKULAČKU A ODEŠLÁNÍ -->
+    <script>
+        const weightInput = document.getElementById('calc-weight');
+        const weightVal = document.getElementById('calc-weight-val');
+        const timeInput = document.getElementById('calc-time');
+        const timeVal = document.getElementById('calc-time-val');
+        const materialSelect = document.getElementById('order-material');
+        const totalPriceEl = document.getElementById('calc-total-price');
+
+        function updateCalculator() {
+            const w = parseInt(weightInput.value);
+            const t = parseInt(timeInput.value);
+            const mat = parseFloat(materialSelect.value);
+
+            weightVal.textContent = w + 'g';
+            timeVal.textContent = t + 'h';
+
+            // Výpočet zohledňující 220 Kč/kg (0.22 Kč/g)
+            let price = ((w * 0.22) + (t * 6)) * mat + 50;
+            totalPriceEl.textContent = Math.round(price) + ' Kč';
+        }
+
+        weightInput.addEventListener('input', updateCalculator);
+        timeInput.addEventListener('input', updateCalculator);
+        materialSelect.addEventListener('change', updateCalculator);
+        updateCalculator();
+
+        function submitOrder() {
+            const contact = document.getElementById('order-contact').value.trim();
+            const note = document.getElementById('order-note').value.trim();
+            const category = document.getElementById('order-category').value;
+            const price = totalPriceEl.textContent;
+
+            if (!contact) {
+                alert('Prosím zadejte váš e-mail nebo jméno, abychom vám mohli odpovědět.');
+                return;
+            }
+
+            const orderId = '3D-' + Math.floor(1000 + Math.random() * 9000);
+            alert(`Děkujeme za vaši poptávku!\n\nID zakázky: ${orderId}\nKategorie: ${category}\nOdhadovaná cena: ${price}\n\nVaše poptávka byla úspěšně připravena k odeslání do naší dílny. Brzy se vám ozveme!`);
+            
+            // Vyčištění formuláře
+            document.getElementById('order-contact').value = '';
+            document.getElementById('order-note').value = '';
+        }
+    </script>
 </body>
 </html>
