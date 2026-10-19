@@ -70,7 +70,7 @@
         </div>
     </nav>
 
-    <!-- HERO SEKCE (HNĚDÁ DŘEVĚNÁ) -->
+    <!-- HERO SEKCE -->
     <section class="relative pt-12 pb-24 text-amber-50">
         <div class="max-w-5xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             
@@ -111,7 +111,7 @@
         </div>
     </section>
 
-    <!-- DETAILNÍ PŘEHLED (PAPÍROVÁ SEKCE) -->
+    <!-- DETAILNÍ PŘEHLED -->
     <section id="sluzby" class="paper-texture text-amber-950 py-20 brush-border-top brush-border-bottom relative z-10">
         <div class="max-w-5xl mx-auto px-4">
             
@@ -164,7 +164,7 @@
         </div>
     </section>
 
-    <!-- HLAVNÍ HNĚDÁ SEKCE PRO AKCE (SVATBY, PLESY, OSLAVY) -->
+    <!-- HLAVNÍ HNĚDÁ SEKCE PRO AKCE -->
     <section id="akce" class="wood-texture py-24 text-amber-50 relative">
         <div class="max-w-5xl mx-auto px-4">
             
@@ -205,7 +205,7 @@
         </div>
     </section>
 
-    <!-- OBJEDNÁVKOVÝ SYSTÉM (PAPÍROVÁ SEKCE) -->
+    <!-- OBJEDNÁVKOVÝ SYSTÉM -->
     <section id="objednat" class="paper-texture text-amber-950 py-20 brush-border-top relative z-10">
         <div class="max-w-3xl mx-auto px-4">
             
@@ -306,7 +306,7 @@
                         <div id="total-price" class="text-3xl font-black text-craftAmber">280 Kč</div>
                     </div>
                     <div id="price-note" class="text-xs text-gray-500 text-center sm:text-right max-w-xs">
-                        Zahrnuje materiál (220 Kč/kg), energii, přípravu a ruční začištění z naší dílny.
+                        Zahrnuje materiál (220 Kč/kg), strojový čas, začištění a vybranou úpravu.
                     </div>
                 </div>
 
@@ -330,7 +330,7 @@
         </div>
     </section>
 
-    <!-- PATIČKA (HNĚDÁ DŘEVĚNÁ) -->
+    <!-- PATIČKA -->
     <footer class="wood-texture border-t border-amber-900/40 py-10 text-center text-amber-300/60 text-xs">
         <div class="max-w-5xl mx-auto px-4 space-y-3">
             <p class="font-handwrite text-2xl text-amber-100">Vyrobeno ručně a s láskou v naší 3D & Cricut dílně</p>
@@ -381,14 +381,18 @@
                 const w = parseInt(wInput.value);
                 wVal.textContent = w + 'g';
 
-                let basePrice = (w * 0.22) + 60;
+                // Odhad hodin tisku dle hmotnosti (cca 25g/hod)
+                const estimatedHours = Math.max(2, Math.round(w / 25));
 
-                if (type3d.value.includes('Vícebarevný')) basePrice += 80;
-                if (type3d.value.includes('Skládací')) basePrice += 50;
-                if (paint3d.value.includes('Ruční malování')) basePrice += 250;
+                // Výpočet: Materiál (0.22 Kč/g) + Strojový čas a elektřina (20 Kč/h) + Základní režie (80 Kč)
+                let basePrice = (w * 0.22) + (estimatedHours * 20) + 80;
+
+                if (type3d.value.includes('Vícebarevný')) basePrice += 120;
+                if (type3d.value.includes('Skládací')) basePrice += 60;
+                if (paint3d.value.includes('Ruční malování')) basePrice += 350;
 
                 totalPriceEl.textContent = Math.round(basePrice) + ' Kč';
-                priceNoteEl.textContent = "Zahrnuje materiál (220 Kč/kg), energii, začištění a vybranou úpravu.";
+                priceNoteEl.textContent = "Zahrnuje materiál (220 Kč/kg), strojový čas, začištění a vybranou úpravu.";
             } else {
                 const qty = parseInt(qtyInput.value);
                 qtyVal.textContent = qty + ' ks/sad';
