@@ -224,33 +224,42 @@
         // --- ZPRACOVÁNÍ 3MF (ZIP ARCHIV) ---
         async function zpracovat3MF(file) {
             const zip = await JSZip.loadAsync(file);
-            let modelFile = zip.file("3D/3dmodel.model");
+            let modelFile = null;
             
-            // Záloha pro případ, že slicer uložil XML pod jiným názvem
-            if (!modelFile) {
-                const files = Object.keys(zip.files);
-                const match = files.find(f => f.toLowerCase() === "3d/3dmodel.model");
-                if (match) modelFile = zip.file(match);
+            // 1. Bezpečné hledání .model souboru (ignoruje velikost písmen a složky)
+            for (const filename of Object.keys(zip.files)) {
+                if (filename.toLowerCase().endsWith('.model')) {
+                    modelFile = zip.file(filename);
+                    break;
+                }
             }
-            if (!modelFile) throw new Error("Soubor 3dmodel.model nebyl v 3MF nalezen.");
+            
+            if (!modelFile) throw new Error("Soubor s modelem nebyl v 3MF archivu nalezen.");
 
             const xmlString = await modelFile.async("string");
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(xmlString, "text/xml");
             
-            const objects = xmlDoc.getElementsByTagName("object");
+            // 2. Pomocná funkce pro bezpečné čtení XML tagů (obchází jmenné prostory Slicerů)
+            function getTags(node, tag) {
+                let els = node.getElementsByTagNameNS("*", tag);
+                if (els.length === 0) els = node.getElementsByTagName(tag);
+                return els;
+            }
+
+            const objects = getTags(xmlDoc, "object");
             let totalVolume = 0;
 
             for (let i = 0; i < objects.length; i++) {
-                const meshNodes = objects[i].getElementsByTagName("mesh");
+                const meshNodes = getTags(objects[i], "mesh");
                 if (meshNodes.length === 0) continue;
                 const mesh = meshNodes[0];
 
-                const verticesNode = mesh.getElementsByTagName("vertices")[0];
-                const trianglesNode = mesh.getElementsByTagName("triangles")[0];
+                const verticesNode = getTags(mesh, "vertices")[0];
+                const trianglesNode = getTags(mesh, "triangles")[0];
                 if (!verticesNode || !trianglesNode) continue;
 
-                const vNodes = verticesNode.getElementsByTagName("vertex");
+                const vNodes = getTags(verticesNode, "vertex");
                 const vertices = [];
                 for (let j = 0; j < vNodes.length; j++) {
                     vertices.push({
@@ -260,7 +269,7 @@
                     });
                 }
 
-                const tNodes = trianglesNode.getElementsByTagName("triangle");
+                const tNodes = getTags(trianglesNode, "triangle");
                 let volume = 0;
                 for (let j = 0; j < tNodes.length; j++) {
                     const v1Idx = parseInt(tNodes[j].getAttribute("v1"));
@@ -271,8 +280,12 @@
                     const p2 = vertices[v2Idx];
                     const p3 = vertices[v3Idx];
 
-                    const v321 = p3.x * p2.y * p1.z; const v231 = p2.x * p3.y * p1.z; const v312 = p3.x * p1.y * p2.z;
-                    const v132 = p1.x * p3.y * p2.z; const v213 = p2.x * p1.y * p3.z; const v123 = p1.x * p2.y * p3.z;
+                    const v321 = p3.x * p2.y * p1.z; 
+                    const v231 = p2.x * p3.y * p1.z; 
+                    const v312 = p3.x * p1.y * p2.z;
+                    const v132 = p1.x * p3.y * p2.z; 
+                    const v213 = p2.x * p1.y * p3.z; 
+                    const v123 = p1.x * p2.y * p3.z;
                     volume += (1.0 / 6.0) * (-v321 + v231 + v312 - v132 - v213 + v123);
                 }
                 totalVolume += Math.abs(volume) / 1000;
