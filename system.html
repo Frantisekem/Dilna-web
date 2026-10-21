@@ -30,7 +30,7 @@
     </div>
 
     <!-- BOČNÍ MENU -->
-    <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
+    <aside class="w-64 bg-white border-r border-gray-200 flex flex-col z-10">
         <div class="p-6 border-b border-gray-200">
             <h1 class="text-xl font-bold text-gray-800">Moje Dílna</h1>
         </div>
@@ -56,18 +56,93 @@
 
     <main id="hlavni-obsah" class="flex-1 overflow-y-auto p-8 opacity-0 transition-opacity duration-300">
         
-        <!-- PŘEHLED -->
+        <!-- PŘEHLED (NÁSTĚNKA) -->
         <section id="prehled" class="tab-content active">
-            <h2 class="text-2xl font-bold mb-6">Dnešní přehled</h2>
+            <h2 class="text-2xl font-bold mb-6">Ranní přehled</h2>
+            
+            <!-- Hlavní statistiky -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="bg-white p-6 rounded-xl border shadow-sm"><h3 class="text-gray-500 text-sm font-medium">Aktivní zakázky</h3><p class="text-3xl font-bold text-blue-600 mt-2" id="stat-aktivni">0</p></div>
-                <div class="bg-white p-6 rounded-xl border shadow-sm"><h3 class="text-gray-500 text-sm font-medium">K odeslání (Zabaleno)</h3><p class="text-3xl font-bold text-green-600 mt-2" id="stat-odeslani">0</p></div>
-                <div class="bg-white p-6 rounded-xl border shadow-sm"><h3 class="text-gray-500 text-sm font-medium">Finanční bilance</h3><p class="text-3xl font-bold text-gray-800 mt-2" id="stat-finance">0 Kč</p></div>
-                <div class="bg-white p-6 rounded-xl border-red-200 shadow-sm bg-red-50"><h3 class="text-red-600 text-sm font-medium">Docházející materiál</h3><p class="text-xl font-bold text-red-700 mt-2" id="stat-sklad">0 položek</p></div>
+                <div class="bg-white p-6 rounded-xl border shadow-sm">
+                    <h3 class="text-gray-500 text-sm font-medium">Aktivní zakázky</h3>
+                    <p class="text-3xl font-bold text-blue-600 mt-2" id="stat-aktivni">0</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl border shadow-sm">
+                    <h3 class="text-gray-500 text-sm font-medium">K odeslání</h3>
+                    <p class="text-3xl font-bold text-green-600 mt-2" id="stat-odeslani">0</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl border shadow-sm">
+                    <h3 class="text-gray-500 text-sm font-medium">Finanční bilance</h3>
+                    <p class="text-3xl font-bold text-gray-800 mt-2" id="stat-finance">0 Kč</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl border-red-200 shadow-sm bg-red-50">
+                    <h3 class="text-red-600 text-sm font-medium">Docházející materiál (< 200g)</h3>
+                    <p class="text-xl font-bold text-red-700 mt-2" id="stat-sklad">0 položek</p>
+                </div>
             </div>
-            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-                <h3 class="text-lg font-bold mb-4">Upozornění ze skladu:</h3>
-                <ul id="low-stock-list" class="space-y-2 text-sm text-gray-600"></ul>
+            
+            <!-- Detaily k řešení (Grid 3 sloupců) -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Sklad -->
+                <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col">
+                    <h3 class="text-lg font-bold mb-4 text-red-600 border-b pb-2">⚠️ Upozornění ze skladu</h3>
+                    <ul id="low-stock-list" class="space-y-2 text-sm text-gray-600 flex-1 overflow-y-auto max-h-48"></ul>
+                </div>
+                
+                <!-- Blížící se termíny -->
+                <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col">
+                    <h3 class="text-lg font-bold mb-4 text-orange-600 border-b pb-2">⏳ Hořící termíny (do 4 dnů)</h3>
+                    <ul id="urgent-orders-list" class="space-y-3 text-sm text-gray-800 flex-1 overflow-y-auto max-h-48">
+                        <li class="text-gray-400 italic">Načítám...</li>
+                    </ul>
+                </div>
+
+                <!-- K odeslání -->
+                <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col">
+                    <h3 class="text-lg font-bold mb-4 text-green-600 border-b pb-2">📦 Čeká na zabalení/odeslání</h3>
+                    <ul id="ready-orders-list" class="space-y-3 text-sm text-gray-800 flex-1 overflow-y-auto max-h-48">
+                        <li class="text-gray-400 italic">Načítám...</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- TO-DO LISTY -->
+            <h2 class="text-2xl font-bold mb-6 mt-10">Úkoly a To-Do</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <!-- 3D Tisk To-Do -->
+                <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col">
+                    <h3 class="text-lg font-bold mb-4 text-blue-600 border-b pb-2">🖨️ 3D Tisk (Výroba)</h3>
+                    <ul id="todo-3dtisk" class="space-y-2 mb-4 flex-1 overflow-y-auto min-h-[150px] max-h-60">
+                        <li class="text-gray-400 italic text-xs">Načítám...</li>
+                    </ul>
+                    <form onsubmit="pridatTodo(event, '3D tisk', 'input-todo-3d')" class="flex gap-2 mt-auto pt-4 border-t border-gray-100">
+                        <input type="text" id="input-todo-3d" placeholder="Nový úkol pro tisk..." class="flex-1 border p-2 rounded-lg text-sm bg-gray-50 focus:border-blue-500 outline-none" required>
+                        <button type="submit" class="bg-blue-600 text-white px-3 py-2 rounded-lg font-bold">+</button>
+                    </form>
+                </div>
+
+                <!-- Cricut To-Do -->
+                <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col">
+                    <h3 class="text-lg font-bold mb-4 text-pink-600 border-b pb-2">✂️ Cricut (Plotr)</h3>
+                    <ul id="todo-cricut" class="space-y-2 mb-4 flex-1 overflow-y-auto min-h-[150px] max-h-60">
+                        <li class="text-gray-400 italic text-xs">Načítám...</li>
+                    </ul>
+                    <form onsubmit="pridatTodo(event, 'Cricut', 'input-todo-cricut')" class="flex gap-2 mt-auto pt-4 border-t border-gray-100">
+                        <input type="text" id="input-todo-cricut" placeholder="Nový úkol pro Cricut..." class="flex-1 border p-2 rounded-lg text-sm bg-gray-50 focus:border-pink-500 outline-none" required>
+                        <button type="submit" class="bg-pink-600 text-white px-3 py-2 rounded-lg font-bold">+</button>
+                    </form>
+                </div>
+
+                <!-- Dílna To-Do -->
+                <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col">
+                    <h3 class="text-lg font-bold mb-4 text-emerald-600 border-b pb-2">🛠️ Naše Dílna (Obecné)</h3>
+                    <ul id="todo-dilna" class="space-y-2 mb-4 flex-1 overflow-y-auto min-h-[150px] max-h-60">
+                        <li class="text-gray-400 italic text-xs">Načítám...</li>
+                    </ul>
+                    <form onsubmit="pridatTodo(event, 'Dílna', 'input-todo-dilna')" class="flex gap-2 mt-auto pt-4 border-t border-gray-100">
+                        <input type="text" id="input-todo-dilna" placeholder="Nový úkol do dílny..." class="flex-1 border p-2 rounded-lg text-sm bg-gray-50 focus:border-emerald-500 outline-none" required>
+                        <button type="submit" class="bg-emerald-600 text-white px-3 py-2 rounded-lg font-bold">+</button>
+                    </form>
+                </div>
             </div>
         </section>
 
@@ -179,7 +254,7 @@
                 <form id="form-sklad" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                     <div class="md:col-span-2"><label class="block text-sm mb-1">Název materiálu (např. Černé PLA)</label><input type="text" id="s-nazev" class="w-full border p-2 rounded-lg" required></div>
                     <div><label class="block text-sm mb-1">Dodavatel</label><input type="text" id="s-dodavatel" class="w-full border p-2 rounded-lg"></div>
-                    <div><label class="block text-sm mb-1 font-bold text-blue-600">Počet (ks nebo GRAMY)</label><input type="number" id="s-pocet" class="w-full border p-2 rounded-lg border-blue-400" required></div>
+                    <div><label class="block text-sm mb-1 font-bold text-blue-600">Počet (v gramech)</label><input type="number" id="s-pocet" class="w-full border p-2 rounded-lg border-blue-400" required></div>
                     <div class="md:col-span-4"><button type="submit" class="bg-gray-800 text-white px-6 py-2 rounded-lg">Přidat na sklad</button></div>
                 </form>
             </div>
@@ -289,6 +364,52 @@
             const app = initializeApp(firebaseConfig);
             const db = getFirestore(app);
 
+            // TODO LISTY (3D Tisk, Cricut, Dílna)
+            window.pridatTodo = async function(e, kategorie, inputId) {
+                e.preventDefault();
+                const textEl = document.getElementById(inputId);
+                if(!textEl.value) return;
+                await addDoc(collection(db, "todo"), { text: textEl.value, kategorie: kategorie, hotovo: false, vytvoreno: new Date().getTime() });
+                textEl.value = '';
+            };
+            window.toggleTodo = async function(id, aktualniStav) {
+                await updateDoc(doc(db, "todo", id), { hotovo: !aktualniStav });
+            };
+            window.smazatTodo = async function(id) {
+                await deleteDoc(doc(db, "todo", id));
+            };
+
+            onSnapshot(collection(db, "todo"), (snapshot) => {
+                let html3D = '', htmlCricut = '', htmlDilna = '';
+                let todoArray = [];
+                snapshot.forEach(docSnap => todoArray.push({id: docSnap.id, ...docSnap.data()}));
+                
+                // Řazení: Nejdřív nehotové (od nejnovějších), pak hotové
+                todoArray.sort((a,b) => {
+                    if (a.hotovo === b.hotovo) return (a.vytvoreno || 0) - (b.vytvoreno || 0);
+                    return a.hotovo ? 1 : -1;
+                });
+
+                todoArray.forEach(t => {
+                    const textStyle = t.hotovo ? 'line-through text-gray-400' : 'text-gray-800 font-medium';
+                    const checkIcon = t.hotovo ? '☑️' : '🔲';
+                    const row = `
+                        <li class="flex items-start gap-2 text-sm group p-1 hover:bg-gray-50 rounded">
+                            <button onclick="toggleTodo('${t.id}', ${t.hotovo})" class="mt-0.5 opacity-80 hover:opacity-100">${checkIcon}</button>
+                            <span class="flex-1 ${textStyle}">${t.text}</span>
+                            <button onclick="smazatTodo('${t.id}')" class="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition px-2 font-bold">X</button>
+                        </li>
+                    `;
+                    if(t.kategorie === '3D tisk') html3D += row;
+                    else if(t.kategorie === 'Cricut') htmlCricut += row;
+                    else if(t.kategorie === 'Dílna') htmlDilna += row;
+                });
+
+                if(document.getElementById('todo-3dtisk')) document.getElementById('todo-3dtisk').innerHTML = html3D || '<li class="text-gray-400 italic text-xs">Vše hotovo.</li>';
+                if(document.getElementById('todo-cricut')) document.getElementById('todo-cricut').innerHTML = htmlCricut || '<li class="text-gray-400 italic text-xs">Vše hotovo.</li>';
+                if(document.getElementById('todo-dilna')) document.getElementById('todo-dilna').innerHTML = htmlDilna || '<li class="text-gray-400 italic text-xs">Vše hotovo.</li>';
+            });
+
             // KLIENTI
             document.getElementById('form-klienti').addEventListener('submit', async (e) => { e.preventDefault(); await addDoc(collection(db, "klienti"), { jmeno: document.getElementById('k-jmeno').value, kontakt: document.getElementById('k-kontakt').value, telefon: document.getElementById('k-telefon').value, poznamka: document.getElementById('k-poznamka').value }); e.target.reset(); });
             window.smazatK = async (id) => { if(confirm('Smazat klienta?')) await deleteDoc(doc(db, "klienti", id)); };
@@ -378,6 +499,11 @@
                 const stavyVyroby = { '3D tisk': ['Přijato','Příprava 3D modelu','Tisk','Nabarveno','Zabaleno','Odesláno'], 'Cricut': ['Přijato','Příprava grafiky','Řezání/Tisk','Zabaleno','Odesláno'] }; 
                 vsechnyZakazkyRaw = {}; 
                 
+                let urgentHTML = '';
+                let readyHTML = '';
+                const dnes = new Date();
+                dnes.setHours(0,0,0,0);
+                
                 snapshot.forEach(docSnap => { 
                     const z = docSnap.data(); const id = docSnap.id; const typ = z.typ || '3D tisk'; 
                     vsechnyZakazkyRaw[id] = z; 
@@ -399,7 +525,26 @@
                     if(z.stav === 'Odesláno') { 
                         archivHTML += rowHtml; 
                     } else { 
-                        zHTML += rowHtml; aktivni++; if(z.stav === 'Zabaleno') kOdeslani++; 
+                        zHTML += rowHtml; aktivni++; 
+                        
+                        // Zpracování Nástěnky: K Odeslání
+                        if(z.stav === 'Zabaleno' || z.stav === 'Hotovo') { 
+                            kOdeslani++; 
+                            readyHTML += `<li class="p-3 bg-green-50 rounded-lg border border-green-100 flex justify-between items-center shadow-sm"><div><strong class="text-green-800">${z.zakaznik}</strong><br><span class="text-xs text-green-600">${z.kategorie || z.typ}</span></div><button onclick="switchTab('zakazky')" class="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-md transition font-bold">Vyřídit</button></li>`;
+                        }
+
+                        // Zpracování Nástěnky: Blížící se termíny
+                        if(z.termin && z.stav !== 'Zabaleno' && z.stav !== 'Hotovo') {
+                            const terminDatum = new Date(z.termin);
+                            const rozdilDni = Math.ceil((terminDatum - dnes) / (1000 * 60 * 60 * 24));
+                            
+                            if(rozdilDni <= 4) { 
+                                let barvaTextu = rozdilDni < 0 ? 'text-red-600' : (rozdilDni === 0 ? 'text-orange-600' : 'text-gray-500');
+                                let textDni = rozdilDni < 0 ? `Zpožděno (${Math.abs(rozdilDni)} d)` : (rozdilDni === 0 ? 'Dnes!' : `Za ${rozdilDni} dny`);
+                                urgentHTML += `<li class="p-3 bg-white rounded-lg border border-gray-200 shadow-sm flex justify-between items-center"><div><strong class="text-gray-800">${z.zakaznik}</strong><br><span class="text-xs font-bold ${barvaTextu}">${textDni}</span></div><button onclick="switchTab('zakazky')" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 border px-3 py-1.5 rounded-md transition font-bold">Detail</button></li>`;
+                            }
+                        }
+                        
                         ucelOptions += `<option value="Zakázka: ${z.zakaznik}">Zakázka: ${z.zakaznik}</option>`;
                     } 
                 }); 
@@ -407,8 +552,11 @@
                 if(document.getElementById('list-archiv')) document.getElementById('list-archiv').innerHTML = archivHTML; 
                 if(document.getElementById('stat-aktivni')) document.getElementById('stat-aktivni').innerText = aktivni; 
                 if(document.getElementById('stat-odeslani')) document.getElementById('stat-odeslani').innerText = kOdeslani; 
-                
                 if(document.getElementById('zt-ucel')) document.getElementById('zt-ucel').innerHTML = ucelOptions;
+                
+                // Aktualizace seznamů na nástěnce
+                if(document.getElementById('urgent-orders-list')) document.getElementById('urgent-orders-list').innerHTML = urgentHTML || '<li class="text-gray-400 italic">Všechny termíny mají dostatečnou rezervu.</li>';
+                if(document.getElementById('ready-orders-list')) document.getElementById('ready-orders-list').innerHTML = readyHTML || '<li class="text-gray-400 italic">Zatím nic nečeká na odeslání.</li>';
             });
 
             // SKLAD & ROLETKA MATERIÁLU
@@ -418,17 +566,17 @@
                 let sHTML = '', varovaniHTML = ''; let maloSkladem = 0; let materialOptions = '<option value="">-- Vyberte materiál --</option>'; 
                 snapshot.forEach(docSnap => { 
                     const s = docSnap.data(); const id = docSnap.id; const isMalo = s.pocet < 200; 
-                    if(isMalo) { maloSkladem++; varovaniHTML += `<li>⚠️ ${s.nazev} (zbývá ${s.pocet})</li>`; } 
+                    if(isMalo) { maloSkladem++; varovaniHTML += `<li class="border-b border-gray-100 pb-1">⚠️ <strong>${s.nazev}</strong><br><span class="text-xs text-gray-500">Zbývá: ${s.pocet}g (Od: ${s.dodavatel})</span></li>`; } 
                     sHTML += `<div class="bg-white p-4 border rounded-xl flex justify-between items-center"><div><div class="font-bold">${s.nazev}</div><div class="text-xs">Stav: <span class="${isMalo ? 'text-red-600 font-bold' : ''}">${s.pocet}</span> (Od: ${s.dodavatel})</div></div><div class="flex"><button onclick="zmenitPocet('${id}', ${s.pocet}, -100)" class="px-2 bg-gray-200 mx-1 rounded hover:bg-gray-300">-100</button><button onclick="zmenitPocet('${id}', ${s.pocet}, 100)" class="px-2 bg-gray-200 mx-1 rounded hover:bg-gray-300">+100</button><button onclick="smazatS('${id}')" class="text-red-400 ml-2 font-bold hover:text-red-600">X</button></div></div>`; 
                     materialOptions += `<option value="${id}">${s.nazev} (Zbytků: ${s.pocet})</option>`; 
                 }); 
                 if(document.getElementById('list-sklad')) document.getElementById('list-sklad').innerHTML = sHTML; 
                 if(document.getElementById('stat-sklad')) document.getElementById('stat-sklad').innerText = maloSkladem + ' položek'; 
-                if(document.getElementById('low-stock-list')) document.getElementById('low-stock-list').innerHTML = maloSkladem > 0 ? varovaniHTML : '<li class="text-green-600">Sklad je v pořádku.</li>'; 
+                if(document.getElementById('low-stock-list')) document.getElementById('low-stock-list').innerHTML = maloSkladem > 0 ? varovaniHTML : '<li class="text-green-600 font-bold">Materiálu je dostatek.</li>'; 
                 if(document.getElementById('zt-material')) document.getElementById('zt-material').innerHTML = materialOptions; 
             });
 
-            // ZÁZNAMY TISKU (NOVĚ S ÚČELEM)
+            // ZÁZNAMY TISKU
             document.getElementById('form-zaznam').addEventListener('submit', async (e) => { 
                 e.preventDefault(); 
                 const materialId = document.getElementById('zt-material').value; 
