@@ -10,82 +10,110 @@
         body { font-family: 'Inter', sans-serif; }
         .modal { transition: opacity 0.25s ease; }
         body.modal-active { overflow-x: hidden; overflow-y: hidden !important; }
+        .tab-active { border-bottom: 2px solid #059669; color: #059669; font-weight: bold; }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 h-screen flex flex-col">
 
     <!-- HLAVIČKA -->
-    <header class="bg-gray-900 text-white p-4 shadow-md flex justify-between items-center">
-        <div class="flex items-center gap-3">
+    <header class="bg-gray-900 text-white p-4 shadow-md flex justify-between items-center overflow-x-auto">
+        <div class="flex items-center gap-3 min-w-max mr-6">
             <div class="w-10 h-10 bg-emerald-600 rounded flex items-center justify-center font-black text-xl" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);">
                 M
             </div>
-            <h1 class="text-xl font-bold">MachacekART <span class="text-gray-400 text-sm font-normal">| Výrobní systém</span></h1>
+            <h1 class="text-xl font-bold">MachacekART</h1>
         </div>
-        <button onclick="otevritModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded font-bold shadow transition">
-            + Nová zakázka
-        </button>
+        
+        <!-- NAVIGACE -->
+        <div class="flex gap-6 min-w-max">
+            <button onclick="prepniSekci('sekce-zakazky', this)" class="nav-tab tab-active pb-1 px-2 text-emerald-500 transition">Zakázky</button>
+            <button onclick="prepniSekci('sekce-sklad', this)" class="nav-tab pb-1 px-2 text-gray-400 hover:text-white transition">Sklad materiálu</button>
+            <button onclick="prepniSekci('sekce-knihovna', this)" class="nav-tab pb-1 px-2 text-gray-400 hover:text-white transition">3D Knihovna</button>
+            <button onclick="prepniSekci('sekce-vytisky', this)" class="nav-tab pb-1 px-2 text-gray-400 hover:text-white transition">Záznam výtisků</button>
+        </div>
     </header>
 
-    <!-- OBSAH -->
-    <main class="flex-1 overflow-auto p-6 max-w-6xl mx-auto w-full">
-        
+    <!-- OBSAH: ZAKÁZKY -->
+    <main id="sekce-zakazky" class="flex-1 overflow-auto p-6 max-w-6xl mx-auto w-full">
         <div class="flex justify-between items-end mb-6">
             <h2 class="text-2xl font-bold">Aktivní zakázky</h2>
+            <button onclick="otevritModalZakazka()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded font-bold shadow transition">
+                + Nová zakázka
+            </button>
         </div>
-
-        <!-- VÝPIS ZAKÁZEK -->
-        <div id="seznam-zakazek" class="grid grid-cols-1 gap-4">
-            <p class="text-gray-500">Načítám data z dílny...</p>
-        </div>
-
+        <div id="seznam-zakazek" class="grid grid-cols-1 gap-4"></div>
     </main>
 
-    <!-- MODÁLNÍ OKNO PRO PŘIDÁNÍ / ÚPRAVU ZAKÁZKY -->
-    <div id="modal-zakazka" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50">
-        <div class="absolute w-full h-full bg-gray-900 opacity-50" onclick="zavritModal()"></div>
-        
-        <div class="bg-white w-full max-w-2xl mx-auto rounded-xl shadow-2xl z-50 overflow-y-auto max-h-[90vh]">
-            <div class="py-4 text-left px-6 border-b flex justify-between items-center">
-                <h2 class="text-2xl font-bold text-gray-800" id="modal-titulek">Nová zakázka</h2>
-                <button class="text-gray-600 hover:text-black font-bold text-2xl" onclick="zavritModal()">&times;</button>
-            </div>
-            
-            <form id="form-zakazka" class="p-6">
-                <!-- Skryté ID pro editaci -->
-                <input type="hidden" id="z-id">
+    <!-- OBSAH: SKLAD -->
+    <main id="sekce-sklad" class="flex-1 overflow-auto p-6 max-w-6xl mx-auto w-full hidden">
+        <div class="flex justify-between items-end mb-6">
+            <h2 class="text-2xl font-bold">Sklad filamentů</h2>
+            <button onclick="otevritModalSklad()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded font-bold shadow transition">
+                + Přidat materiál
+            </button>
+        </div>
+        <div id="seznam-sklad" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </main>
 
+    <!-- OBSAH: 3D KNIHOVNA -->
+    <main id="sekce-knihovna" class="flex-1 overflow-auto p-6 max-w-6xl mx-auto w-full hidden">
+        <div class="flex justify-between items-end mb-6">
+            <h2 class="text-2xl font-bold">3D Knihovna modelů</h2>
+            <button onclick="otevritModalKnihovna()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded font-bold shadow transition">
+                + Přidat model
+            </button>
+        </div>
+        <div id="seznam-knihovna" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </main>
+
+    <!-- OBSAH: ZÁZNAM VÝTISKŮ -->
+    <main id="sekce-vytisky" class="flex-1 overflow-auto p-6 max-w-6xl mx-auto w-full hidden">
+        <div class="flex justify-between items-end mb-6">
+            <h2 class="text-2xl font-bold">Historie výtisků</h2>
+            <button onclick="otevritModalVytisk()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded font-bold shadow transition">
+                + Zaznamenat tisk
+            </button>
+        </div>
+        <div id="seznam-vytisky" class="grid grid-cols-1 gap-4"></div>
+    </main>
+
+
+    <!-- ================= MODÁLNÍ OKNA ================= -->
+
+    <!-- ZAKÁZKA MODAL -->
+    <div id="modal-zakazka" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50">
+        <div class="absolute w-full h-full bg-gray-900 opacity-50" onclick="zavritModalZakazka()"></div>
+        <div class="bg-white w-full max-w-2xl mx-auto rounded-xl shadow-2xl z-50 overflow-y-auto max-h-[90vh]">
+            <div class="py-4 px-6 border-b flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-gray-800" id="modal-titulek-zakazka">Nová zakázka</h2>
+                <button class="text-gray-600 font-bold text-2xl" onclick="zavritModalZakazka()">&times;</button>
+            </div>
+            <form id="form-zakazka" class="p-6">
+                <input type="hidden" id="z-id">
                 <div class="grid grid-cols-2 gap-4 mb-4">
                     <div>
-                        <label class="block text-sm font-bold mb-1">Zákazník (Název firmy / Jméno)</label>
-                        <input type="text" id="z-zakaznik" class="w-full border-2 border-gray-200 p-2 rounded focus:border-emerald-500 outline-none" required>
+                        <label class="block text-sm font-bold mb-1">Zákazník</label>
+                        <input type="text" id="z-zakaznik" class="w-full border-2 p-2 rounded focus:border-emerald-500 outline-none" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-bold mb-1 text-red-600">Termín dodání (Do kdy)</label>
+                        <label class="block text-sm font-bold mb-1 text-red-600">Termín dodání</label>
                         <input type="date" id="z-termin" class="w-full border-2 border-red-200 bg-red-50 p-2 rounded focus:border-red-500 outline-none" required>
                     </div>
                 </div>
-
                 <div class="mb-6">
                     <label class="block text-sm font-bold mb-1">Stav zakázky</label>
-                    <select id="z-stav" class="w-full border-2 border-gray-200 p-2 rounded outline-none">
+                    <select id="z-stav" class="w-full border-2 p-2 rounded outline-none">
                         <option value="Přijato">Přijato (Čeká na zpracování)</option>
                         <option value="Tiskne se">Tiskne se / Ve výrobě</option>
                         <option value="Hotovo">Hotovo (K předání)</option>
                     </select>
                 </div>
-
-                <!-- SEKCE POLOŽEK -->
                 <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
                     <h3 class="font-bold mb-3 border-b pb-2">Položky zakázky</h3>
-                    
-                    <div id="vypis-polozek" class="mb-3 space-y-2">
-                        <!-- Položky se vypíší přes JS -->
-                    </div>
-
+                    <div id="vypis-polozek" class="mb-3 space-y-2"></div>
                     <div class="flex gap-2 items-end">
                         <div class="flex-1">
-                            <label class="text-xs text-gray-500">Název (např. Podtácek)</label>
+                            <label class="text-xs text-gray-500">Název položky</label>
                             <input type="text" id="p-nazev" class="w-full border p-2 rounded">
                         </div>
                         <div class="w-20">
@@ -96,26 +124,120 @@
                             <label class="text-xs text-gray-500">Cena/ks</label>
                             <input type="number" id="p-cena" value="0" min="0" class="w-full border p-2 rounded">
                         </div>
-                        <button type="button" onclick="pridatPolozku()" class="bg-gray-800 hover:bg-black text-white px-4 py-2 rounded font-bold h-[42px]">+</button>
+                        <button type="button" onclick="pridatPolozku()" class="bg-gray-800 text-white px-4 py-2 rounded font-bold h-[42px]">+</button>
                     </div>
                 </div>
-
                 <div class="flex justify-between items-center mb-6">
                     <span class="text-gray-600">Celková cena:</span>
                     <span class="text-2xl font-black text-emerald-600" id="z-celkova-cena">0 Kč</span>
                 </div>
-
                 <div class="flex justify-end gap-3 pt-4 border-t">
-                    <button type="button" onclick="zavritModal()" class="px-4 py-2 bg-gray-200 text-gray-800 font-bold rounded hover:bg-gray-300">Zrušit</button>
-                    <button type="submit" class="px-6 py-2 bg-emerald-600 text-white font-bold rounded shadow hover:bg-emerald-700">Uložit zakázku</button>
+                    <button type="button" onclick="zavritModalZakazka()" class="px-4 py-2 bg-gray-200 font-bold rounded">Zrušit</button>
+                    <button type="submit" class="px-6 py-2 bg-emerald-600 text-white font-bold rounded">Uložit</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- SKLAD MODAL -->
+    <div id="modal-sklad" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50">
+        <div class="absolute w-full h-full bg-gray-900 opacity-50" onclick="zavritModalSklad()"></div>
+        <div class="bg-white w-full max-w-md mx-auto rounded-xl shadow-2xl z-50">
+            <div class="py-4 px-6 border-b flex justify-between items-center">
+                <h2 class="text-xl font-bold" id="modal-titulek-sklad">Materiál</h2>
+                <button class="text-gray-600 font-bold text-2xl" onclick="zavritModalSklad()">&times;</button>
+            </div>
+            <form id="form-sklad" class="p-6">
+                <input type="hidden" id="s-id">
+                <div class="mb-4">
+                    <label class="block text-sm font-bold mb-1">Název a barva</label>
+                    <input type="text" id="s-nazev" class="w-full border-2 p-2 rounded focus:border-emerald-500" required>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-bold mb-1">Množství (v gramech)</label>
+                    <input type="number" id="s-pocet" class="w-full border-2 p-2 rounded focus:border-emerald-500" required>
+                </div>
+                <div class="flex justify-end gap-3 pt-4 border-t">
+                    <button type="button" onclick="zavritModalSklad()" class="px-4 py-2 bg-gray-200 font-bold rounded">Zrušit</button>
+                    <button type="submit" class="px-6 py-2 bg-emerald-600 text-white font-bold rounded">Uložit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- KNIHOVNA MODAL -->
+    <div id="modal-knihovna" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50">
+        <div class="absolute w-full h-full bg-gray-900 opacity-50" onclick="zavritModalKnihovna()"></div>
+        <div class="bg-white w-full max-w-md mx-auto rounded-xl shadow-2xl z-50">
+            <div class="py-4 px-6 border-b flex justify-between items-center">
+                <h2 class="text-xl font-bold">Přidat 3D model</h2>
+                <button class="text-gray-600 font-bold text-2xl" onclick="zavritModalKnihovna()">&times;</button>
+            </div>
+            <form id="form-knihovna" class="p-6">
+                <input type="hidden" id="k-id">
+                <div class="mb-4">
+                    <label class="block text-sm font-bold mb-1">Název modelu</label>
+                    <input type="text" id="k-nazev" class="w-full border-2 p-2 rounded focus:border-emerald-500" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-bold mb-1">Odkaz (Printables / MakerWorld)</label>
+                    <input type="url" id="k-odkaz" class="w-full border-2 p-2 rounded focus:border-emerald-500">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-bold mb-1">Kategorie</label>
+                    <input type="text" id="k-kategorie" placeholder="Např. DnD, Firemní dárky" class="w-full border-2 p-2 rounded focus:border-emerald-500">
+                </div>
+                <div class="flex justify-end gap-3 pt-4 border-t">
+                    <button type="button" onclick="zavritModalKnihovna()" class="px-4 py-2 bg-gray-200 font-bold rounded">Zrušit</button>
+                    <button type="submit" class="px-6 py-2 bg-emerald-600 text-white font-bold rounded">Uložit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- VÝTISKY MODAL -->
+    <div id="modal-vytisk" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50">
+        <div class="absolute w-full h-full bg-gray-900 opacity-50" onclick="zavritModalVytisk()"></div>
+        <div class="bg-white w-full max-w-md mx-auto rounded-xl shadow-2xl z-50">
+            <div class="py-4 px-6 border-b flex justify-between items-center">
+                <h2 class="text-xl font-bold">Záznam tisku</h2>
+                <button class="text-gray-600 font-bold text-2xl" onclick="zavritModalVytisk()">&times;</button>
+            </div>
+            <form id="form-vytisk" class="p-6">
+                <div class="mb-4">
+                    <label class="block text-sm font-bold mb-1">Co se tisklo?</label>
+                    <input type="text" id="v-nazev" class="w-full border-2 p-2 rounded focus:border-emerald-500" required>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-bold mb-1">Spotřeba (g)</label>
+                        <input type="number" id="v-vaha" class="w-full border-2 p-2 rounded focus:border-emerald-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1">Čas (hod)</label>
+                        <input type="number" step="0.5" id="v-cas" class="w-full border-2 p-2 rounded focus:border-emerald-500">
+                    </div>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-bold mb-1">Účel tisku</label>
+                    <select id="v-ucel" class="w-full border-2 p-2 rounded outline-none">
+                        <option value="Zakázka">Zakázka (Pro klienta)</option>
+                        <option value="Osobní">Osobní / Pokus / Vzorek</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-3 pt-4 border-t">
+                    <button type="button" onclick="zavritModalVytisk()" class="px-4 py-2 bg-gray-200 font-bold rounded">Zrušit</button>
+                    <button type="submit" class="px-6 py-2 bg-emerald-600 text-white font-bold rounded">Uložit záznam</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- ================= SKRIPTY ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, updateDoc, doc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, updateDoc, doc, deleteDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { 
             apiKey: "AIzaSyCGMPmV6UI1Q-T5VCHFkv_Qbp3_6d8HoGQ", 
@@ -129,53 +251,49 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Globální proměnné pro editaci
+        // --- PŘEPÍNÁNÍ ZÁLOŽEK ---
+        window.prepniSekci = function(sekceId, btn) {
+            document.querySelectorAll('main').forEach(m => m.classList.add('hidden'));
+            document.getElementById(sekceId).classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-tab').forEach(t => {
+                t.classList.remove('tab-active', 'text-emerald-500');
+                t.classList.add('text-gray-400');
+            });
+            btn.classList.remove('text-gray-400');
+            btn.classList.add('tab-active', 'text-emerald-500');
+        }
+
+        window.smazatDokument = async function(kolekce, id) {
+            if(confirm('Opravdu chcete položku smazat?')) await deleteDoc(doc(db, kolekce, id));
+        }
+
+        // ================= 1. ZAKÁZKY =================
         window.pracovniPolozky = [];
         window.vsechnyZakazky = {};
 
-        // --- 1. VYKRESLENÍ ZAKÁZEK Z FIREBASE ---
         onSnapshot(collection(db, "zakazky"), (snapshot) => {
             const kontejner = document.getElementById('seznam-zakazek');
-            kontejner.innerHTML = '';
+            kontejner.innerHTML = snapshot.empty ? '<p class="text-gray-500">Žádné zakázky.</p>' : '';
             window.vsechnyZakazky = {};
-
-            if (snapshot.empty) {
-                kontejner.innerHTML = '<p class="text-gray-500">Zatím tu nejsou žádné zakázky.</p>';
-                return;
-            }
 
             snapshot.forEach(docSnap => {
                 const z = docSnap.data();
                 const id = docSnap.id;
-                window.vsechnyZakazky[id] = z; // Uložíme si do paměti pro editaci
+                window.vsechnyZakazky[id] = z;
 
-                // Barvy štítků podle stavu
-                let barvaStavu = 'bg-gray-200 text-gray-800';
-                if(z.stav === 'Tiskne se') barvaStavu = 'bg-blue-100 text-blue-800 border border-blue-200';
-                if(z.stav === 'Hotovo') barvaStavu = 'bg-green-100 text-green-800 border border-green-200';
+                let barvaStavu = z.stav === 'Tiskne se' ? 'bg-blue-100 text-blue-800' : (z.stav === 'Hotovo' ? 'bg-green-100 text-green-800' : 'bg-gray-200');
+                let zobrazenyTermin = z.termin ? new Date(z.termin).toLocaleDateString('cs-CZ') : "Neurčeno";
 
-                // Formátování data (zobrazit hezky)
-                let zobrazenyTermin = "Neurčeno";
-                if(z.termin) {
-                    const d = new Date(z.termin);
-                    zobrazenyTermin = `${d.getDate()}.${d.getMonth() + 1}.${d.getFullYear()}`;
-                }
-
-                // Generování výpisu položek
                 let htmlPolozky = '';
                 let skutecnaCena = 0;
                 if(z.obsah && z.obsah.length > 0) {
                     z.obsah.forEach(p => {
                         const cenaPolozky = p.cena ? (p.cena * p.ks) : 0;
                         skutecnaCena += cenaPolozky;
-                        htmlPolozky += `<div class="flex justify-between text-sm py-1 border-b border-gray-100 last:border-0">
-                            <span>${p.ks}x ${p.nazev}</span>
-                            <span class="text-gray-500">${cenaPolozky} Kč</span>
-                        </div>`;
+                        htmlPolozky += `<div class="flex justify-between text-sm py-1 border-b last:border-0"><span>${p.ks}x ${p.nazev}</span><span class="text-gray-500">${cenaPolozky} Kč</span></div>`;
                     });
                 }
-                
-                // Záchrana ceny pro staré zakázky (z webu), které neměly cenu u položek
                 const cenaKVypsani = skutecnaCena > 0 ? skutecnaCena : (z.cena || 0);
 
                 kontejner.innerHTML += `
@@ -185,156 +303,134 @@
                                 <h3 class="text-lg font-bold">${z.zakaznik}</h3>
                                 <span class="px-2 py-1 rounded text-xs font-bold ${barvaStavu}">${z.stav}</span>
                             </div>
-                            
-                            <div class="text-sm font-medium text-red-600 mb-3 flex items-center gap-1">
-                                ⏳ Termín: ${zobrazenyTermin}
-                            </div>
-                            
-                            <div class="bg-gray-50 p-3 rounded border border-gray-100">
-                                ${htmlPolozky || '<span class="text-sm text-gray-400">Žádné položky</span>'}
-                            </div>
+                            <div class="text-sm font-medium text-red-600 mb-3">⏳ Termín: ${zobrazenyTermin}</div>
+                            <div class="bg-gray-50 p-3 rounded border">${htmlPolozky || 'Žádné položky'}</div>
                         </div>
-                        
                         <div class="flex flex-col justify-between items-end min-w-[150px]">
                             <div class="text-right">
-                                <span class="block text-xs text-gray-500 uppercase font-bold tracking-wider">Cena celkem</span>
+                                <span class="block text-xs text-gray-500 font-bold">CENA</span>
                                 <span class="text-2xl font-black text-emerald-600">${cenaKVypsani} Kč</span>
                             </div>
                             <div class="flex gap-2 mt-4">
-                                <button onclick="otevritModal('${id}')" class="text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 font-medium rounded text-gray-700 transition">Upravit</button>
-                                <button onclick="smazatZakazku('${id}')" class="text-sm px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 font-medium rounded transition">Smazat</button>
+                                <button onclick="otevritModalZakazka('${id}')" class="px-3 py-1 bg-gray-100 rounded text-sm">Upravit</button>
+                                <button onclick="smazatDokument('zakazky', '${id}')" class="px-3 py-1 bg-red-50 text-red-600 rounded text-sm">Smazat</button>
                             </div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
         });
 
-        // --- 2. LOGIKA MODÁLNÍHO OKNA A POLOŽEK ---
-        window.otevritModal = function(id = null) {
+        window.otevritModalZakazka = function(id = null) {
             document.getElementById('modal-zakazka').classList.remove('opacity-0', 'pointer-events-none');
             document.body.classList.add('modal-active');
-            
-            // Vyresetovat formulář
             document.getElementById('form-zakazka').reset();
             window.pracovniPolozky = [];
             
             if(id && window.vsechnyZakazky[id]) {
-                // ÚPRAVA EXISTUJÍCÍ ZAKÁZKY
                 const z = window.vsechnyZakazky[id];
-                document.getElementById('modal-titulek').innerText = 'Upravit zakázku';
                 document.getElementById('z-id').value = id;
                 document.getElementById('z-zakaznik').value = z.zakaznik;
                 document.getElementById('z-termin').value = z.termin || '';
                 document.getElementById('z-stav').value = z.stav || 'Přijato';
-                
                 if(z.obsah) window.pracovniPolozky = [...z.obsah];
             } else {
-                // NOVÁ ZAKÁZKA
-                document.getElementById('modal-titulek').innerText = 'Nová zakázka';
                 document.getElementById('z-id').value = '';
-                // Předvyplnit dnešní datum + 7 dní
-                const zaTyden = new Date();
-                zaTyden.setDate(zaTyden.getDate() + 7);
+                const zaTyden = new Date(); zaTyden.setDate(zaTyden.getDate() + 7);
                 document.getElementById('z-termin').value = zaTyden.toISOString().split('T')[0];
             }
-            
             prekreslitPracovniPolozky();
         }
-
-        window.zavritModal = function() {
-            document.getElementById('modal-zakazka').classList.add('opacity-0', 'pointer-events-none');
-            document.body.classList.remove('modal-active');
-        }
-
+        window.zavritModalZakazka = () => { document.getElementById('modal-zakazka').classList.add('opacity-0', 'pointer-events-none'); document.body.classList.remove('modal-active'); }
         window.pridatPolozku = function() {
-            const nazev = document.getElementById('p-nazev').value;
-            const ks = parseInt(document.getElementById('p-ks').value) || 1;
-            const cena = parseInt(document.getElementById('p-cena').value) || 0;
-            
-            if(!nazev) { alert('Zadejte název položky'); return; }
-
-            window.pracovniPolozky.push({
-                nazev: nazev,
-                ks: ks,
-                cena: cena,
-                stavItem: 'Čeká'
-            });
-
-            document.getElementById('p-nazev').value = '';
-            document.getElementById('p-ks').value = '1';
-            document.getElementById('p-cena').value = '0';
-            
+            const nazev = document.getElementById('p-nazev').value, ks = parseInt(document.getElementById('p-ks').value) || 1, cena = parseInt(document.getElementById('p-cena').value) || 0;
+            if(!nazev) return;
+            window.pracovniPolozky.push({ nazev, ks, cena, stavItem: 'Čeká' });
+            document.getElementById('p-nazev').value = ''; document.getElementById('p-ks').value = '1'; document.getElementById('p-cena').value = '0';
             prekreslitPracovniPolozky();
         }
-
-        window.odebratPolozku = function(index) {
-            window.pracovniPolozky.splice(index, 1);
-            prekreslitPracovniPolozky();
-        }
-
+        window.odebratPolozku = (index) => { window.pracovniPolozky.splice(index, 1); prekreslitPracovniPolozky(); }
         function prekreslitPracovniPolozky() {
-            const box = document.getElementById('vypis-polozek');
-            box.innerHTML = '';
-            let celkem = 0;
-
-            if(window.pracovniPolozky.length === 0) {
-                box.innerHTML = '<div class="text-sm text-gray-500 italic">Zatím nepřidány žádné položky.</div>';
-            } else {
-                window.pracovniPolozky.forEach((p, index) => {
-                    const cenaSpolu = p.ks * (p.cena || 0);
-                    celkem += cenaSpolu;
-                    box.innerHTML += `
-                        <div class="flex justify-between items-center bg-white p-2 rounded border border-gray-200 text-sm">
-                            <div><strong>${p.ks}x</strong> ${p.nazev}</div>
-                            <div class="flex items-center gap-3">
-                                <span>${cenaSpolu} Kč</span>
-                                <button type="button" onclick="odebratPolozku(${index})" class="text-red-500 hover:text-red-700 font-bold">&times;</button>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
+            const box = document.getElementById('vypis-polozek'); box.innerHTML = ''; let celkem = 0;
+            window.pracovniPolozky.forEach((p, i) => {
+                const c = p.ks * (p.cena || 0); celkem += c;
+                box.innerHTML += `<div class="flex justify-between bg-white p-2 rounded border text-sm"><div><strong>${p.ks}x</strong> ${p.nazev}</div><div>${c} Kč <button onclick="odebratPolozku(${i})" class="text-red-500 ml-2">&times;</button></div></div>`;
+            });
             document.getElementById('z-celkova-cena').innerText = celkem + ' Kč';
         }
-
-        // --- 3. ULOŽENÍ / ÚPRAVA DO FIREBASE ---
         document.getElementById('form-zakazka').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('z-id').value;
-            
-            let celkovaCena = 0;
-            window.pracovniPolozky.forEach(p => { celkovaCena += (p.ks * (p.cena || 0)); });
-
-            const dataZakazky = {
-                zakaznik: document.getElementById('z-zakaznik').value,
-                termin: document.getElementById('z-termin').value,
-                stav: document.getElementById('z-stav').value,
-                obsah: window.pracovniPolozky,
-                cena: celkovaCena
-            };
-
-            try {
-                if(id) {
-                    // Updatujeme existující
-                    await updateDoc(doc(db, "zakazky", id), dataZakazky);
-                } else {
-                    // Vytváříme novou
-                    await addDoc(collection(db, "zakazky"), dataZakazky);
-                }
-                zavritModal();
-            } catch(err) {
-                alert("Chyba při ukládání: " + err.message);
-            }
+            let celkovaCena = 0; window.pracovniPolozky.forEach(p => celkovaCena += (p.ks * (p.cena || 0)));
+            const data = { zakaznik: document.getElementById('z-zakaznik').value, termin: document.getElementById('z-termin').value, stav: document.getElementById('z-stav').value, obsah: window.pracovniPolozky, cena: celkovaCena };
+            if(id) await updateDoc(doc(db, "zakazky", id), data); else await addDoc(collection(db, "zakazky"), data);
+            zavritModalZakazka();
         });
 
-        // --- 4. SMAZÁNÍ ZAKÁZKY ---
-        window.smazatZakazku = async function(id) {
-            if(confirm('Opravdu chcete tuto zakázku smazat? Tento krok nelze vrátit.')) {
-                await deleteDoc(doc(db, "zakazky", id));
-            }
-        }
 
+        // ================= 2. SKLAD =================
+        window.vsechenSklad = {};
+        onSnapshot(collection(db, "sklad"), (snapshot) => {
+            const k = document.getElementById('seznam-sklad');
+            k.innerHTML = snapshot.empty ? '<p class="text-gray-500">Sklad je prázdný.</p>' : '';
+            window.vsechenSklad = {};
+            snapshot.forEach(docSnap => {
+                const s = docSnap.data(), id = docSnap.id; window.vsechenSklad[id] = s;
+                let stav = s.pocet > 50 ? '<span class="text-green-600 font-bold">Skladem</span>' : '<span class="text-orange-500 font-bold">Málo</span>';
+                k.innerHTML += `<div class="bg-white p-4 rounded-xl shadow border flex flex-col justify-between"><div><h3 class="font-bold">${s.nazev}</h3><p class="text-sm mt-1">Zbývá: <span class="font-bold">${s.pocet} g</span></p><div>${stav}</div></div><div class="flex gap-2 mt-4 pt-4 border-t"><button onclick="otevritModalSklad('${id}')" class="flex-1 bg-gray-100 rounded py-1">Upravit</button><button onclick="smazatDokument('sklad', '${id}')" class="flex-1 bg-red-50 text-red-600 rounded py-1">Smazat</button></div></div>`;
+            });
+        });
+        window.otevritModalSklad = (id = null) => {
+            document.getElementById('modal-sklad').classList.remove('opacity-0', 'pointer-events-none'); document.body.classList.add('modal-active'); document.getElementById('form-sklad').reset();
+            if(id && window.vsechenSklad[id]) {
+                const s = window.vsechenSklad[id]; document.getElementById('s-id').value = id; document.getElementById('s-nazev').value = s.nazev; document.getElementById('s-pocet').value = s.pocet;
+            } else document.getElementById('s-id').value = '';
+        }
+        window.zavritModalSklad = () => { document.getElementById('modal-sklad').classList.add('opacity-0', 'pointer-events-none'); document.body.classList.remove('modal-active'); }
+        document.getElementById('form-sklad').addEventListener('submit', async (e) => {
+            e.preventDefault(); const id = document.getElementById('s-id').value, data = { nazev: document.getElementById('s-nazev').value, pocet: parseInt(document.getElementById('s-pocet').value) };
+            if(id) await updateDoc(doc(db, "sklad", id), data); else await addDoc(collection(db, "sklad"), data);
+            zavritModalSklad();
+        });
+
+
+        // ================= 3. KNIHOVNA =================
+        onSnapshot(collection(db, "knihovna"), (snapshot) => {
+            const k = document.getElementById('seznam-knihovna');
+            k.innerHTML = snapshot.empty ? '<p class="text-gray-500">Knihovna je prázdná.</p>' : '';
+            snapshot.forEach(docSnap => {
+                const d = docSnap.data(), id = docSnap.id;
+                k.innerHTML += `<div class="bg-white p-4 rounded-xl shadow border flex justify-between items-center"><div><h3 class="font-bold">${d.nazev}</h3><span class="text-xs bg-gray-200 px-2 py-1 rounded mt-1 inline-block">${d.kategorie || 'Bez kategorie'}</span></div><div class="flex gap-2"><a href="${d.odkaz}" target="_blank" class="px-3 py-1 bg-emerald-50 text-emerald-700 rounded text-sm border border-emerald-200">Odkaz</a><button onclick="smazatDokument('knihovna', '${id}')" class="px-3 py-1 bg-red-50 text-red-600 rounded text-sm">Smazat</button></div></div>`;
+            });
+        });
+        window.otevritModalKnihovna = () => { document.getElementById('modal-knihovna').classList.remove('opacity-0', 'pointer-events-none'); document.body.classList.add('modal-active'); document.getElementById('form-knihovna').reset(); document.getElementById('k-id').value = ''; }
+        window.zavritModalKnihovna = () => { document.getElementById('modal-knihovna').classList.add('opacity-0', 'pointer-events-none'); document.body.classList.remove('modal-active'); }
+        document.getElementById('form-knihovna').addEventListener('submit', async (e) => {
+            e.preventDefault(); const data = { nazev: document.getElementById('k-nazev').value, odkaz: document.getElementById('k-odkaz').value, kategorie: document.getElementById('k-kategorie').value };
+            await addDoc(collection(db, "knihovna"), data); zavritModalKnihovna();
+        });
+
+
+        // ================= 4. VÝTISKY =================
+        onSnapshot(collection(db, "vytisky"), (snapshot) => {
+            const k = document.getElementById('seznam-vytisky');
+            k.innerHTML = snapshot.empty ? '<p class="text-gray-500">Zatím žádné záznamy tisku.</p>' : '';
+            let tiskArr = [];
+            snapshot.forEach(docSnap => tiskArr.push({id: docSnap.id, ...docSnap.data()}));
+            // Řazení od nejnovějšího
+            tiskArr.sort((a,b) => (b.casZaznamu?.toMillis() || 0) - (a.casZaznamu?.toMillis() || 0));
+            
+            tiskArr.forEach(d => {
+                let badge = d.ucel === 'Zakázka' ? 'bg-blue-100 text-blue-800' : 'bg-gray-200 text-gray-700';
+                let datum = d.casZaznamu ? new Date(d.casZaznamu.toDate()).toLocaleDateString('cs-CZ') : '';
+                k.innerHTML += `<div class="bg-white p-4 rounded-xl shadow border flex justify-between items-center"><div class="flex items-center gap-4"><div class="text-sm text-gray-400 w-20">${datum}</div><div><h3 class="font-bold">${d.nazev}</h3><div class="text-sm text-gray-500 mt-1">Spotřeba: ${d.vaha} g | Čas: ${d.cas} hod</div></div></div><div class="flex items-center gap-3"><span class="px-2 py-1 rounded text-xs font-bold ${badge}">${d.ucel}</span><button onclick="smazatDokument('vytisky', '${d.id}')" class="text-red-400 hover:text-red-600 text-xl font-bold">&times;</button></div></div>`;
+            });
+        });
+        window.otevritModalVytisk = () => { document.getElementById('modal-vytisk').classList.remove('opacity-0', 'pointer-events-none'); document.body.classList.add('modal-active'); document.getElementById('form-vytisk').reset(); }
+        window.zavritModalVytisk = () => { document.getElementById('modal-vytisk').classList.add('opacity-0', 'pointer-events-none'); document.body.classList.remove('modal-active'); }
+        document.getElementById('form-vytisk').addEventListener('submit', async (e) => {
+            e.preventDefault(); const data = { nazev: document.getElementById('v-nazev').value, vaha: parseInt(document.getElementById('v-vaha').value), cas: parseFloat(document.getElementById('v-cas').value) || 0, ucel: document.getElementById('v-ucel').value, casZaznamu: serverTimestamp() };
+            await addDoc(collection(db, "vytisky"), data); zavritModalVytisk();
+        });
     </script>
 </body>
 </html>
