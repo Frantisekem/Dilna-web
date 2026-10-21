@@ -93,11 +93,31 @@
                 <h3 class="font-bold mb-4" id="nadpis-form-zakazka">Nová zakázka</h3>
                 <form id="form-zakazky" class="space-y-4">
                     <input type="hidden" id="z-edit-id" value="">
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div class="md:col-span-2"><label class="block text-sm mb-1 font-bold text-indigo-700">Vyberte klienta z adresáře</label><select id="z-zakaznik" class="w-full border-2 border-indigo-200 p-2 rounded-lg bg-indigo-50" required></select></div>
-                        <div class="md:col-span-2"><label class="block text-sm mb-1">Celková cena (Kč)</label><input type="number" id="z-cena" class="w-full border p-2 rounded-lg" required></div>
-                        <div class="md:col-span-2"><label class="block text-sm mb-1">Typ výroby</label><select id="z-typ" class="w-full border p-2 rounded-lg bg-gray-50 font-bold" required onchange="zmenKategorie()"><option value="3D tisk">3D tisk</option><option value="Cricut">Cricut (Plotr)</option></select></div>
-                        <div class="md:col-span-2"><label class="block text-sm mb-1">Kategorie</label><select id="z-kategorie" class="w-full border p-2 rounded-lg" required></select></div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm mb-1 font-bold text-indigo-700">Vyberte klienta</label>
+                            <select id="z-zakaznik" class="w-full border-2 border-indigo-200 p-2 rounded-lg bg-indigo-50" required></select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm mb-1 font-bold text-red-600">Termín dodání (Do kdy)</label>
+                            <input type="date" id="z-termin" class="w-full border-2 border-red-200 p-2 rounded-lg bg-red-50" required>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm mb-1">Celková cena (Kč)</label>
+                            <input type="number" id="z-cena" class="w-full border p-2 rounded-lg" required>
+                        </div>
+                        <div class="md:col-span-3">
+                            <label class="block text-sm mb-1">Typ výroby</label>
+                            <select id="z-typ" class="w-full border p-2 rounded-lg bg-gray-50 font-bold" required onchange="zmenKategorie()">
+                                <option value="3D tisk">3D tisk</option>
+                                <option value="Cricut">Cricut (Plotr)</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-3">
+                            <label class="block text-sm mb-1">Kategorie</label>
+                            <select id="z-kategorie" class="w-full border p-2 rounded-lg" required></select>
+                        </div>
                     </div>
                     <datalist id="katalog-produktu"><option value="Stojánek na mobil s logem"><option value="Fidget spinner"><option value="Klíčenka s 3D logem"><option value="Svatební jmenovky"><option value="Samolepky logo"></datalist>
                     <div class="mt-4 p-4 border rounded-lg bg-gray-50">
@@ -119,7 +139,7 @@
                 </form>
             </div>
             <table class="w-full text-left border-collapse bg-white rounded-xl shadow-sm overflow-hidden">
-                <thead><tr class="bg-gray-50 border-b text-sm text-gray-600"><th class="p-4 w-1/6">Klient</th><th class="p-4 w-1/6">Oblast</th><th class="p-4 w-2/6">Položky a jejich stav</th><th class="p-4 w-1/6">Cena</th><th class="p-4 w-1/6">Celkový Stav</th><th class="p-4">Akce</th></tr></thead>
+                <thead><tr class="bg-gray-50 border-b text-sm text-gray-600"><th class="p-4 w-1/6">Klient</th><th class="p-4 w-1/6">Oblast</th><th class="p-4 w-2/6">Položky a jejich stav</th><th class="p-4">Termín</th><th class="p-4">Cena</th><th class="p-4 w-1/6">Celkový Stav</th><th class="p-4">Akce</th></tr></thead>
                 <tbody id="list-zakazky" class="text-sm divide-y"></tbody>
             </table>
         </section>
@@ -128,7 +148,7 @@
         <section id="archiv" class="tab-content">
             <h2 class="text-2xl font-bold mb-6">Archiv odeslaných zakázek</h2>
             <table class="w-full text-left border-collapse bg-white rounded-xl shadow-sm overflow-hidden opacity-80">
-                <thead><tr class="bg-gray-100 border-b text-sm text-gray-600"><th class="p-4 w-1/6">Klient</th><th class="p-4 w-1/6">Oblast</th><th class="p-4 w-2/6">Položky</th><th class="p-4 w-1/6">Cena</th><th class="p-4 w-1/6">Stav</th><th class="p-4">Akce</th></tr></thead>
+                <thead><tr class="bg-gray-100 border-b text-sm text-gray-600"><th class="p-4 w-1/6">Klient</th><th class="p-4 w-1/6">Oblast</th><th class="p-4 w-2/6">Položky</th><th class="p-4">Termín</th><th class="p-4">Cena</th><th class="p-4 w-1/6">Stav</th><th class="p-4">Akce</th></tr></thead>
                 <tbody id="list-archiv" class="text-sm divide-y bg-gray-50"></tbody>
             </table>
         </section>
@@ -138,33 +158,12 @@
             <h2 class="text-2xl font-bold mb-6">Deník 3D tisku & Odezvání materiálu</h2>
             <div class="bg-white p-6 rounded-xl border shadow-sm mb-8">
                 <form id="form-zaznam" class="grid grid-cols-1 md:grid-cols-8 gap-4 items-end">
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium mb-1">Co se tisklo</label>
-                        <input type="text" id="zt-nazev" class="w-full border p-2 rounded-lg" required>
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium mb-1">Účel / Zakázka</label>
-                        <select id="zt-ucel" class="w-full border p-2 rounded-lg bg-gray-50" required>
-                            <option value="Osobní / Dílna">-- Osobní / Dílna --</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Čas (hod)</label>
-                        <input type="number" step="0.1" id="zt-cas" class="w-full border p-2 rounded-lg" required>
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium mb-1">Ze skladu odečíst</label>
-                        <select id="zt-material" class="w-full border p-2 rounded-lg bg-blue-50 font-bold text-blue-800" required>
-                            <option value="">-- Vyberte materiál --</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Spotřeba (g)</label>
-                        <input type="number" id="zt-spotreba" class="w-full border p-2 rounded-lg" required>
-                    </div>
-                    <div class="md:col-span-8 mt-2">
-                        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700">Uložit tisk a odečíst ze skladu</button>
-                    </div>
+                    <div class="md:col-span-2"><label class="block text-sm font-medium mb-1">Co se tisklo</label><input type="text" id="zt-nazev" class="w-full border p-2 rounded-lg" required></div>
+                    <div class="md:col-span-2"><label class="block text-sm font-medium mb-1">Účel / Zakázka</label><select id="zt-ucel" class="w-full border p-2 rounded-lg bg-gray-50" required><option value="Osobní / Dílna">-- Osobní / Dílna --</option></select></div>
+                    <div><label class="block text-sm font-medium mb-1">Čas (hod)</label><input type="number" step="0.1" id="zt-cas" class="w-full border p-2 rounded-lg" required></div>
+                    <div class="md:col-span-2"><label class="block text-sm font-medium mb-1">Ze skladu odečíst</label><select id="zt-material" class="w-full border p-2 rounded-lg bg-blue-50 font-bold text-blue-800" required><option value="">-- Vyberte materiál --</option></select></div>
+                    <div><label class="block text-sm font-medium mb-1">Spotřeba (g)</label><input type="number" id="zt-spotreba" class="w-full border p-2 rounded-lg" required></div>
+                    <div class="md:col-span-8 mt-2"><button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700">Uložit tisk a odečíst ze skladu</button></div>
                 </form>
             </div>
             <table class="w-full text-left border-collapse bg-white rounded-xl shadow-sm overflow-hidden">
@@ -299,6 +298,7 @@
             window.zrusitUpravuZakazky = function(reset = true) {
                 if(reset) document.getElementById('form-zakazky').reset();
                 document.getElementById('z-edit-id').value = '';
+                document.getElementById('z-termin').value = ''; 
                 document.getElementById('nadpis-form-zakazka').innerText = 'Nová zakázka';
                 document.getElementById('btn-submit-zakazka').innerText = 'Vytvořit zakázku';
                 document.getElementById('btn-cancel-edit').classList.add('hidden');
@@ -310,6 +310,7 @@
                 if(!z) return;
                 document.getElementById('z-edit-id').value = id;
                 document.getElementById('z-zakaznik').value = z.zakaznik;
+                document.getElementById('z-termin').value = z.termin || '';
                 document.getElementById('z-typ').value = z.typ || '3D tisk';
                 window.zmenKategorie();
                 setTimeout(() => { document.getElementById('z-kategorie').value = z.kategorie; }, 50);
@@ -347,7 +348,8 @@
                 
                 const editId = document.getElementById('z-edit-id').value;
                 const dataZakazky = { 
-                    zakaznik: document.getElementById('z-zakaznik').value, 
+                    zakaznik: document.getElementById('z-zakaznik').value,
+                    termin: document.getElementById('z-termin').value,
                     typ: document.getElementById('z-typ').value, 
                     kategorie: document.getElementById('z-kategorie').value, 
                     cena: Number(document.getElementById('z-cena').value), 
@@ -382,6 +384,8 @@
                     const stavyCelkove = stavyVyroby[typ] || stavyVyroby['3D tisk']; 
                     let optionsGlobal = stavyCelkove.map(s => `<option value="${s}" ${z.stav === s ? 'selected' : ''}>${s}</option>`).join(''); 
                     
+                    let zobrazenyTermin = z.termin ? new Date(z.termin).toLocaleDateString('cs-CZ') : '-';
+                    
                     let obsahListHtml = z.obsah ? z.obsah.map((p, index) => { 
                         const stavPolozky = p.stavItem || 'Čeká'; const stavyPolozky = ['Čeká', 'Tiskne se', 'Vytištěno/Vyřezáno', 'Nabarveno', 'Hotovo']; 
                         let optionsItem = stavyPolozky.map(s => `<option value="${s}" ${stavPolozky === s ? 'selected' : ''}>${s}</option>`).join(''); 
@@ -390,7 +394,7 @@
                         else { return `<li class="flex items-center justify-between bg-white border border-gray-200 shadow-sm p-1 px-2 mb-1 rounded text-xs"><span class="font-medium text-gray-700">${p.ks}x ${p.nazev}${cenaText}</span><select onchange="zmenitStavPolozky('${id}', ${index}, this.value)" class="text-xs ml-2 bg-gray-50 border border-gray-300 rounded outline-none cursor-pointer">${optionsItem}</select></li>`; } 
                     }).join('') : ''; 
                     const akceTlacitka = `<div class="flex flex-col gap-1"><button onclick="upravitZakazku('${id}')" class="bg-blue-100 text-blue-700 hover:bg-blue-200 font-bold px-3 py-1 rounded text-xs text-center">Upravit</button><button onclick="generovatPDF('${id}')" class="bg-green-100 text-green-700 hover:bg-green-200 font-bold px-3 py-1 rounded text-xs text-center">📄 PDF</button><button onclick="smazatZ('${id}')" class="text-red-500 hover:text-red-700 font-bold bg-red-50 px-3 py-1 rounded text-xs text-center">Smazat</button></div>`; 
-                    const rowHtml = `<tr class="hover:bg-gray-50"><td class="p-4 font-bold text-gray-800">${z.zakaznik}</td><td class="p-4 text-xs"><span class="bg-gray-200 px-2 py-1 rounded text-gray-700 font-bold">${typ}</span><br><span class="inline-block mt-2 text-gray-500">${z.kategorie || '-'}</span></td><td class="p-4 text-xs"><ul class="min-w-[180px]">${obsahListHtml}</ul></td><td class="p-4 font-bold text-blue-600">${z.cena} Kč</td><td class="p-4"><select onchange="zmenitStav('${id}', this.value)" class="bg-blue-100 font-bold text-blue-800 p-2 rounded outline-none border border-blue-200 cursor-pointer text-xs w-full">${optionsGlobal}</select></td><td class="p-4">${akceTlacitka}</td></tr>`; 
+                    const rowHtml = `<tr class="hover:bg-gray-50"><td class="p-4 font-bold text-gray-800">${z.zakaznik}</td><td class="p-4 text-xs"><span class="bg-gray-200 px-2 py-1 rounded text-gray-700 font-bold">${typ}</span><br><span class="inline-block mt-2 text-gray-500">${z.kategorie || '-'}</span></td><td class="p-4 text-xs"><ul class="min-w-[180px]">${obsahListHtml}</ul></td><td class="p-4 font-medium whitespace-nowrap text-red-600">${zobrazenyTermin}</td><td class="p-4 font-bold text-blue-600 whitespace-nowrap">${z.cena} Kč</td><td class="p-4"><select onchange="zmenitStav('${id}', this.value)" class="bg-blue-100 font-bold text-blue-800 p-2 rounded outline-none border border-blue-200 cursor-pointer text-xs w-full">${optionsGlobal}</select></td><td class="p-4">${akceTlacitka}</td></tr>`; 
                     
                     if(z.stav === 'Odesláno') { 
                         archivHTML += rowHtml; 
