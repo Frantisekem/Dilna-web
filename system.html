@@ -74,22 +74,19 @@
                     <h3 class="text-gray-500 text-sm font-medium">Finanční bilance</h3>
                     <p class="text-3xl font-bold text-gray-800 mt-2" id="stat-finance">0 Kč</p>
                 </div>
-                <!-- ZMĚNA: Výdělek za aktuální měsíc místo duplicitního skladu -->
                 <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm bg-indigo-50">
                     <h3 class="text-indigo-600 text-sm font-bold">Výdělek (Tento měsíc)</h3>
                     <p class="text-3xl font-black text-indigo-700 mt-2" id="stat-vydelek">0 Kč</p>
                 </div>
             </div>
             
-            <!-- Detaily k řešení (Grid 3 sloupců) -->
+            <!-- Detaily k řešení -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                <!-- Sklad -->
                 <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col">
                     <h3 class="text-lg font-bold mb-4 text-red-600 border-b pb-2">⚠️ Upozornění ze skladu</h3>
                     <ul id="low-stock-list" class="space-y-2 text-sm text-gray-600 flex-1 overflow-y-auto max-h-48"></ul>
                 </div>
                 
-                <!-- Blížící se termíny -->
                 <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col">
                     <h3 class="text-lg font-bold mb-4 text-orange-600 border-b pb-2">⏳ Hořící termíny (do 4 dnů)</h3>
                     <ul id="urgent-orders-list" class="space-y-3 text-sm text-gray-800 flex-1 overflow-y-auto max-h-48">
@@ -97,7 +94,6 @@
                     </ul>
                 </div>
 
-                <!-- K odeslání -->
                 <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col">
                     <h3 class="text-lg font-bold mb-4 text-green-600 border-b pb-2">📦 Čeká na zabalení/odeslání</h3>
                     <ul id="ready-orders-list" class="space-y-3 text-sm text-gray-800 flex-1 overflow-y-auto max-h-48">
@@ -106,42 +102,54 @@
                 </div>
             </div>
 
-            <!-- TO-DO LISTY -->
+            <!-- TO-DO LISTY (4 sloupce) -->
             <h2 class="text-2xl font-bold mb-6 mt-10">Úkoly a To-Do</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <!-- 3D Tisk To-Do -->
                 <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col">
-                    <h3 class="text-lg font-bold mb-4 text-blue-600 border-b pb-2">🖨️ 3D Tisk (Výroba)</h3>
+                    <h3 class="text-lg font-bold mb-4 text-blue-600 border-b pb-2">🖨️ 3D Tisk</h3>
                     <ul id="todo-3dtisk" class="space-y-2 mb-4 flex-1 overflow-y-auto min-h-[150px] max-h-60">
                         <li class="text-gray-400 italic text-xs">Načítám...</li>
                     </ul>
                     <form onsubmit="pridatTodo(event, '3D tisk', 'input-todo-3d')" class="flex gap-2 mt-auto pt-4 border-t border-gray-100">
-                        <input type="text" id="input-todo-3d" placeholder="Nový úkol pro tisk..." class="flex-1 border p-2 rounded-lg text-sm bg-gray-50 focus:border-blue-500 outline-none" required>
+                        <input type="text" id="input-todo-3d" placeholder="Nový úkol..." class="flex-1 border p-2 rounded-lg text-sm bg-gray-50 focus:border-blue-500 outline-none" required>
                         <button type="submit" class="bg-blue-600 text-white px-3 py-2 rounded-lg font-bold">+</button>
                     </form>
                 </div>
 
                 <!-- Cricut To-Do -->
                 <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col">
-                    <h3 class="text-lg font-bold mb-4 text-pink-600 border-b pb-2">✂️ Cricut (Plotr)</h3>
+                    <h3 class="text-lg font-bold mb-4 text-pink-600 border-b pb-2">✂️ Cricut</h3>
                     <ul id="todo-cricut" class="space-y-2 mb-4 flex-1 overflow-y-auto min-h-[150px] max-h-60">
                         <li class="text-gray-400 italic text-xs">Načítám...</li>
                     </ul>
                     <form onsubmit="pridatTodo(event, 'Cricut', 'input-todo-cricut')" class="flex gap-2 mt-auto pt-4 border-t border-gray-100">
-                        <input type="text" id="input-todo-cricut" placeholder="Nový úkol pro Cricut..." class="flex-1 border p-2 rounded-lg text-sm bg-gray-50 focus:border-pink-500 outline-none" required>
+                        <input type="text" id="input-todo-cricut" placeholder="Nový úkol..." class="flex-1 border p-2 rounded-lg text-sm bg-gray-50 focus:border-pink-500 outline-none" required>
                         <button type="submit" class="bg-pink-600 text-white px-3 py-2 rounded-lg font-bold">+</button>
                     </form>
                 </div>
 
                 <!-- Dílna To-Do -->
                 <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col">
-                    <h3 class="text-lg font-bold mb-4 text-emerald-600 border-b pb-2">🛠️ Naše Dílna (Obecné)</h3>
+                    <h3 class="text-lg font-bold mb-4 text-emerald-600 border-b pb-2">🛠️ Dílna</h3>
                     <ul id="todo-dilna" class="space-y-2 mb-4 flex-1 overflow-y-auto min-h-[150px] max-h-60">
                         <li class="text-gray-400 italic text-xs">Načítám...</li>
                     </ul>
                     <form onsubmit="pridatTodo(event, 'Dílna', 'input-todo-dilna')" class="flex gap-2 mt-auto pt-4 border-t border-gray-100">
-                        <input type="text" id="input-todo-dilna" placeholder="Nový úkol do dílny..." class="flex-1 border p-2 rounded-lg text-sm bg-gray-50 focus:border-emerald-500 outline-none" required>
+                        <input type="text" id="input-todo-dilna" placeholder="Nový úkol..." class="flex-1 border p-2 rounded-lg text-sm bg-gray-50 focus:border-emerald-500 outline-none" required>
                         <button type="submit" class="bg-emerald-600 text-white px-3 py-2 rounded-lg font-bold">+</button>
+                    </form>
+                </div>
+
+                <!-- Grafika a Sítě To-Do -->
+                <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col">
+                    <h3 class="text-lg font-bold mb-4 text-purple-600 border-b pb-2">📱 Grafika a Sítě</h3>
+                    <ul id="todo-grafika" class="space-y-2 mb-4 flex-1 overflow-y-auto min-h-[150px] max-h-60">
+                        <li class="text-gray-400 italic text-xs">Načítám...</li>
+                    </ul>
+                    <form onsubmit="pridatTodo(event, 'Grafika', 'input-todo-grafika')" class="flex gap-2 mt-auto pt-4 border-t border-gray-100">
+                        <input type="text" id="input-todo-grafika" placeholder="Nový úkol..." class="flex-1 border p-2 rounded-lg text-sm bg-gray-50 focus:border-purple-500 outline-none" required>
+                        <button type="submit" class="bg-purple-600 text-white px-3 py-2 rounded-lg font-bold">+</button>
                     </form>
                 </div>
             </div>
@@ -365,7 +373,7 @@
             const app = initializeApp(firebaseConfig);
             const db = getFirestore(app);
 
-            // TODO LISTY (3D Tisk, Cricut, Dílna)
+            // TODO LISTY
             window.pridatTodo = async function(e, kategorie, inputId) {
                 e.preventDefault();
                 const textEl = document.getElementById(inputId);
@@ -381,7 +389,7 @@
             };
 
             onSnapshot(collection(db, "todo"), (snapshot) => {
-                let html3D = '', htmlCricut = '', htmlDilna = '';
+                let html3D = '', htmlCricut = '', htmlDilna = '', htmlGrafika = '';
                 let todoArray = [];
                 snapshot.forEach(docSnap => todoArray.push({id: docSnap.id, ...docSnap.data()}));
                 
@@ -403,11 +411,13 @@
                     if(t.kategorie === '3D tisk') html3D += row;
                     else if(t.kategorie === 'Cricut') htmlCricut += row;
                     else if(t.kategorie === 'Dílna') htmlDilna += row;
+                    else if(t.kategorie === 'Grafika') htmlGrafika += row;
                 });
 
                 if(document.getElementById('todo-3dtisk')) document.getElementById('todo-3dtisk').innerHTML = html3D || '<li class="text-gray-400 italic text-xs">Vše hotovo.</li>';
                 if(document.getElementById('todo-cricut')) document.getElementById('todo-cricut').innerHTML = htmlCricut || '<li class="text-gray-400 italic text-xs">Vše hotovo.</li>';
                 if(document.getElementById('todo-dilna')) document.getElementById('todo-dilna').innerHTML = htmlDilna || '<li class="text-gray-400 italic text-xs">Vše hotovo.</li>';
+                if(document.getElementById('todo-grafika')) document.getElementById('todo-grafika').innerHTML = htmlGrafika || '<li class="text-gray-400 italic text-xs">Vše hotovo.</li>';
             });
 
             // KLIENTI
@@ -516,7 +526,6 @@
                     
                     let zobrazenyTermin = z.termin ? new Date(z.termin).toLocaleDateString('cs-CZ') : '-';
                     
-                    // Výpočet výdělku za aktuální měsíc
                     if(z.termin) {
                         const termDatum = new Date(z.termin);
                         if(termDatum.getMonth() === aktualniMesic && termDatum.getFullYear() === aktualniRok) {
