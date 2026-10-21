@@ -74,9 +74,10 @@
                     <h3 class="text-gray-500 text-sm font-medium">Finanční bilance</h3>
                     <p class="text-3xl font-bold text-gray-800 mt-2" id="stat-finance">0 Kč</p>
                 </div>
-                <div class="bg-white p-6 rounded-xl border-red-200 shadow-sm bg-red-50">
-                    <h3 class="text-red-600 text-sm font-medium">Docházející materiál (< 200g)</h3>
-                    <p class="text-xl font-bold text-red-700 mt-2" id="stat-sklad">0 položek</p>
+                <!-- ZMĚNA: Výdělek za aktuální měsíc místo duplicitního skladu -->
+                <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm bg-indigo-50">
+                    <h3 class="text-indigo-600 text-sm font-bold">Výdělek (Tento měsíc)</h3>
+                    <p class="text-3xl font-black text-indigo-700 mt-2" id="stat-vydelek">0 Kč</p>
                 </div>
             </div>
             
@@ -384,7 +385,6 @@
                 let todoArray = [];
                 snapshot.forEach(docSnap => todoArray.push({id: docSnap.id, ...docSnap.data()}));
                 
-                // Řazení: Nejdřív nehotové (od nejnovějších), pak hotové
                 todoArray.sort((a,b) => {
                     if (a.hotovo === b.hotovo) return (a.vytvoreno || 0) - (b.vytvoreno || 0);
                     return a.hotovo ? 1 : -1;
@@ -504,6 +504,10 @@
                 const dnes = new Date();
                 dnes.setHours(0,0,0,0);
                 
+                let vydelekMesic = 0;
+                const aktualniMesic = dnes.getMonth();
+                const aktualniRok = dnes.getFullYear();
+                
                 snapshot.forEach(docSnap => { 
                     const z = docSnap.data(); const id = docSnap.id; const typ = z.typ || '3D tisk'; 
                     vsechnyZakazkyRaw[id] = z; 
@@ -512,6 +516,16 @@
                     
                     let zobrazenyTermin = z.termin ? new Date(z.termin).toLocaleDateString('cs-CZ') : '-';
                     
+                    // Výpočet výdělku za aktuální měsíc
+                    if(z.termin) {
+                        const termDatum = new Date(z.termin);
+                        if(termDatum.getMonth() === aktualniMesic && termDatum.getFullYear() === aktualniRok) {
+                            vydelekMesic += Number(z.cena) || 0;
+                        }
+                    } else if(z.stav !== 'Odesláno') {
+                        vydelekMesic += Number(z.cena) || 0;
+                    }
+
                     let obsahListHtml = z.obsah ? z.obsah.map((p, index) => { 
                         const stavPolozky = p.stavItem || 'Čeká'; const stavyPolozky = ['Čeká', 'Tiskne se', 'Vytištěno/Vyřezáno', 'Nabarveno', 'Hotovo']; 
                         let optionsItem = stavyPolozky.map(s => `<option value="${s}" ${stavPolozky === s ? 'selected' : ''}>${s}</option>`).join(''); 
@@ -527,13 +541,11 @@
                     } else { 
                         zHTML += rowHtml; aktivni++; 
                         
-                        // Zpracování Nástěnky: K Odeslání
                         if(z.stav === 'Zabaleno' || z.stav === 'Hotovo') { 
                             kOdeslani++; 
                             readyHTML += `<li class="p-3 bg-green-50 rounded-lg border border-green-100 flex justify-between items-center shadow-sm"><div><strong class="text-green-800">${z.zakaznik}</strong><br><span class="text-xs text-green-600">${z.kategorie || z.typ}</span></div><button onclick="switchTab('zakazky')" class="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-md transition font-bold">Vyřídit</button></li>`;
                         }
 
-                        // Zpracování Nástěnky: Blížící se termíny
                         if(z.termin && z.stav !== 'Zabaleno' && z.stav !== 'Hotovo') {
                             const terminDatum = new Date(z.termin);
                             const rozdilDni = Math.ceil((terminDatum - dnes) / (1000 * 60 * 60 * 24));
@@ -548,13 +560,14 @@
                         ucelOptions += `<option value="Zakázka: ${z.zakaznik}">Zakázka: ${z.zakaznik}</option>`;
                     } 
                 }); 
+                
                 if(document.getElementById('list-zakazky')) document.getElementById('list-zakazky').innerHTML = zHTML; 
                 if(document.getElementById('list-archiv')) document.getElementById('list-archiv').innerHTML = archivHTML; 
                 if(document.getElementById('stat-aktivni')) document.getElementById('stat-aktivni').innerText = aktivni; 
                 if(document.getElementById('stat-odeslani')) document.getElementById('stat-odeslani').innerText = kOdeslani; 
+                if(document.getElementById('stat-vydelek')) document.getElementById('stat-vydelek').innerText = vydelekMesic.toLocaleString('cs-CZ') + ' Kč';
                 if(document.getElementById('zt-ucel')) document.getElementById('zt-ucel').innerHTML = ucelOptions;
                 
-                // Aktualizace seznamů na nástěnce
                 if(document.getElementById('urgent-orders-list')) document.getElementById('urgent-orders-list').innerHTML = urgentHTML || '<li class="text-gray-400 italic">Všechny termíny mají dostatečnou rezervu.</li>';
                 if(document.getElementById('ready-orders-list')) document.getElementById('ready-orders-list').innerHTML = readyHTML || '<li class="text-gray-400 italic">Zatím nic nečeká na odeslání.</li>';
             });
@@ -571,7 +584,6 @@
                     materialOptions += `<option value="${id}">${s.nazev} (Zbytků: ${s.pocet})</option>`; 
                 }); 
                 if(document.getElementById('list-sklad')) document.getElementById('list-sklad').innerHTML = sHTML; 
-                if(document.getElementById('stat-sklad')) document.getElementById('stat-sklad').innerText = maloSkladem + ' položek'; 
                 if(document.getElementById('low-stock-list')) document.getElementById('low-stock-list').innerHTML = maloSkladem > 0 ? varovaniHTML : '<li class="text-green-600 font-bold">Materiálu je dostatek.</li>'; 
                 if(document.getElementById('zt-material')) document.getElementById('zt-material').innerHTML = materialOptions; 
             });
