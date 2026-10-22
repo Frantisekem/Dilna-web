@@ -375,7 +375,7 @@
             const firebaseConfig = { apiKey: "AIzaSyCGMPmV6UI1Q-T5VCHFkv_Qbp3_6d8HoGQ", authDomain: "dilna-web.firebaseapp.com", projectId: "dilna-web", storageBucket: "dilna-web.firebasestorage.app", messagingSenderId: "579413031750", appId: "1:579413031750:web:de8e579a13b3f483134347", measurementId: "G-6T0Q7909D2" };
             const app = initializeApp(firebaseConfig);
             const db = getFirestore(app);
-            const storage = getStorage(app); // Spuštění Firebase Storage pro nahrávání příloh
+            const storage = getStorage(app);
 
             // TODO LISTY
             let vsechnaTodoRaw = {};
@@ -392,7 +392,6 @@
             window.toggleTodo = async function(id, aktualniStav) { await updateDoc(doc(db, "todo", id), { hotovo: !aktualniStav }); };
             window.smazatTodo = async function(id) { await deleteDoc(doc(db, "todo", id)); };
 
-            // Otevření okna pro úpravu úkolu
             window.upravitTodo = function(id) {
                 const t = vsechnaTodoRaw[id];
                 if(!t) return;
@@ -413,7 +412,6 @@
                 document.getElementById('form-todo-edit').reset();
             };
 
-            // Uložení upraveného úkolu a nahrání přílohy do Storage
             document.getElementById('form-todo-edit').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const id = document.getElementById('todo-edit-id').value;
@@ -424,44 +422,31 @@
                 tlacitko.disabled = true;
 
                 try {
-                    let updateData = {
-                        text: document.getElementById('todo-edit-text').value,
-                        pracovnik: document.getElementById('todo-edit-pracovnik').value
-                    };
+                    let updateData = { text: document.getElementById('todo-edit-text').value, pracovnik: document.getElementById('todo-edit-pracovnik').value };
 
-                    // Pokud byl vybrán soubor k nahrání
                     if (fileInput.files.length > 0) {
                         const file = fileInput.files[0];
                         const bezpecnyNazev = Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9.]/g, '_');
                         const storageRef = ref(storage, 'todo_prilohy/' + bezpecnyNazev);
-                        
                         await uploadBytes(storageRef, file);
                         const url = await getDownloadURL(storageRef);
-                        
-                        updateData.prilohaUrl = url;
-                        updateData.prilohaNazev = file.name;
+                        updateData.prilohaUrl = url; updateData.prilohaNazev = file.name;
                     }
-
                     await updateDoc(doc(db, "todo", id), updateData);
                     window.zavritModalTodo();
                 } catch (err) {
-                    console.error(err);
-                    alert("Nepodařilo se uložit úkol nebo nahrát soubor. Zkontrolujte prosím přístupová práva ve Firebase Storage pravidlech.");
+                    console.error(err); alert("Chyba nahrávání souboru. Zkontrolujte Firebase pravidla.");
                 } finally {
-                    tlacitko.innerText = "Uložit změny";
-                    tlacitko.disabled = false;
+                    tlacitko.innerText = "Uložit změny"; tlacitko.disabled = false;
                 }
             });
 
             onSnapshot(collection(db, "todo"), (snapshot) => {
                 let html3D = '', htmlCricut = '', htmlDilna = '', htmlGrafika = '';
-                let todoArray = [];
-                vsechnaTodoRaw = {};
+                let todoArray = []; vsechnaTodoRaw = {};
                 
                 snapshot.forEach(docSnap => {
-                    const data = docSnap.data();
-                    vsechnaTodoRaw[docSnap.id] = data;
-                    todoArray.push({id: docSnap.id, ...data});
+                    const data = docSnap.data(); vsechnaTodoRaw[docSnap.id] = data; todoArray.push({id: docSnap.id, ...data});
                 });
                 
                 todoArray.sort((a,b) => {
@@ -487,10 +472,7 @@
                             <button onclick="smazatTodo('${t.id}')" class="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition px-1 font-bold text-xs" title="Smazat">X</button>
                         </li>
                     `;
-                    if(t.kategorie === '3D tisk') html3D += row;
-                    else if(t.kategorie === 'Cricut') htmlCricut += row;
-                    else if(t.kategorie === 'Dílna') htmlDilna += row;
-                    else if(t.kategorie === 'Grafika') htmlGrafika += row;
+                    if(t.kategorie === '3D tisk') html3D += row; else if(t.kategorie === 'Cricut') htmlCricut += row; else if(t.kategorie === 'Dílna') htmlDilna += row; else if(t.kategorie === 'Grafika') htmlGrafika += row;
                 });
 
                 if(document.getElementById('todo-3dtisk')) document.getElementById('todo-3dtisk').innerHTML = html3D || '<li class="text-gray-400 italic text-xs">Vše hotovo.</li>';
@@ -499,11 +481,12 @@
                 if(document.getElementById('todo-grafika')) document.getElementById('todo-grafika').innerHTML = htmlGrafika || '<li class="text-gray-400 italic text-xs">Vše hotovo.</li>';
             });
 
-            // ZBÝVAJÍCÍ KÓD PRO KLIENTY, ZAKÁZKY, SKLAD A FINANCE
+            // KLIENTI
             document.getElementById('form-klienti').addEventListener('submit', async (e) => { e.preventDefault(); await addDoc(collection(db, "klienti"), { jmeno: document.getElementById('k-jmeno').value, kontakt: document.getElementById('k-kontakt').value, telefon: document.getElementById('k-telefon').value, poznamka: document.getElementById('k-poznamka').value }); e.target.reset(); });
             window.smazatK = async (id) => { if(confirm('Smazat klienta?')) await deleteDoc(doc(db, "klienti", id)); };
             onSnapshot(collection(db, "klienti"), (snapshot) => { let kHTML = ''; let optionsHtml = '<option value="">-- Vyberte klienta --</option>'; snapshot.forEach(docSnap => { const k = docSnap.data(); kHTML += `<div class="bg-white p-4 border rounded-xl relative"><button onclick="smazatK('${docSnap.id}')" class="absolute top-3 right-3 text-red-400 font-bold hover:text-red-600">X</button><h4 class="font-bold text-indigo-700">${k.jmeno}</h4><div class="text-sm text-gray-600 mt-1">📱 ${k.telefon || '-'}</div><div class="text-sm text-gray-600">📧 ${k.kontakt || '-'}</div>${k.poznamka ? `<div class="mt-2 bg-yellow-50 p-2 text-xs border rounded text-yellow-800">${k.poznamka}</div>` : ''}</div>`; optionsHtml += `<option value="${k.jmeno}">${k.jmeno}</option>`; }); if(document.getElementById('list-klienti')) document.getElementById('list-klienti').innerHTML = kHTML; if(document.getElementById('z-zakaznik')) document.getElementById('z-zakaznik').innerHTML = optionsHtml; });
 
+            // ZAKÁZKY - PŘIDÁVÁNÍ A ÚPRAVY
             window.zrusitUpravuZakazky = function(reset = true) {
                 if(reset) document.getElementById('form-zakazky').reset();
                 document.getElementById('z-edit-id').value = '';
@@ -568,8 +551,15 @@
                     obsah: obsah 
                 };
 
-                if (editId) { await updateDoc(doc(db, "zakazky", editId), dataZakazky); } else { dataZakazky.stav = 'Přijato'; await addDoc(collection(db, "zakazky"), dataZakazky); }
-                window.zrusitUpravuZakazky(true); window.zmenKategorie(); 
+                if (editId) { 
+                    await updateDoc(doc(db, "zakazky", editId), dataZakazky); 
+                } else { 
+                    dataZakazky.stav = dataZakazky.typ === 'Cricut' ? 'Čeká' : 'Přijato'; 
+                    await addDoc(collection(db, "zakazky"), dataZakazky); 
+                }
+                
+                window.zrusitUpravuZakazky(true);
+                window.zmenKategorie(); 
             });
             
             window.zmenitStav = async (id, novyStav) => { await updateDoc(doc(db, "zakazky", id), { stav: novyStav }); }; window.smazatZ = async (id) => { if(confirm('Opravdu smazat zakázku?')) await deleteDoc(doc(db, "zakazky", id)); }; window.zmenitStavPolozky = async (zakazkaId, polozkaIndex, novyStav) => { const docRef = doc(db, "zakazky", zakazkaId); const docSnap = await getDoc(docRef); if (docSnap.exists()) { let data = docSnap.data(); if (data.obsah && data.obsah[polozkaIndex]) { data.obsah[polozkaIndex].stavItem = novyStav; await updateDoc(docRef, { obsah: data.obsah }); } } };
@@ -580,16 +570,27 @@
             onSnapshot(collection(db, "zakazky"), (snapshot) => { 
                 let zHTML = ''; let archivHTML = ''; let aktivni = 0, kOdeslani = 0; 
                 let ucelOptions = '<option value="Osobní / Dílna">-- Osobní / Dílna --</option>'; 
-                const stavyVyroby = { '3D tisk': ['Přijato','Příprava 3D modelu','Tisk','Nabarveno','Zabaleno','Odesláno'], 'Cricut': ['Přijato','Příprava grafiky','Řezání/Tisk','Zabaleno','Odesláno'] }; 
+                const stavyVyroby = { '3D tisk': ['Přijato','Příprava 3D modelu','Tisk','Nabarveno','Zabaleno','Odesláno'], 'Cricut': ['Čeká','Grafika','Tisk','Zabaleno','Hotovo'] }; 
                 vsechnyZakazkyRaw = {}; 
-                let urgentHTML = ''; let readyHTML = ''; const dnes = new Date(); dnes.setHours(0,0,0,0);
-                let vydelekMesic = 0; const aktualniMesic = dnes.getMonth(); const aktualniRok = dnes.getFullYear();
+                
+                let urgentHTML = '';
+                let readyHTML = '';
+                const dnes = new Date();
+                dnes.setHours(0,0,0,0);
+                
+                let vydelekMesic = 0;
+                const aktualniMesic = dnes.getMonth();
+                const aktualniRok = dnes.getFullYear();
                 
                 snapshot.forEach(docSnap => { 
                     const z = docSnap.data(); const id = docSnap.id; const typ = z.typ || '3D tisk'; 
                     vsechnyZakazkyRaw[id] = z; 
                     const stavyCelkove = stavyVyroby[typ] || stavyVyroby['3D tisk']; 
-                    let optionsGlobal = stavyCelkove.map(s => `<option value="${s}" ${z.stav === s ? 'selected' : ''}>${s}</option>`).join(''); 
+                    
+                    let optionsGlobalArray = stavyCelkove.map(s => `<option value="${s}" ${z.stav === s ? 'selected' : ''}>${s}</option>`); 
+                    if(!stavyCelkove.includes(z.stav)) optionsGlobalArray.unshift(`<option value="${z.stav}" selected>${z.stav}</option>`);
+                    let optionsGlobal = optionsGlobalArray.join('');
+                    
                     let zobrazenyTermin = z.termin ? new Date(z.termin).toLocaleDateString('cs-CZ') : '-';
                     
                     let pracBadge = '';
@@ -597,26 +598,47 @@
                     else if(z.pracovnik === 'Týnka') pracBadge = '<span class="px-2 py-0.5 bg-pink-100 text-pink-800 rounded text-[10px] font-bold mt-1 inline-block">Týnka</span>';
                     else if(z.pracovnik === 'Společně') pracBadge = '<span class="px-2 py-0.5 bg-purple-100 text-purple-800 rounded text-[10px] font-bold mt-1 inline-block">Společně</span>';
 
-                    if(z.termin) { const termDatum = new Date(z.termin); if(termDatum.getMonth() === aktualniMesic && termDatum.getFullYear() === aktualniRok) { vydelekMesic += Number(z.cena) || 0; } } else if(z.stav !== 'Odesláno') { vydelekMesic += Number(z.cena) || 0; }
+                    if(z.termin) {
+                        const termDatum = new Date(z.termin);
+                        if(termDatum.getMonth() === aktualniMesic && termDatum.getFullYear() === aktualniRok) {
+                            vydelekMesic += Number(z.cena) || 0;
+                        }
+                    } else if(z.stav !== 'Odesláno' && z.stav !== 'Hotovo') {
+                        vydelekMesic += Number(z.cena) || 0;
+                    }
 
                     let obsahListHtml = z.obsah ? z.obsah.map((p, index) => { 
                         const stavPolozky = p.stavItem || 'Čeká'; const stavyPolozky = ['Čeká', 'Tiskne se', 'Vytištěno/Vyřezáno', 'Nabarveno', 'Hotovo']; 
                         let optionsItem = stavyPolozky.map(s => `<option value="${s}" ${stavPolozky === s ? 'selected' : ''}>${s}</option>`).join(''); 
                         const cenaText = p.cena ? ` (${p.cena} Kč/ks)` : '';
-                        if(z.stav === 'Odesláno') { return `<li class="py-1">✔️ ${p.ks}x ${p.nazev}${cenaText}</li>`; } 
+                        if(z.stav === 'Odesláno' || z.stav === 'Hotovo') { return `<li class="py-1">✔️ ${p.ks}x ${p.nazev}${cenaText}</li>`; } 
                         else { return `<li class="flex items-center justify-between bg-white border border-gray-200 shadow-sm p-1 px-2 mb-1 rounded text-xs"><span class="font-medium text-gray-700">${p.ks}x ${p.nazev}${cenaText}</span><select onchange="zmenitStavPolozky('${id}', ${index}, this.value)" class="text-xs ml-2 bg-gray-50 border border-gray-300 rounded outline-none cursor-pointer">${optionsItem}</select></li>`; } 
                     }).join('') : ''; 
                     const akceTlacitka = `<div class="flex flex-col gap-1"><button onclick="upravitZakazku('${id}')" class="bg-blue-100 text-blue-700 hover:bg-blue-200 font-bold px-3 py-1 rounded text-xs text-center">Upravit</button><button onclick="generovatPDF('${id}')" class="bg-green-100 text-green-700 hover:bg-green-200 font-bold px-3 py-1 rounded text-xs text-center">📄 PDF</button><button onclick="smazatZ('${id}')" class="text-red-500 hover:text-red-700 font-bold bg-red-50 px-3 py-1 rounded text-xs text-center">Smazat</button></div>`; 
                     
                     const rowHtml = `<tr class="hover:bg-gray-50"><td class="p-4"><div class="font-bold text-gray-800">${z.zakaznik}</div>${pracBadge}</td><td class="p-4 text-xs"><span class="bg-gray-200 px-2 py-1 rounded text-gray-700 font-bold">${typ}</span><br><span class="inline-block mt-2 text-gray-500">${z.kategorie || '-'}</span></td><td class="p-4 text-xs"><ul class="min-w-[180px]">${obsahListHtml}</ul></td><td class="p-4 font-medium whitespace-nowrap text-red-600">${zobrazenyTermin}</td><td class="p-4 font-bold text-blue-600 whitespace-nowrap">${z.cena} Kč</td><td class="p-4"><select onchange="zmenitStav('${id}', this.value)" class="bg-blue-100 font-bold text-blue-800 p-2 rounded outline-none border border-blue-200 cursor-pointer text-xs w-full">${optionsGlobal}</select></td><td class="p-4">${akceTlacitka}</td></tr>`; 
                     
-                    if(z.stav === 'Odesláno') { archivHTML += rowHtml; } else { 
+                    if(z.stav === 'Odesláno' || z.stav === 'Hotovo') { 
+                        archivHTML += rowHtml; 
+                    } else { 
                         zHTML += rowHtml; aktivni++; 
-                        if(z.stav === 'Zabaleno' || z.stav === 'Hotovo') { kOdeslani++; readyHTML += `<li class="p-3 bg-green-50 rounded-lg border border-green-100 flex justify-between items-center shadow-sm"><div><strong class="text-green-800">${z.zakaznik}</strong><br><span class="text-xs text-green-600">${z.kategorie || z.typ}</span></div><button onclick="switchTab('zakazky')" class="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-md transition font-bold">Vyřídit</button></li>`; }
-                        if(z.termin && z.stav !== 'Zabaleno' && z.stav !== 'Hotovo') {
-                            const terminDatum = new Date(z.termin); const rozdilDni = Math.ceil((terminDatum - dnes) / (1000 * 60 * 60 * 24));
-                            if(rozdilDni <= 4) { let barvaTextu = rozdilDni < 0 ? 'text-red-600' : (rozdilDni === 0 ? 'text-orange-600' : 'text-gray-500'); let textDni = rozdilDni < 0 ? `Zpožděno (${Math.abs(rozdilDni)} d)` : (rozdilDni === 0 ? 'Dnes!' : `Za ${rozdilDni} dny`); urgentHTML += `<li class="p-3 bg-white rounded-lg border border-gray-200 shadow-sm flex justify-between items-center"><div><strong class="text-gray-800">${z.zakaznik}</strong><br><span class="text-xs font-bold ${barvaTextu}">${textDni}</span></div><button onclick="switchTab('zakazky')" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 border px-3 py-1.5 rounded-md transition font-bold">Detail</button></li>`; }
+                        
+                        if(z.stav === 'Zabaleno') { 
+                            kOdeslani++; 
+                            readyHTML += `<li class="p-3 bg-green-50 rounded-lg border border-green-100 flex justify-between items-center shadow-sm"><div><strong class="text-green-800">${z.zakaznik}</strong><br><span class="text-xs text-green-600">${z.kategorie || z.typ}</span></div><button onclick="switchTab('zakazky')" class="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-md transition font-bold">Vyřídit</button></li>`;
                         }
+
+                        if(z.termin && z.stav !== 'Zabaleno') {
+                            const terminDatum = new Date(z.termin);
+                            const rozdilDni = Math.ceil((terminDatum - dnes) / (1000 * 60 * 60 * 24));
+                            
+                            if(rozdilDni <= 4) { 
+                                let barvaTextu = rozdilDni < 0 ? 'text-red-600' : (rozdilDni === 0 ? 'text-orange-600' : 'text-gray-500');
+                                let textDni = rozdilDni < 0 ? `Zpožděno (${Math.abs(rozdilDni)} d)` : (rozdilDni === 0 ? 'Dnes!' : `Za ${rozdilDni} dny`);
+                                urgentHTML += `<li class="p-3 bg-white rounded-lg border border-gray-200 shadow-sm flex justify-between items-center"><div><strong class="text-gray-800">${z.zakaznik}</strong><br><span class="text-xs font-bold ${barvaTextu}">${textDni}</span></div><button onclick="switchTab('zakazky')" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 border px-3 py-1.5 rounded-md transition font-bold">Detail</button></li>`;
+                            }
+                        }
+                        
                         ucelOptions += `<option value="Zakázka: ${z.zakaznik}">Zakázka: ${z.zakaznik}</option>`;
                     } 
                 }); 
@@ -627,15 +649,61 @@
                 if(document.getElementById('stat-odeslani')) document.getElementById('stat-odeslani').innerText = kOdeslani; 
                 if(document.getElementById('stat-vydelek')) document.getElementById('stat-vydelek').innerText = vydelekMesic.toLocaleString('cs-CZ') + ' Kč';
                 if(document.getElementById('zt-ucel')) document.getElementById('zt-ucel').innerHTML = ucelOptions;
+                
                 if(document.getElementById('urgent-orders-list')) document.getElementById('urgent-orders-list').innerHTML = urgentHTML || '<li class="text-gray-400 italic">Všechny termíny mají dostatečnou rezervu.</li>';
                 if(document.getElementById('ready-orders-list')) document.getElementById('ready-orders-list').innerHTML = readyHTML || '<li class="text-gray-400 italic">Zatím nic nečeká na odeslání.</li>';
             });
 
-            // OSTATNÍ MODULY (SKLAD, ZÁZNAMY TISKU, FINANCE, ATD.)
-            document.getElementById('form-sklad').addEventListener('submit', async (e) => { e.preventDefault(); await addDoc(collection(db, "sklad"), { nazev: document.getElementById('s-nazev').value, dodavatel: document.getElementById('s-dodavatel').value || '-', pocet: Number(document.getElementById('s-pocet').value) }); e.target.reset(); }); window.zmenitPocet = async (id, pocet, delta) => { await updateDoc(doc(db, "sklad", id), { pocet: Math.max(0, pocet + delta) }); }; window.smazatS = async (id) => await deleteDoc(doc(db, "sklad", id));
-            onSnapshot(collection(db, "sklad"), (snapshot) => { let sHTML = '', varovaniHTML = ''; let maloSkladem = 0; let materialOptions = '<option value="">-- Vyberte materiál --</option>'; snapshot.forEach(docSnap => { const s = docSnap.data(); const id = docSnap.id; const isMalo = s.pocet < 200; if(isMalo) { maloSkladem++; varovaniHTML += `<li class="border-b border-gray-100 pb-1">⚠️ <strong>${s.nazev}</strong><br><span class="text-xs text-gray-500">Zbývá: ${s.pocet}g (Od: ${s.dodavatel})</span></li>`; } sHTML += `<div class="bg-white p-4 border rounded-xl flex justify-between items-center"><div><div class="font-bold">${s.nazev}</div><div class="text-xs">Stav: <span class="${isMalo ? 'text-red-600 font-bold' : ''}">${s.pocet}</span> (Od: ${s.dodavatel})</div></div><div class="flex"><button onclick="zmenitPocet('${id}', ${s.pocet}, -100)" class="px-2 bg-gray-200 mx-1 rounded hover:bg-gray-300">-100</button><button onclick="zmenitPocet('${id}', ${s.pocet}, 100)" class="px-2 bg-gray-200 mx-1 rounded hover:bg-gray-300">+100</button><button onclick="smazatS('${id}')" class="text-red-400 ml-2 font-bold hover:text-red-600">X</button></div></div>`; materialOptions += `<option value="${id}">${s.nazev} (Zbytků: ${s.pocet})</option>`; }); if(document.getElementById('list-sklad')) document.getElementById('list-sklad').innerHTML = sHTML; if(document.getElementById('stat-sklad')) document.getElementById('stat-sklad').innerText = maloSkladem + ' položek'; if(document.getElementById('low-stock-list')) document.getElementById('low-stock-list').innerHTML = maloSkladem > 0 ? varovaniHTML : '<li class="text-green-600 font-bold">Materiálu je dostatek.</li>'; if(document.getElementById('zt-material')) document.getElementById('zt-material').innerHTML = materialOptions; });
-            document.getElementById('form-zaznam').addEventListener('submit', async (e) => { e.preventDefault(); const materialId = document.getElementById('zt-material').value; const spotreba = Number(document.getElementById('zt-spotreba').value); const selectEl = document.getElementById('zt-material'); const ucelEl = document.getElementById('zt-ucel').value; const materialNazev = selectEl.options[selectEl.selectedIndex].text.split(' (')[0]; if(!materialId) { alert("Musíte vybrat materiál!"); return; } await addDoc(collection(db, "zaznamy_tisku"), { datum: new Date().toLocaleDateString('cs-CZ'), nazev: document.getElementById('zt-nazev').value, ucel: ucelEl, cas: Number(document.getElementById('zt-cas').value), materialId: materialId, materialNazev: materialNazev, spotreba: spotreba }); await updateDoc(doc(db, "sklad", materialId), { pocet: increment(-spotreba) }); e.target.reset(); }); window.smazatZaznam = async (id, matId, spotreba) => { if(confirm('Smazat záznam? Gramy se vrátí do skladu.')) { await deleteDoc(doc(db, "zaznamy_tisku", id)); if(matId) { await updateDoc(doc(db, "sklad", matId), { pocet: increment(spotreba) }); } } };
-            onSnapshot(collection(db, "zaznamy_tisku"), (snapshot) => { let ztHTML = ''; snapshot.forEach(docSnap => { const zt = docSnap.data(); ztHTML += `<tr class="hover:bg-gray-50"><td class="p-4 text-xs">${zt.datum}</td><td class="p-4 font-bold text-blue-700">${zt.nazev}</td><td class="p-4 text-xs text-gray-500 font-bold">${zt.ucel || '-'}</td><td class="p-4">${zt.cas} h</td><td class="p-4 text-xs">${zt.materialNazev}</td><td class="p-4 font-bold text-orange-600">${zt.spotreba} g</td><td class="p-4"><button onclick="smazatZaznam('${docSnap.id}', '${zt.materialId}', ${zt.spotreba})" class="text-red-500 hover:text-red-700 font-bold bg-red-50 px-2 rounded">X</button></td></tr>`; }); if(document.getElementById('list-zaznamy')) document.getElementById('list-zaznamy').innerHTML = ztHTML; });
+            // SKLAD & ROLETKA MATERIÁLU
+            document.getElementById('form-sklad').addEventListener('submit', async (e) => { e.preventDefault(); await addDoc(collection(db, "sklad"), { nazev: document.getElementById('s-nazev').value, dodavatel: document.getElementById('s-dodavatel').value || '-', pocet: Number(document.getElementById('s-pocet').value) }); e.target.reset(); });
+            window.zmenitPocet = async (id, pocet, delta) => { await updateDoc(doc(db, "sklad", id), { pocet: Math.max(0, pocet + delta) }); }; window.smazatS = async (id) => await deleteDoc(doc(db, "sklad", id));
+            onSnapshot(collection(db, "sklad"), (snapshot) => { 
+                let sHTML = '', varovaniHTML = ''; let maloSkladem = 0; let materialOptions = '<option value="">-- Vyberte materiál --</option>'; 
+                snapshot.forEach(docSnap => { 
+                    const s = docSnap.data(); const id = docSnap.id; const isMalo = s.pocet < 200; 
+                    if(isMalo) { maloSkladem++; varovaniHTML += `<li class="border-b border-gray-100 pb-1">⚠️ <strong>${s.nazev}</strong><br><span class="text-xs text-gray-500">Zbývá: ${s.pocet}g (Od: ${s.dodavatel})</span></li>`; } 
+                    sHTML += `<div class="bg-white p-4 border rounded-xl flex justify-between items-center"><div><div class="font-bold">${s.nazev}</div><div class="text-xs">Stav: <span class="${isMalo ? 'text-red-600 font-bold' : ''}">${s.pocet}</span> (Od: ${s.dodavatel})</div></div><div class="flex"><button onclick="zmenitPocet('${id}', ${s.pocet}, -100)" class="px-2 bg-gray-200 mx-1 rounded hover:bg-gray-300">-100</button><button onclick="zmenitPocet('${id}', ${s.pocet}, 100)" class="px-2 bg-gray-200 mx-1 rounded hover:bg-gray-300">+100</button><button onclick="smazatS('${id}')" class="text-red-400 ml-2 font-bold hover:text-red-600">X</button></div></div>`; 
+                    materialOptions += `<option value="${id}">${s.nazev} (Zbytků: ${s.pocet})</option>`; 
+                }); 
+                if(document.getElementById('list-sklad')) document.getElementById('list-sklad').innerHTML = sHTML; 
+                if(document.getElementById('stat-sklad')) document.getElementById('stat-sklad').innerText = maloSkladem + ' položek'; 
+                if(document.getElementById('low-stock-list')) document.getElementById('low-stock-list').innerHTML = maloSkladem > 0 ? varovaniHTML : '<li class="text-green-600 font-bold">Materiálu je dostatek.</li>'; 
+                if(document.getElementById('zt-material')) document.getElementById('zt-material').innerHTML = materialOptions; 
+            });
+
+            // ZÁZNAMY TISKU
+            document.getElementById('form-zaznam').addEventListener('submit', async (e) => { 
+                e.preventDefault(); 
+                const materialId = document.getElementById('zt-material').value; 
+                const spotreba = Number(document.getElementById('zt-spotreba').value); 
+                const selectEl = document.getElementById('zt-material'); 
+                const ucelEl = document.getElementById('zt-ucel').value; 
+                const materialNazev = selectEl.options[selectEl.selectedIndex].text.split(' (')[0]; 
+                
+                if(!materialId) { alert("Musíte vybrat materiál!"); return; } 
+                await addDoc(collection(db, "zaznamy_tisku"), { 
+                    datum: new Date().toLocaleDateString('cs-CZ'), 
+                    nazev: document.getElementById('zt-nazev').value, 
+                    ucel: ucelEl, 
+                    cas: Number(document.getElementById('zt-cas').value), 
+                    materialId: materialId, 
+                    materialNazev: materialNazev, 
+                    spotreba: spotreba 
+                }); 
+                await updateDoc(doc(db, "sklad", materialId), { pocet: increment(-spotreba) }); 
+                e.target.reset(); 
+            });
+            window.smazatZaznam = async (id, matId, spotreba) => { if(confirm('Smazat záznam? Gramy se vrátí do skladu.')) { await deleteDoc(doc(db, "zaznamy_tisku", id)); if(matId) { await updateDoc(doc(db, "sklad", matId), { pocet: increment(spotreba) }); } } };
+            onSnapshot(collection(db, "zaznamy_tisku"), (snapshot) => { 
+                let ztHTML = ''; 
+                snapshot.forEach(docSnap => { 
+                    const zt = docSnap.data(); 
+                    ztHTML += `<tr class="hover:bg-gray-50"><td class="p-4 text-xs">${zt.datum}</td><td class="p-4 font-bold text-blue-700">${zt.nazev}</td><td class="p-4 text-xs text-gray-500 font-bold">${zt.ucel || '-'}</td><td class="p-4">${zt.cas} h</td><td class="p-4 text-xs">${zt.materialNazev}</td><td class="p-4 font-bold text-orange-600">${zt.spotreba} g</td><td class="p-4"><button onclick="smazatZaznam('${docSnap.id}', '${zt.materialId}', ${zt.spotreba})" class="text-red-500 hover:text-red-700 font-bold bg-red-50 px-2 rounded">X</button></td></tr>`; 
+                }); 
+                if(document.getElementById('list-zaznamy')) document.getElementById('list-zaznamy').innerHTML = ztHTML; 
+            });
+
+            // DODAVATELÉ, FINANCE, KNIHOVNA
             document.getElementById('form-dodavatele').addEventListener('submit', async (e) => { e.preventDefault(); await addDoc(collection(db, "dodavatele"), { nazev: document.getElementById('d-nazev').value, material: document.getElementById('d-material').value }); e.target.reset(); }); window.smazatD = async (id) => await deleteDoc(doc(db, "dodavatele", id)); onSnapshot(collection(db, "dodavatele"), (snapshot) => { let dHTML = ''; snapshot.forEach(docSnap => { const d = docSnap.data(); dHTML += `<li class="bg-white p-4 border rounded-xl flex justify-between"><div><div class="font-bold">${d.nazev}</div><div class="text-sm">${d.material}</div></div><button onclick="smazatD('${docSnap.id}')" class="text-red-500 font-bold">X</button></li>`; }); if(document.getElementById('list-dodavatele')) document.getElementById('list-dodavatele').innerHTML = dHTML; });
             document.getElementById('form-finance').addEventListener('submit', async (e) => { e.preventDefault(); await addDoc(collection(db, "finance"), { datum: new Date().toLocaleDateString('cs-CZ'), typ: document.getElementById('f-typ').value, popis: document.getElementById('f-popis').value, castka: Number(document.getElementById('f-castka').value) }); e.target.reset(); }); window.smazatF = async (id) => await deleteDoc(doc(db, "finance", id)); onSnapshot(collection(db, "finance"), (snapshot) => { let fHTML = '', celkem = 0; snapshot.forEach(docSnap => { const f = docSnap.data(); if(f.typ === 'prijem') celkem += f.castka; else celkem -= f.castka; fHTML += `<tr><td class="p-4">${f.datum}</td><td class="p-4 font-bold ${f.typ === 'prijem' ? 'text-green-600' : 'text-red-600'}">${f.typ === 'prijem' ? '+' : '-'}</td><td class="p-4">${f.popis}</td><td class="p-4 font-bold">${f.castka} Kč</td><td class="p-4"><button onclick="smazatF('${docSnap.id}')" class="text-red-500 font-bold bg-red-50 px-2 rounded">X</button></td></tr>`; }); if(document.getElementById('list-finance')) document.getElementById('list-finance').innerHTML = fHTML; if(document.getElementById('stat-finance')) { document.getElementById('stat-finance').innerText = celkem + ' Kč'; document.getElementById('stat-finance').className = celkem >= 0 ? "text-3xl font-bold text-green-600 mt-2" : "text-3xl font-bold text-red-600 mt-2"; } });
             document.getElementById('form-3d').addEventListener('submit', async (e) => { e.preventDefault(); await addDoc(collection(db, "modely"), { nazev: document.getElementById('m-nazev').value, odkaz: document.getElementById('m-odkaz').value, soubor: document.getElementById('m-soubor').value, poznamky: document.getElementById('m-poznamky').value }); e.target.reset(); }); window.smazatM = async (id) => { if(confirm('Opravdu smazat?')) await deleteDoc(doc(db, "modely", id)); }; onSnapshot(collection(db, "modely"), (snapshot) => { let mHTML = ''; snapshot.forEach(docSnap => { const m = docSnap.data(); mHTML += `<div class="bg-white p-4 border rounded-xl relative"><button onclick="smazatM('${docSnap.id}')" class="absolute top-3 right-3 text-red-400 font-bold">X</button><h4 class="font-bold text-indigo-700 mb-2">${m.nazev}</h4>${m.soubor ? `<div class="text-xs text-gray-500">📄 ${m.soubor}</div>` : ''} ${m.odkaz ? `<a href="${m.odkaz}" target="_blank" class="text-xs text-blue-500 mt-1 inline-block">Odkaz</a>` : ''}</div>`; }); if(document.getElementById('list-3d')) document.getElementById('list-3d').innerHTML = mHTML; });
