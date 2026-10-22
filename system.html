@@ -39,6 +39,7 @@
             
             <div class="pt-4 pb-1 text-xs font-bold text-gray-400 uppercase tracking-wider">Výroba a klienti</div>
             <button onclick="switchTab('zakazky')" class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 font-medium tab-btn" id="btn-zakazky">📦 Aktivní Zakázky</button>
+            <button onclick="switchTab('odeslani')" class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 font-medium tab-btn" id="btn-odeslani">📬 K odeslání</button>
             <button onclick="switchTab('archiv')" class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 font-medium tab-btn" id="btn-archiv">🗃️ Archiv Zakázek</button>
             <button onclick="switchTab('klienti')" class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 font-medium tab-btn" id="btn-klienti">👥 Adresář Klientů</button>
             <button onclick="switchTab('zaznamy-tisku')" class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 font-medium tab-btn bg-blue-50 text-blue-700 border border-blue-200 mt-2" id="btn-zaznamy-tisku">🖨️ Záznamy tisku</button>
@@ -194,6 +195,15 @@
             <table class="w-full text-left border-collapse bg-white rounded-xl shadow-sm overflow-hidden">
                 <thead><tr class="bg-gray-50 border-b text-sm text-gray-600"><th class="p-4 w-1/6">Klient a Kdo řeší</th><th class="p-4 w-1/6">Oblast</th><th class="p-4 w-2/6">Položky a jejich stav</th><th class="p-4">Termín</th><th class="p-4">Cena</th><th class="p-4 w-1/6">Celkový Stav</th><th class="p-4">Akce</th></tr></thead>
                 <tbody id="list-zakazky" class="text-sm divide-y"></tbody>
+            </table>
+        </section>
+
+        <!-- K ODESLÁNÍ -->
+        <section id="odeslani" class="tab-content">
+            <h2 class="text-2xl font-bold mb-6">Zakázky připravené k odeslání</h2>
+            <table class="w-full text-left border-collapse bg-white rounded-xl shadow-sm overflow-hidden">
+                <thead><tr class="bg-gray-50 border-b text-sm text-gray-600"><th class="p-4 w-1/5">Klient a Zodpovědnost</th><th class="p-4 w-1/6">Oblast</th><th class="p-4 w-2/5">Položky k zabalení</th><th class="p-4">Kód zásilky</th><th class="p-4 w-1/6">Akce</th></tr></thead>
+                <tbody id="list-odeslani" class="text-sm divide-y"></tbody>
             </table>
         </section>
 
@@ -558,29 +568,28 @@
                     await addDoc(collection(db, "zakazky"), dataZakazky); 
                 }
                 
-                window.zrusitUpravuZakazky(true);
-                window.zmenKategorie(); 
+                window.zrusitUpravuZakazky(true); window.zmenKategorie(); 
             });
             
             window.zmenitStav = async (id, novyStav) => { await updateDoc(doc(db, "zakazky", id), { stav: novyStav }); }; window.smazatZ = async (id) => { if(confirm('Opravdu smazat zakázku?')) await deleteDoc(doc(db, "zakazky", id)); }; window.zmenitStavPolozky = async (zakazkaId, polozkaIndex, novyStav) => { const docRef = doc(db, "zakazky", zakazkaId); const docSnap = await getDoc(docRef); if (docSnap.exists()) { let data = docSnap.data(); if (data.obsah && data.obsah[polozkaIndex]) { data.obsah[polozkaIndex].stavItem = novyStav; await updateDoc(docRef, { obsah: data.obsah }); } } };
             
+            window.odeslatZasilku = async function(id) { 
+                const track = document.getElementById('track-'+id).value; 
+                await updateDoc(doc(db, "zakazky", id), { stav: 'Odesláno', tracking: track }); 
+            };
+
             let vsechnyZakazkyRaw = {};
             window.generovatPDF = function(zakazkaId) { const z = vsechnyZakazkyRaw[zakazkaId]; if(!z) return; document.getElementById('pdf-datum').innerText = new Date().toLocaleDateString('cs-CZ'); document.getElementById('pdf-zakaznik').innerText = z.zakaznik; document.getElementById('pdf-cena').innerText = z.cena + ' Kč'; let pHTML = ''; if(z.obsah) { z.obsah.forEach(p => { pHTML += `<tr class="border-b border-gray-100"><td class="py-3 text-lg">${p.nazev}</td><td class="py-3 text-right font-bold">${p.ks} ks</td></tr>`; }); } document.getElementById('pdf-polozky').innerHTML = pHTML; const element = document.getElementById('invoice-template'); element.style.display = 'block'; html2pdf().set({ margin: 0, filename: `Dodak_${z.zakaznik.replace(/\s+/g, '_')}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } }).from(element).save().then(() => { element.style.display = 'none'; }); };
 
             onSnapshot(collection(db, "zakazky"), (snapshot) => { 
-                let zHTML = ''; let archivHTML = ''; let aktivni = 0, kOdeslani = 0; 
+                let zHTML = ''; let archivHTML = ''; let odeslaniHTML = '';
+                let aktivni = 0, kOdeslani = 0; 
                 let ucelOptions = '<option value="Osobní / Dílna">-- Osobní / Dílna --</option>'; 
                 const stavyVyroby = { '3D tisk': ['Přijato','Příprava 3D modelu','Tisk','Nabarveno','Zabaleno','Odesláno'], 'Cricut': ['Čeká','Grafika','Tisk','Zabaleno','Hotovo'] }; 
                 vsechnyZakazkyRaw = {}; 
                 
-                let urgentHTML = '';
-                let readyHTML = '';
-                const dnes = new Date();
-                dnes.setHours(0,0,0,0);
-                
-                let vydelekMesic = 0;
-                const aktualniMesic = dnes.getMonth();
-                const aktualniRok = dnes.getFullYear();
+                let urgentHTML = ''; let readyHTML = ''; const dnes = new Date(); dnes.setHours(0,0,0,0);
+                let vydelekMesic = 0; const aktualniMesic = dnes.getMonth(); const aktualniRok = dnes.getFullYear();
                 
                 snapshot.forEach(docSnap => { 
                     const z = docSnap.data(); const id = docSnap.id; const typ = z.typ || '3D tisk'; 
@@ -611,24 +620,27 @@
                         const stavPolozky = p.stavItem || 'Čeká'; const stavyPolozky = ['Čeká', 'Tiskne se', 'Vytištěno/Vyřezáno', 'Nabarveno', 'Hotovo']; 
                         let optionsItem = stavyPolozky.map(s => `<option value="${s}" ${stavPolozky === s ? 'selected' : ''}>${s}</option>`).join(''); 
                         const cenaText = p.cena ? ` (${p.cena} Kč/ks)` : '';
-                        if(z.stav === 'Odesláno' || z.stav === 'Hotovo') { return `<li class="py-1">✔️ ${p.ks}x ${p.nazev}${cenaText}</li>`; } 
+                        if(z.stav === 'Odesláno' || z.stav === 'Hotovo' || z.stav === 'Zabaleno') { return `<li class="py-1">✔️ ${p.ks}x ${p.nazev}${cenaText}</li>`; } 
                         else { return `<li class="flex items-center justify-between bg-white border border-gray-200 shadow-sm p-1 px-2 mb-1 rounded text-xs"><span class="font-medium text-gray-700">${p.ks}x ${p.nazev}${cenaText}</span><select onchange="zmenitStavPolozky('${id}', ${index}, this.value)" class="text-xs ml-2 bg-gray-50 border border-gray-300 rounded outline-none cursor-pointer">${optionsItem}</select></li>`; } 
                     }).join('') : ''; 
-                    const akceTlacitka = `<div class="flex flex-col gap-1"><button onclick="upravitZakazku('${id}')" class="bg-blue-100 text-blue-700 hover:bg-blue-200 font-bold px-3 py-1 rounded text-xs text-center">Upravit</button><button onclick="generovatPDF('${id}')" class="bg-green-100 text-green-700 hover:bg-green-200 font-bold px-3 py-1 rounded text-xs text-center">📄 PDF</button><button onclick="smazatZ('${id}')" class="text-red-500 hover:text-red-700 font-bold bg-red-50 px-3 py-1 rounded text-xs text-center">Smazat</button></div>`; 
-                    
-                    const rowHtml = `<tr class="hover:bg-gray-50"><td class="p-4"><div class="font-bold text-gray-800">${z.zakaznik}</div>${pracBadge}</td><td class="p-4 text-xs"><span class="bg-gray-200 px-2 py-1 rounded text-gray-700 font-bold">${typ}</span><br><span class="inline-block mt-2 text-gray-500">${z.kategorie || '-'}</span></td><td class="p-4 text-xs"><ul class="min-w-[180px]">${obsahListHtml}</ul></td><td class="p-4 font-medium whitespace-nowrap text-red-600">${zobrazenyTermin}</td><td class="p-4 font-bold text-blue-600 whitespace-nowrap">${z.cena} Kč</td><td class="p-4"><select onchange="zmenitStav('${id}', this.value)" class="bg-blue-100 font-bold text-blue-800 p-2 rounded outline-none border border-blue-200 cursor-pointer text-xs w-full">${optionsGlobal}</select></td><td class="p-4">${akceTlacitka}</td></tr>`; 
-                    
-                    if(z.stav === 'Odesláno' || z.stav === 'Hotovo') { 
-                        archivHTML += rowHtml; 
-                    } else { 
-                        zHTML += rowHtml; aktivni++; 
-                        
-                        if(z.stav === 'Zabaleno') { 
-                            kOdeslani++; 
-                            readyHTML += `<li class="p-3 bg-green-50 rounded-lg border border-green-100 flex justify-between items-center shadow-sm"><div><strong class="text-green-800">${z.zakaznik}</strong><br><span class="text-xs text-green-600">${z.kategorie || z.typ}</span></div><button onclick="switchTab('zakazky')" class="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-md transition font-bold">Vyřídit</button></li>`;
-                        }
 
-                        if(z.termin && z.stav !== 'Zabaleno') {
+                    if(z.stav === 'Odesláno' || z.stav === 'Hotovo') { 
+                        let trackBadge = z.tracking ? `<br><span class="inline-block mt-2 px-2 py-1 bg-blue-50 text-blue-800 rounded text-xs font-bold border border-blue-200">Sledování: ${z.tracking}</span>` : '';
+                        archivHTML += `<tr class="hover:bg-gray-50 opacity-70"><td class="p-4 font-bold text-gray-800">${z.zakaznik}</td><td class="p-4 text-xs"><span class="bg-gray-200 px-2 py-1 rounded text-gray-700 font-bold">${typ}</span><br><span class="inline-block mt-1 text-gray-500">${z.kategorie || '-'}</span></td><td class="p-4 text-xs"><ul class="min-w-[180px]">${obsahListHtml}</ul>${trackBadge}</td><td class="p-4 font-medium text-gray-500">${zobrazenyTermin}</td><td class="p-4 font-bold text-gray-500">${z.cena} Kč</td><td class="p-4 text-green-600 font-bold">Odesláno</td><td class="p-4"><button onclick="zmenitStav('${id}', 'Přijato')" class="text-xs text-blue-500 hover:underline">Vrátit do výroby</button><br><button onclick="smazatZ('${id}')" class="text-red-500 hover:underline text-xs mt-2">Smazat</button></td></tr>`;
+                    } else if (z.stav === 'Zabaleno') {
+                        kOdeslani++; 
+                        readyHTML += `<li class="p-3 bg-green-50 rounded-lg border border-green-100 flex justify-between items-center shadow-sm"><div><strong class="text-green-800">${z.zakaznik}</strong><br><span class="text-xs text-green-600">${z.kategorie || z.typ}</span></div><button onclick="switchTab('odeslani')" class="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-md transition font-bold">Vyřídit odeslání</button></li>`;
+                        
+                        const trackInput = `<input type="text" id="track-${id}" placeholder="Kód balíku..." class="w-full border-2 border-gray-300 p-2 rounded-lg text-sm outline-none focus:border-green-500">`;
+                        const odeslatBtn = `<button onclick="odeslatZasilku('${id}')" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg text-sm transition shadow mt-2">✔️ Odesláno</button>`;
+                        const zpetBtn = `<button onclick="zmenitStav('${id}', 'Přijato')" class="w-full text-gray-500 hover:text-gray-800 font-bold py-1 mt-2 rounded text-xs transition underline">Vrátit do výroby</button>`;
+                        
+                        odeslaniHTML += `<tr class="hover:bg-gray-50"><td class="p-4"><div class="font-bold text-gray-800">${z.zakaznik}</div>${pracBadge}</td><td class="p-4 text-xs"><span class="bg-gray-200 px-2 py-1 rounded text-gray-700 font-bold">${typ}</span><br><span class="inline-block mt-1 text-gray-500">${z.kategorie || '-'}</span></td><td class="p-4 text-xs"><ul class="min-w-[180px]">${obsahListHtml}</ul></td><td class="p-4">${trackInput}</td><td class="p-4">${odeslatBtn}${zpetBtn}</td></tr>`;
+                        ucelOptions += `<option value="Zakázka: ${z.zakaznik}">Zakázka: ${z.zakaznik}</option>`;
+                    } else { 
+                        aktivni++; 
+                        
+                        if(z.termin) {
                             const terminDatum = new Date(z.termin);
                             const rozdilDni = Math.ceil((terminDatum - dnes) / (1000 * 60 * 60 * 24));
                             
@@ -639,11 +651,16 @@
                             }
                         }
                         
+                        const prepnoutZabalenoBtn = `<button onclick="zmenitStav('${id}', 'Zabaleno')" class="w-full bg-indigo-600 text-white hover:bg-indigo-700 font-bold px-3 py-2 rounded text-xs text-center shadow mt-1">📦 K odeslání</button>`;
+                        const akceTlacitka = `<div class="flex flex-col gap-1"><button onclick="upravitZakazku('${id}')" class="bg-blue-100 text-blue-700 hover:bg-blue-200 font-bold px-3 py-1 rounded text-xs text-center">Upravit</button><button onclick="generovatPDF('${id}')" class="bg-green-100 text-green-700 hover:bg-green-200 font-bold px-3 py-1 rounded text-xs text-center">📄 PDF</button><button onclick="smazatZ('${id}')" class="text-red-500 hover:text-red-700 font-bold bg-red-50 px-3 py-1 rounded text-xs text-center">Smazat</button>${prepnoutZabalenoBtn}</div>`; 
+                        
+                        zHTML += `<tr class="hover:bg-gray-50"><td class="p-4"><div class="font-bold text-gray-800">${z.zakaznik}</div>${pracBadge}</td><td class="p-4 text-xs"><span class="bg-gray-200 px-2 py-1 rounded text-gray-700 font-bold">${typ}</span><br><span class="inline-block mt-2 text-gray-500">${z.kategorie || '-'}</span></td><td class="p-4 text-xs"><ul class="min-w-[180px]">${obsahListHtml}</ul></td><td class="p-4 font-medium whitespace-nowrap text-red-600">${zobrazenyTermin}</td><td class="p-4 font-bold text-blue-600 whitespace-nowrap">${z.cena} Kč</td><td class="p-4"><select onchange="zmenitStav('${id}', this.value)" class="bg-blue-100 font-bold text-blue-800 p-2 rounded outline-none border border-blue-200 cursor-pointer text-xs w-full">${optionsGlobal}</select></td><td class="p-4">${akceTlacitka}</td></tr>`; 
                         ucelOptions += `<option value="Zakázka: ${z.zakaznik}">Zakázka: ${z.zakaznik}</option>`;
                     } 
                 }); 
                 
                 if(document.getElementById('list-zakazky')) document.getElementById('list-zakazky').innerHTML = zHTML; 
+                if(document.getElementById('list-odeslani')) document.getElementById('list-odeslani').innerHTML = odeslaniHTML || '<tr><td colspan="5" class="p-4 text-center text-gray-500">Žádné zakázky nečekají na odeslání.</td></tr>';
                 if(document.getElementById('list-archiv')) document.getElementById('list-archiv').innerHTML = archivHTML; 
                 if(document.getElementById('stat-aktivni')) document.getElementById('stat-aktivni').innerText = aktivni; 
                 if(document.getElementById('stat-odeslani')) document.getElementById('stat-odeslani').innerText = kOdeslani; 
