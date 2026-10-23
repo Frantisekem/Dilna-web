@@ -120,6 +120,21 @@
             </div>
         </section>
 
+        <!-- KLIENTI -->
+        <section id="klienti" class="tab-content">
+            <h2 class="text-2xl font-bold mb-6">Adresář Klientů (CRM)</h2>
+            <div class="bg-white p-6 rounded-xl border shadow-sm mb-8">
+                <form id="form-klienti" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                    <div><label class="block text-sm mb-1">Jméno / Firma</label><input type="text" id="k-jmeno" class="w-full border p-2 rounded-lg" required></div>
+                    <div><label class="block text-sm mb-1">IG Profil / E-mail</label><input type="text" id="k-kontakt" class="w-full border p-2 rounded-lg"></div>
+                    <div><label class="block text-sm mb-1">Telefon</label><input type="text" id="k-telefon" class="w-full border p-2 rounded-lg"></div>
+                    <div><label class="block text-sm mb-1">Poznámka</label><input type="text" id="k-poznamka" class="w-full border p-2 rounded-lg"></div>
+                    <div class="md:col-span-4"><button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold">Uložit klienta</button></div>
+                </form>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="list-klienti"></div>
+        </section>
+
         <!-- ZAKÁZKY -->
         <section id="zakazky" class="tab-content">
             <h2 class="text-2xl font-bold mb-6">Aktivní Zakázky</h2>
