@@ -120,25 +120,10 @@
             </div>
         </section>
 
-        <!-- KLIENTI -->
-        <section id="klienti" class="tab-content">
-            <h2 class="text-2xl font-bold mb-6">Adresář Klientů (CRM)</h2>
-            <div class="bg-white p-6 rounded-xl border shadow-sm mb-8">
-                <form id="form-klienti" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                    <div><label class="block text-sm mb-1">Jméno / Firma</label><input type="text" id="k-jmeno" class="w-full border p-2 rounded-lg" required></div>
-                    <div><label class="block text-sm mb-1">IG Profil / E-mail</label><input type="text" id="k-kontakt" class="w-full border p-2 rounded-lg"></div>
-                    <div><label class="block text-sm mb-1">Telefon</label><input type="text" id="k-telefon" class="w-full border p-2 rounded-lg"></div>
-                    <div><label class="block text-sm mb-1">Poznámka</label><input type="text" id="k-poznamka" class="w-full border p-2 rounded-lg"></div>
-                    <div class="md:col-span-4"><button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold">Uložit klienta</button></div>
-                </form>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="list-klienti"></div>
-        </section>
-
         <!-- ZAKÁZKY -->
         <section id="zakazky" class="tab-content">
             <h2 class="text-2xl font-bold mb-6">Aktivní Zakázky</h2>
-            <div class="bg-white p-6 rounded-xl border shadow-sm mb-8">
+            <div class="bg-white p-6 rounded-xl border shadow-sm mb-10">
                 <h3 class="font-bold mb-4" id="nadpis-form-zakazka">Nová zakázka</h3>
                 <form id="form-zakazky" class="space-y-4">
                     <input type="hidden" id="z-edit-id" value="">
@@ -165,7 +150,7 @@
                         <div class="md:col-span-2">
                             <label class="block text-sm mb-1">Typ výroby</label>
                             <select id="z-typ" class="w-full border p-2 rounded-lg bg-gray-50 font-bold" required onchange="zmenKategorie()">
-                                <option value="3D tisk">3D tisk</option><option value="Cricut">Cricut (Plotr)</option>
+                                <option value="3D tisk">3D tisk</option><option value="Cricut">Cricut (Plotr)</option><option value="Sádra">Sádra</option>
                             </select>
                         </div>
                         <div class="md:col-span-2">
@@ -192,10 +177,33 @@
                     <button type="submit" id="btn-submit-zakazka" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold text-lg shadow-lg hover:bg-blue-700 transition">Vytvořit zakázku</button>
                 </form>
             </div>
-            <table class="w-full text-left border-collapse bg-white rounded-xl shadow-sm overflow-hidden">
-                <thead><tr class="bg-gray-50 border-b text-sm text-gray-600"><th class="p-4 w-1/6">Klient a Kdo řeší</th><th class="p-4 w-1/6">Oblast</th><th class="p-4 w-2/6">Položky a jejich stav</th><th class="p-4">Termín</th><th class="p-4">Cena</th><th class="p-4 w-1/6">Celkový Stav</th><th class="p-4">Akce</th></tr></thead>
-                <tbody id="list-zakazky" class="text-sm divide-y"></tbody>
-            </table>
+            
+            <!-- 3D Tisk Tabulka -->
+            <div class="mb-8">
+                <h3 class="text-lg font-bold text-blue-800 mb-3 flex items-center gap-2">🖨️ 3D Tisk</h3>
+                <table class="w-full text-left border-collapse bg-white rounded-xl shadow-sm overflow-hidden">
+                    <thead><tr class="bg-gray-50 border-b text-sm text-gray-600"><th class="p-4 w-1/6">Klient a Kdo řeší</th><th class="p-4 w-1/6">Oblast</th><th class="p-4 w-2/6">Položky a jejich stav</th><th class="p-4">Termín</th><th class="p-4">Cena</th><th class="p-4 w-1/6">Celkový Stav</th><th class="p-4">Akce</th></tr></thead>
+                    <tbody id="list-zakazky-3d" class="text-sm divide-y"></tbody>
+                </table>
+            </div>
+
+            <!-- Cricut Tabulka -->
+            <div class="mb-8">
+                <h3 class="text-lg font-bold text-pink-800 mb-3 flex items-center gap-2">✂️ Cricut</h3>
+                <table class="w-full text-left border-collapse bg-white rounded-xl shadow-sm overflow-hidden">
+                    <thead><tr class="bg-gray-50 border-b text-sm text-gray-600"><th class="p-4 w-1/6">Klient a Kdo řeší</th><th class="p-4 w-1/6">Oblast</th><th class="p-4 w-2/6">Položky a jejich stav</th><th class="p-4">Termín</th><th class="p-4">Cena</th><th class="p-4 w-1/6">Celkový Stav</th><th class="p-4">Akce</th></tr></thead>
+                    <tbody id="list-zakazky-cricut" class="text-sm divide-y"></tbody>
+                </table>
+            </div>
+
+            <!-- Sádra Tabulka -->
+            <div class="mb-8">
+                <h3 class="text-lg font-bold text-amber-700 mb-3 flex items-center gap-2">🏺 Sádra</h3>
+                <table class="w-full text-left border-collapse bg-white rounded-xl shadow-sm overflow-hidden">
+                    <thead><tr class="bg-gray-50 border-b text-sm text-gray-600"><th class="p-4 w-1/6">Klient a Kdo řeší</th><th class="p-4 w-1/6">Oblast</th><th class="p-4 w-2/6">Položky a jejich stav</th><th class="p-4">Termín</th><th class="p-4">Cena</th><th class="p-4 w-1/6">Celkový Stav</th><th class="p-4">Akce</th></tr></thead>
+                    <tbody id="list-zakazky-sadra" class="text-sm divide-y"></tbody>
+                </table>
+            </div>
         </section>
 
         <!-- K ODESLÁNÍ -->
@@ -360,7 +368,19 @@
         
         window.overitHeslo = function(e) { e.preventDefault(); if(document.getElementById('heslo-input').value === TAJNE_HESLO) { sessionStorage.setItem('dilna_prihlaseno', 'ano'); document.getElementById('login-screen').style.display = 'none'; document.getElementById('hlavni-obsah').classList.remove('opacity-0'); jePrihlasen = true; spustitFirebase(); } else { document.getElementById('heslo-chyba').classList.remove('hidden'); } };
         function switchTab(tabId) { document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active')); document.getElementById(tabId).classList.add('active'); document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('bg-gray-200', 'bg-blue-50', 'text-blue-600', 'text-blue-700', 'border-blue-200')); let btn = document.getElementById('btn-' + tabId); if(tabId === 'zaznamy-tisku') { btn.classList.add('bg-blue-50', 'text-blue-700', 'border-blue-200'); } else { btn.classList.add('bg-gray-200', 'text-blue-600'); } }
-        window.zmenKategorie = function() { const typ = document.getElementById('z-typ').value; const katSelect = document.getElementById('z-kategorie'); katSelect.innerHTML = ''; const moznosti = { '3D tisk': ['Postavy a figurky', 'Dekorace', 'Kancelář a stůl', 'IT a elektronika', 'EDC a doplňky', 'Domácnost a jídlo', 'Zábava a hračky', 'VIP dárky', 'Běžný tisk'], 'Cricut': ['Svatební výzdoba', 'Plesová výzdoba', 'Samolepky', 'Oblečení / Nažehlovačky', 'Další'] }; moznosti[typ].forEach(kat => { const opt = document.createElement('option'); opt.value = kat; opt.innerText = kat; katSelect.appendChild(opt); }); }; document.addEventListener('DOMContentLoaded', window.zmenKategorie); 
+        
+        window.zmenKategorie = function() { 
+            const typ = document.getElementById('z-typ').value; 
+            const katSelect = document.getElementById('z-kategorie'); 
+            katSelect.innerHTML = ''; 
+            const moznosti = { 
+                '3D tisk': ['Postavy a figurky', 'Dekorace', 'Kancelář a stůl', 'IT a elektronika', 'EDC a doplňky', 'Domácnost a jídlo', 'Zábava a hračky', 'VIP dárky', 'Běžný tisk'], 
+                'Cricut': ['Svatební výzdoba', 'Plesová výzdoba', 'Samolepky', 'Oblečení / Nažehlovačky', 'Další'],
+                'Sádra': ['Dekorace', 'Podtácky', 'Květináče', 'Sošky', 'Další']
+            }; 
+            moznosti[typ].forEach(kat => { const opt = document.createElement('option'); opt.value = kat; opt.innerText = kat; katSelect.appendChild(opt); }); 
+        }; 
+        document.addEventListener('DOMContentLoaded', window.zmenKategorie); 
         
         window.pridatRadekPolozky = function(nazev = '', ks = 1, cena = 0, stavItem = 'Čeká') {
             const container = document.getElementById('polozky-container');
@@ -578,14 +598,19 @@
                 await updateDoc(doc(db, "zakazky", id), { stav: 'Odesláno', tracking: track }); 
             };
 
+            window.ulozitTracking = async function(id) {
+                const track = document.getElementById('track-'+id).value;
+                await updateDoc(doc(db, "zakazky", id), { tracking: track });
+            };
+
             let vsechnyZakazkyRaw = {};
             window.generovatPDF = function(zakazkaId) { const z = vsechnyZakazkyRaw[zakazkaId]; if(!z) return; document.getElementById('pdf-datum').innerText = new Date().toLocaleDateString('cs-CZ'); document.getElementById('pdf-zakaznik').innerText = z.zakaznik; document.getElementById('pdf-cena').innerText = z.cena + ' Kč'; let pHTML = ''; if(z.obsah) { z.obsah.forEach(p => { pHTML += `<tr class="border-b border-gray-100"><td class="py-3 text-lg">${p.nazev}</td><td class="py-3 text-right font-bold">${p.ks} ks</td></tr>`; }); } document.getElementById('pdf-polozky').innerHTML = pHTML; const element = document.getElementById('invoice-template'); element.style.display = 'block'; html2pdf().set({ margin: 0, filename: `Dodak_${z.zakaznik.replace(/\s+/g, '_')}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } }).from(element).save().then(() => { element.style.display = 'none'; }); };
 
             onSnapshot(collection(db, "zakazky"), (snapshot) => { 
-                let zHTML = ''; let archivHTML = ''; let odeslaniHTML = '';
+                let zHTML = ''; let html3D = ''; let htmlCricut = ''; let htmlSadra = ''; let archivHTML = ''; let odeslaniHTML = '';
                 let aktivni = 0, kOdeslani = 0; 
                 let ucelOptions = '<option value="Osobní / Dílna">-- Osobní / Dílna --</option>'; 
-                const stavyVyroby = { '3D tisk': ['Přijato','Příprava 3D modelu','Tisk','Nabarveno','Zabaleno','Odesláno'], 'Cricut': ['Čeká','Grafika','Tisk','Zabaleno','Hotovo'] }; 
+                const stavyVyroby = { '3D tisk': ['Přijato','Příprava 3D modelu','Tisk','Nabarveno','Zabaleno','Odesláno'], 'Cricut': ['Čeká','Grafika','Tisk','Zabaleno','Hotovo'], 'Sádra': ['Přijato', 'Odlévání', 'Schnutí', 'Broušení/Úprava', 'Zabaleno', 'Odesláno'] }; 
                 vsechnyZakazkyRaw = {}; 
                 
                 let urgentHTML = ''; let readyHTML = ''; const dnes = new Date(); dnes.setHours(0,0,0,0);
@@ -631,11 +656,12 @@
                         kOdeslani++; 
                         readyHTML += `<li class="p-3 bg-green-50 rounded-lg border border-green-100 flex justify-between items-center shadow-sm"><div><strong class="text-green-800">${z.zakaznik}</strong><br><span class="text-xs text-green-600">${z.kategorie || z.typ}</span></div><button onclick="switchTab('odeslani')" class="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-md transition font-bold">Vyřídit odeslání</button></li>`;
                         
-                        const trackInput = `<input type="text" id="track-${id}" placeholder="Kód balíku..." class="w-full border-2 border-gray-300 p-2 rounded-lg text-sm outline-none focus:border-green-500">`;
-                        const odeslatBtn = `<button onclick="odeslatZasilku('${id}')" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg text-sm transition shadow mt-2">✔️ Odesláno</button>`;
+                        const trackVal = z.tracking || '';
+                        const trackInput = `<div class="flex gap-2"><input type="text" id="track-${id}" value="${trackVal}" placeholder="Kód balíku..." class="w-full border-2 border-gray-300 p-2 rounded-lg text-sm outline-none focus:border-green-500"><button onclick="ulozitTracking('${id}')" class="bg-blue-100 text-blue-700 hover:bg-blue-200 px-3 rounded-lg font-bold text-xs transition">Uložit</button></div>`;
+                        const odeslatBtn = `<button onclick="odeslatZasilku('${id}')" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg text-sm transition shadow mt-2">✔️ Odeslat do archivu</button>`;
                         const zpetBtn = `<button onclick="zmenitStav('${id}', 'Přijato')" class="w-full text-gray-500 hover:text-gray-800 font-bold py-1 mt-2 rounded text-xs transition underline">Vrátit do výroby</button>`;
                         
-                        odeslaniHTML += `<tr class="hover:bg-gray-50"><td class="p-4"><div class="font-bold text-gray-800">${z.zakaznik}</div>${pracBadge}</td><td class="p-4 text-xs"><span class="bg-gray-200 px-2 py-1 rounded text-gray-700 font-bold">${typ}</span><br><span class="inline-block mt-1 text-gray-500">${z.kategorie || '-'}</span></td><td class="p-4 text-xs"><ul class="min-w-[180px]">${obsahListHtml}</ul></td><td class="p-4">${trackInput}</td><td class="p-4">${odeslatBtn}${zpetBtn}</td></tr>`;
+                        odeslaniHTML += `<tr class="hover:bg-gray-50"><td class="p-4"><div class="font-bold text-gray-800">${z.zakaznik}</div>${pracBadge}</td><td class="p-4 text-xs"><span class="bg-gray-200 px-2 py-1 rounded text-gray-700 font-bold">${typ}</span><br><span class="inline-block mt-1 text-gray-500">${z.kategorie || '-'}</span></td><td class="p-4 text-xs"><ul class="min-w-[180px]">${obsahListHtml}</ul></td><td class="p-4 w-64">${trackInput}</td><td class="p-4">${odeslatBtn}${zpetBtn}</td></tr>`;
                         ucelOptions += `<option value="Zakázka: ${z.zakaznik}">Zakázka: ${z.zakaznik}</option>`;
                     } else { 
                         aktivni++; 
@@ -654,12 +680,19 @@
                         const prepnoutZabalenoBtn = `<button onclick="zmenitStav('${id}', 'Zabaleno')" class="w-full bg-indigo-600 text-white hover:bg-indigo-700 font-bold px-3 py-2 rounded text-xs text-center shadow mt-1">📦 K odeslání</button>`;
                         const akceTlacitka = `<div class="flex flex-col gap-1"><button onclick="upravitZakazku('${id}')" class="bg-blue-100 text-blue-700 hover:bg-blue-200 font-bold px-3 py-1 rounded text-xs text-center">Upravit</button><button onclick="generovatPDF('${id}')" class="bg-green-100 text-green-700 hover:bg-green-200 font-bold px-3 py-1 rounded text-xs text-center">📄 PDF</button><button onclick="smazatZ('${id}')" class="text-red-500 hover:text-red-700 font-bold bg-red-50 px-3 py-1 rounded text-xs text-center">Smazat</button>${prepnoutZabalenoBtn}</div>`; 
                         
-                        zHTML += `<tr class="hover:bg-gray-50"><td class="p-4"><div class="font-bold text-gray-800">${z.zakaznik}</div>${pracBadge}</td><td class="p-4 text-xs"><span class="bg-gray-200 px-2 py-1 rounded text-gray-700 font-bold">${typ}</span><br><span class="inline-block mt-2 text-gray-500">${z.kategorie || '-'}</span></td><td class="p-4 text-xs"><ul class="min-w-[180px]">${obsahListHtml}</ul></td><td class="p-4 font-medium whitespace-nowrap text-red-600">${zobrazenyTermin}</td><td class="p-4 font-bold text-blue-600 whitespace-nowrap">${z.cena} Kč</td><td class="p-4"><select onchange="zmenitStav('${id}', this.value)" class="bg-blue-100 font-bold text-blue-800 p-2 rounded outline-none border border-blue-200 cursor-pointer text-xs w-full">${optionsGlobal}</select></td><td class="p-4">${akceTlacitka}</td></tr>`; 
+                        const rowHtml = `<tr class="hover:bg-gray-50"><td class="p-4"><div class="font-bold text-gray-800">${z.zakaznik}</div>${pracBadge}</td><td class="p-4 text-xs"><span class="bg-gray-200 px-2 py-1 rounded text-gray-700 font-bold">${typ}</span><br><span class="inline-block mt-2 text-gray-500">${z.kategorie || '-'}</span></td><td class="p-4 text-xs"><ul class="min-w-[180px]">${obsahListHtml}</ul></td><td class="p-4 font-medium whitespace-nowrap text-red-600">${zobrazenyTermin}</td><td class="p-4 font-bold text-blue-600 whitespace-nowrap">${z.cena} Kč</td><td class="p-4"><select onchange="zmenitStav('${id}', this.value)" class="bg-blue-100 font-bold text-blue-800 p-2 rounded outline-none border border-blue-200 cursor-pointer text-xs w-full">${optionsGlobal}</select></td><td class="p-4">${akceTlacitka}</td></tr>`; 
+                        
+                        if(typ === '3D tisk') html3D += rowHtml;
+                        else if(typ === 'Cricut') htmlCricut += rowHtml;
+                        else if(typ === 'Sádra') htmlSadra += rowHtml;
+                        
                         ucelOptions += `<option value="Zakázka: ${z.zakaznik}">Zakázka: ${z.zakaznik}</option>`;
                     } 
                 }); 
                 
-                if(document.getElementById('list-zakazky')) document.getElementById('list-zakazky').innerHTML = zHTML; 
+                if(document.getElementById('list-zakazky-3d')) document.getElementById('list-zakazky-3d').innerHTML = html3D || '<tr><td colspan="7" class="p-4 text-center text-gray-500">Žádné aktivní zakázky.</td></tr>'; 
+                if(document.getElementById('list-zakazky-cricut')) document.getElementById('list-zakazky-cricut').innerHTML = htmlCricut || '<tr><td colspan="7" class="p-4 text-center text-gray-500">Žádné aktivní zakázky.</td></tr>'; 
+                if(document.getElementById('list-zakazky-sadra')) document.getElementById('list-zakazky-sadra').innerHTML = htmlSadra || '<tr><td colspan="7" class="p-4 text-center text-gray-500">Žádné aktivní zakázky.</td></tr>'; 
                 if(document.getElementById('list-odeslani')) document.getElementById('list-odeslani').innerHTML = odeslaniHTML || '<tr><td colspan="5" class="p-4 text-center text-gray-500">Žádné zakázky nečekají na odeslání.</td></tr>';
                 if(document.getElementById('list-archiv')) document.getElementById('list-archiv').innerHTML = archivHTML; 
                 if(document.getElementById('stat-aktivni')) document.getElementById('stat-aktivni').innerText = aktivni; 
